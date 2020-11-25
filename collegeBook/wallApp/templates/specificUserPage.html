@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <title>College Book</title>
+</head>
+<!-- <style>
+    * {
+        outline: 1px solid red;
+    }
+
+    .check {
+        background-color: yellow;
+    }
+</style> -->
+
+<body class="bg-light">
+    <a class="navbar-brand ml-2" href="/wall">College Book</a>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light float-right">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"><span
+                class="navbar-toggler-icon"></span></button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item active">
+                    <a class="nav-link float-right" href="/wall">Home <span class="sr-only"></span></a>
+                </li>
+                <li class="nav-item float-right"><a class="nav-link" href="/logout">Log Out</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container">
+        <h4 class="ml-5">Hello, {{specificUserPage.firstName}}! </h4>
+        <div class="row ml-5">
+            <div class="col-sm-3 mt-4 bg-white">
+                <p class="lead mr-2 pl-2">Friends</p>
+                {% for user in allUsers %}
+                <a href="/user/{{user.id}}">{{user.firstName}}</a>
+                {% endfor %}
+            </div>
+            <div class="col-sm-7 ml-5">
+                <h6 class="mb-2 ml-3">What's On Your Mind?</h6>
+
+                <!-- The below code is for the post a message form -->
+                <form class="mb-2 bg-white col-sm-12" action="/processMessage" method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="textArea"></label>
+                        <textarea class="form-control" id="" name="userMessage" rows="2"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary mb-2 btn-sm">Post A Message</button>
+                </form>
+                <small class="font-weight-bold">Posts</small>
+                <!-- The above code is for the post a message form -->
+
+                <table class="table table-borderless">
+                    <tbody>
+                        <tr>
+                            <td class="border border border-light bg-white">
+                                <h6 class="col-sm-10 mb-0">
+                                    {% for message in specificUserMessages %}
+                                    <a href="user/{{message.id}}">{{message.user.firstName}}
+                                        {{message.user.lastName}}</a>
+                                </h6>
+                                <small class="ml-3">{{message.user.createdAt}}</small>
+                                <p class="col-sm mb-0 ml-0">{{message.message}} </p>
+                                <!-- <div class="bg-light"> FIGURE OUT HOW TO FLOAT THIS TO THE RIGHT
+                                    <a class="" href=""> # Comments</a>
+                                    <a class="" href="">Share</a>
+                                </div> -->
+                                <div class=" col-sm-12 mr-3 pl-5 bg-light">
+                                    <a class="mr-2 hover" href="/like/{{message.id}}">Like</a>
+                                    <a class="mr-2" href="/unlike/{{message.id}}">Unlike</a>
+                                    <a class="" href="">Comment</a>
+                                </div>
+                                <div class="col-sm ml-5">
+                                    <!-- The below line of code displays what the user would see when they like a message -->
+                                    {% if loggedInUser in message.userLikes.all %}
+                                    <small class=""> You </small>
+                                    {% endif %}
+                                    <!-- The above line of code displays what the user would see when they like a message -->
+
+                                    <!-- The below line of code does not display the logged in user's like(code above does) and the word 'others' if there is only one like -->
+                                    {% for name in message.userLikes.all %}
+                                    {% if loggedInUser != name %}
+                                    {% if likesCount < 2 %}
+                                    <small class=""> {{name.firstName}} liked your message </small>
+                                    <!-- The above line of code does not display the logged in user's like(code above does) and the word 'others' if there is only one like -->
+                                    {% else %}
+                                    <!-- The below line of code displays the word 'others' if there is more than one like -->
+                                    <small class=""> ,{{name.firstName}}, & {{likesCount}} others </small>
+                                    <!-- The above line of code displays the word 'others' if there is more than one like -->
+
+
+                                    <!-- <small class=""> {{name.firstName}}, & {{likesCount}} others </small> -->
+                                    {% endif %}
+                                    {% endif %}
+                                    {% endfor %}
+
+                                </div>
+
+                                {% for comment in message.comments.all %}
+                                <!-- <p class="col-sm ml-4 sm mb-0">{{comment.user.firstName}} {{comment.user.lastName}}
+                                    {{message.user.createdAt}}</p> -->
+                                <p class="col-sm-8 ml-5 mb-0 rounded-pill bg-light">
+                                    <a href="/user/{{comment.user.id}}">{{comment.user.firstName}}
+                                        {{comment.user.lastName}}</a>
+                                    {{comment.comment}}
+                                </p>
+                                {% endfor %}
+                                <!-- This code below is the code for the form to post a comment. -->
+                                <form class="col-sm ml-0 sm mb-0 mt-0 pt-0 pb-0" action="/processComments"
+                                    method="post">
+                                    {% csrf_token %}
+                                    <div class="form-group">
+                                        <label for="textArea"></label>
+                                        <input type="hidden" id="" name="postLocationForComment" value="{{message.id}}">
+                                        <textarea
+                                            class="form-control form-control-sm col-sm-8 rounded-pill bg-light text-black"
+                                            id="exampleFormControlTextarea1" rows="1" name="userComment"></textarea>
+                                        <button type="submit"
+                                            class="btn btn-primary mb-0 mt-1 btn-success btn-sm">Comment</button>
+                                    </div>
+                                </form>
+                                <!-- This code above is the code for the form to post a comment. -->
+                                {% endfor %}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</body>
+
+</html>

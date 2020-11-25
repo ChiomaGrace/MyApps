@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <title>CollegeBook</title>
+    {% load static %}	<!-- Need this line to use static images -->
+    <link rel="stylesheet" href="{% static 'css/collegeWall.css' %}">  <!-- Need this line to use external stylesheet --> 
+    <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js'></script>
+
+    <script>
+
+        $(document).ready(function() { 
+
+            var $crf_token = $('[name="csrfmiddlewaretoken"]').attr('value'); //this defines the token form the form so it can be used in the jquery/ajax code below
+
+            //This initially hides the registration button, so it doesn't display until the register button is clicked
+            $( '#registrationForm' ).hide();
+
+            //This initially hides the birthday information, so it doesn't display until the birthday information div is clicked
+            $( '#birthdayInfoDiv' ).hide();
+            
+            //This initially hides the registration errors, so it doesn't continue to display upon a refresh or until necessary
+            $(".displayErrors").hide(); 
+
+            $('#createAccount').click(function(){
+                console.log("This is when the create account button is clicked.")
+                $( '#registrationForm' ).show()
+                $( '#loginFormErrorsDiv' ).hide() //hides the errors on the login section if there are any displaying
+                event.preventDefault(); //prevents the dialog box (create account) from hiding again
+
+                $('#XForRegistrationForm').click(function(){
+                    // $(".displayErrors").hide(); This could also work instead of the below if statement
+                    if ($('.displayErrors').is(':visible')) {
+                        $(".displayErrors").empty() 
+                        $('#userFirstNameID').removeClass('decoratedErrorField');  //This resets/removes the red input box 
+                        $('#userLastNameID').removeClass('decoratedErrorField');  //This resets/removes the red input box 
+                        $('#userRegistrationEmail').removeClass('decoratedErrorField');
+                        $('#initialPassword').removeClass('decoratedErrorField');  //This resets/removes the red input box 
+                        $('#confirmPassword').removeClass('decoratedErrorField');  //This resets/removes the red input box 
+                        $('#userBirthdayMonthID').removeClass('decoratedErrorField');  //This resets/removes the red input box around the specific error that was raised
+                        $(".displayErrors").hide(); 
+                    }
+                    $( '#registrationForm' ).hide();
+                });
+
+                $('#questionMark').click(function(){
+                    $( '#birthdayInfoDiv' ).show();
+                    event.preventDefault(); //prevents from hiding again
+                });
+
+                $('#closeBirthdayInfoBoxButton').click(function(){
+                    $( '#birthdayInfoDiv' ).hide();
+                });
+            });
+
+//The below code is submitting a form via jquery/ajax
+
+            $("#regForm").submit(function(e){// the id name given to the form action in the below html
+                console.log("The submit register function was clicked.")
+                e.preventDefault(); //prevents the default browser behavior of the form submitting normally
+                if ($(".displayErrors").is(':visible')) {
+                    console.log("This console log means errors occurred and are visible on the html")
+                    $(".displayErrors").empty() // This resets the current errors and prevents them from appending multiple times upon a submit (register attempt)
+                    $('#userFirstNameID').removeClass('decoratedErrorField');  //This resets/removes the red input box around the specific error that was raised
+                    $('#userLastNameID').removeClass('decoratedErrorField');  //This resets/removes the red input box around the specific error that was raised
+                    $('#userRegistrationEmail').removeClass('decoratedErrorField');  //This resets/removes the red input box around the specific error that was raised
+                    $('#initialPassword').removeClass('decoratedErrorField');  //This resets/removes the red input box around the specific error that was raised
+                    $('#confirmPassword').removeClass('decoratedErrorField');  //This resets/removes the red input box around the specific error that was raised
+                    $('#userBirthdayMonthID').removeClass('decoratedErrorField');  //This resets/removes the red input box around the specific error that was raised
+                }
+                var registrationData = {
+                    //Note: The key name needs to match the key name in the html because it is the key name used on the server side for validations. if not  will get a multi value dict key error
+                    "userFirstName": $('input[name="userFirstName"]').val(), 
+                    "userLastName": $('input[name="userLastName"]').val(), 
+                    "initialEmail": $('input[name="initialEmail"]').val(), 
+                    "initialPassword": $('input[name="initialPassword"]').val(), 
+                    "userConfirmPassword": $('input[name="userConfirmPassword"]').val(), 
+                    //This is select rather than input 
+                    "birthdayMonth": $('select[name="userBirthdayMonth"]').val(),
+                    //This is select rather than input 
+                    "birthdayDay": $('select[name="userBirthdayDay"]').val(), 
+                    //This is select rather than input 
+                    "birthdayYear": $('select[name="userBirthdayYear"]').val() ,
+                };
+                console.log("The form data was submitted.", registrationData)
+                $.ajax({
+                    type: "POST",
+                    url: '/processRegistration',
+                    headers:{"X-CSRFToken": $crf_token}, //this relates to the CSRF token in the form
+                    data: registrationData,
+                    success: function(data) {
+                        // if (data.success) {
+                            console.log("This is the data successfully submitted", data)
+                            window.location.href = '/wall'; //if the data is submitted correctly, this directs the user to their homepage
+                        // }
+                        // else{
+                        //     console.log("If this console log is displaying, it means errors occurred in submitting the registration data")
+                        // }
+                    },
+                    error: function(data){
+                        console.log("If this console log is displaying, it means errors occurred in submitting the registration data")
+                        var registrationErrors = data.responseJSON.errors //Name of the dictionary.
+                        console.log("This will print the key and value of each pair in the dictionary", registrationErrors)
+                        // alert(data.responseJSON.errors)
+                        console.log("Before the for loop of the dictionary")
+                        for(error in registrationErrors){ 
+                            console.log(error) //This provides the key name of each error
+                            console.log(registrationErrors[error]) //This provides the value of each error (the actual error message)
+                            // console.log(registrationErrors[error][0]) //This provides the value of each character in the error message (a specific letter)
+                            $(".displayErrors").append('<li class= "text-danger small">' + registrationErrors[error] + '</li>')
+                            $(".displayErrors").show(); //displays the appended registration errors on the html
+                            if(error == "firstName") { //the key name of an error in the dictionary
+                                console.log("This is inside the if loop for the firstName error", error)
+                                $('#userFirstNameID').addClass('decoratedErrorField');  //adds a red border around the incorrectly submitted input field
+                                // $("#userFirstNameID").append('<input placeholder="Must submit a First Name">')
+                            }
+                            if(error == "lastName") { //the key name of an error in the dictionary
+                                console.log("This is inside the if loop for the lastName error", error) //adds a red border around the incorrectly submitted input field
+                                $('#userLastNameID').addClass('decoratedErrorField'); 
+                            }
+                            if(error == "emailAddressRequired") { //the key name of an error in the dictionary
+                                console.log("This is inside the if loop for the emailAddressRequired error", error) //adds a red border around the incorrectly submitted input field
+                                $('#userRegistrationEmail').addClass('decoratedErrorField'); 
+                            }
+                            if(error == "emailAddress") { //the key name of an error in the dictionary
+                                console.log("This is inside the if loop for the emailAddress error", error) //adds a red border around the incorrectly submitted input field
+                                $('#userRegistrationEmail').addClass('decoratedErrorField'); 
+                            }
+                            if(error == "password") { //the key name of an error in the dictionary
+                                console.log("This is inside the if loop for the password error", error) //adds a red border around the incorrectly submitted input field
+                                $('#initialPassword').addClass('decoratedErrorField'); 
+                                $('#confirmPassword').addClass('decoratedErrorField'); 
+                            }
+                            // if(error == "birthdayMonth") { //the given name of the error in the registration validator in the models.py
+                                // console.log("This is inside the if loop for the birthdayMonth error", error) //adds a red border around the incorrectly submitted input field
+                                // $('#userBirthdayMonthID').addClass('decoratedErrorField'); 
+                            // }
+                            
+                        }
+                        console.log("Outside of the for loop of the dictionary")
+                    },
+                });
+            });
+//The above code is the function for submitting a form via jquery/ajax
+        });
+
+    </script>
+
+</head>
+
+<body class="bg-light">
+    <div class="container">
+        <div class="row mt-5">
+
+            <!-- The below code is the first column -->
+            <div class="col-sm-6">
+                <h2 class=" mt-4 ml-5">College Wall</h2>
+                <h3 class=" ml-5 mt-3 font-italic font-weight-light">Recent Logins</h3>
+                <small class="text-secondary ml-5">Click Your Picture Or Add An Account.</small>
+            </div>
+            <!-- The above code is the first column -->
+
+            <!-- The below code is the second column (login form) -->
+            <div id= "loginForm" class="col-sm-4 mt-5 ml-4 pb-4 bg-white rounded-lg">
+                <form action="/processLogin" method="POST">
+                    {% csrf_token %}
+                    <div id="loginFormErrorsDiv">
+                    {% if messages %}
+                        <ul class="messages">
+                            {% for message in messages %}
+        <!-- The below extra_tags prevents the registration login errors from displaying on the login errors div-->
+                                {% if 'loginErrors' in message.extra_tags %}
+                                <!-- if message.extra_tags == "loginErrors" would also suffice above  -->
+                            <li class="{{message.tags}} text-danger" > {{message}}</li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="emailAddress"></label>
+                        <input type="text" class="form-control rounded-lg pt-4 pb-4" aria-describedby="emailHelp" name="userEmail" placeholder="Email" value="{{request.session.rememberEmail}}">
+                        <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+                        <label for="password"></label>
+                        <input type="password" class="form-control rounded-lg pt-4 pb-4" id="password" name="userPassword" placeholder="Password">
+                    </div>
+                    <button type="submit" class="btn btn-primary col-sm-12 rounded-lg pt-2 pb-2">Log In</button>
+                </form>
+                <p class="decorativeLine"> ___________________________________________________</p>
+                <div class="col-sm-12 ml-4 ">
+                    <!-- Column two of three --> 
+                    <button type="submit" id="createAccount" class="btn btn-primary btn-success rounded-lg pt-2 pb-2 ml-5">Create New Account</button>
+                </div>     
+            </div>
+            <!-- The above code is the second column (login form) -->
+
+            <!-- The below code is the register form that appears after ajax function is clicked -->
+            <div id= "registrationForm" class=" col-sm-4 rounded-lg">
+                <form action="" id="regForm" method="POST">    
+                    <!-- Removed the url above to submit form data via jquery/ajax in the script-->
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <h2 class=" mb-0"> Sign Up</h2>
+                            </div>
+                            <div class="col-sm-3 ">
+                                <!-- Column two of three --> 
+                            </div> 
+                            <div class="col-sm-3">
+                                <h4 id= "XForRegistrationForm"class="font-weight-bolder text-secondary"> X <h4>
+                                </div>
+                            </div>
+                            
+                            <small id="signUp" class="ml-1 mt-1 text-muted">It's quick and easy.</small>
+                        <div id="registrationErrors">
+                            <ul class="displayErrors mb-0">
+                                <!-- <li class="  text-danger"> </li> -->
+                            </ul>
+                        </div>
+                    <p class="decorativeLine">__________________________________________________________</p>
+                    
+                    <div class="form-group pt-0 d-inline">
+                        <label for="firstName"></label>
+                        <input type="text" class="form-control d-inline ml-2 col-sm-5 " name="userFirstName"  id="userFirstNameID" placeholder="First Name" value="{{request.session.rememberFirstName}}">
+                        <label for="lastName"></label>
+                        <input type="text" class=" ml-4 form-control d-inline col-sm-5" name="userLastName" id="userLastNameID" placeholder="Last Name" value="{{request.session.rememberLastName}}">
+                    </div>
+
+                    <input type="text" class="form-control mt-3" id="userRegistrationEmail" aria-describedby="emailHelp" name="initialEmail" placeholder="Email Address" value="{{rememberEmail}}">
+                    <small id="emailHelp" class=" ml-1 text-muted">We'll never share your email with anyone else.</small>
+
+                    <input type="password" class="form-control mt-1 mb-3" id="initialPassword" name="initialPassword" placeholder="New Password">
+                    <input type="password" class="form-control mb-2" id="confirmPassword" name="userConfirmPassword" placeholder="Confirm Password">
+                    
+                    <div> 
+                        <small id="birthdayLabel" class="form-text text-muted">Birthday</small>
+                        <small id="questionMark">?</small>
+                    </div>
+
+                    <div id="birthdayInfoDiv">
+                        <p>Providing your birthday helps us to remind your college buddies to send you some love amidst midterms and papers.</p>
+                        <p class="decorativeLine">________________________________</p>
+                        <button type="button" id="closeBirthdayInfoBoxButton" class="btn btn-primary btn-sm rounded-sm ml-5">Close</button>
+                    </div>
+
+                    <div class="form-group pt-0 d-inline">
+                        <select class="form-control d-inline col-sm-4" name="userBirthdayMonth" id="userBirthdayMonthID">
+                            <option disabled selected>Month</option>
+                            <option value="January">January</option>
+                            <option value="February">February</option>
+                            <option value="March">March</option>
+                            <option value="April">April</option>
+                            <option value="May">May</option>
+                            <option value="June">June</option>
+                            <option value="July">July</option>
+                            <option value="August">August</option>
+                            <option value="September">September</option>
+                            <option value="October">October</option>
+                            <option value="November">November</option>
+                            <option value="December">December</option>
+                        </select>
+
+                        <select id="birthdayDayOnRegistrationForm" class="form-control d-inline col-sm-3 ml-2 mr-2" name="userBirthdayDay">
+                            <option  disabled selected>Day</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                            <option value="11">11</option>
+                            <option value="12">12</option>
+                            <option value="13">13</option>
+                            <option value="14">14</option>
+                            <option value="15">15</option>
+                            <option value="16">16</option>
+                            <option value="17">17</option>
+                            <option value="18">18</option>
+                            <option value="19">19</option>
+                            <option value="20">20</option>
+                            <option value="21">21</option>
+                            <option value="22">22</option>
+                            <option value="23">23</option>
+                            <option value="24">24</option>
+                            <option value="25">25</option>
+                            <option value="26">26</option>
+                            <option value="27">27</option>
+                            <option value="28">28</option>
+                            <option value="29">29</option>
+                            <option value="30">30</option>
+                            <option value="31">31</option>
+                        </select>
+
+                        <select id="birthdayYearOnRegistrationForm" class="form-control d-inline col-sm-4" name="userBirthdayYear">
+                            <option  disabled selected>Year</option>
+                            <option value="2020">2020</option>
+                            <option value="2019">2019</option>
+                            <option value="2018">2018</option>
+                            <option value="2017">2017</option>
+                            <option value="2016">2016</option>
+                            <option value="2015">2015</option>
+                            <option value="2014">2014</option>
+                            <option value="2013">2013</option>
+                            <option value="2012">2012</option>
+                            <option value="2011">2011</option>
+                            <option value="2010">2010</option>
+                            <option value="2009">2009</option>
+                            <option value="2008">2008</option>
+                            <option value="2007">2007</option>
+                            <option value="2006">2006</option>
+                            <option value="2005">2005</option>
+                            <option value="2004">2004</option>
+                            <option value="2003">2003</option>
+                            <option value="2002">2002</option>
+                            <option value="2001">2001</option>
+                            <option value="2000">2000</option>
+                            <option value="1999">1999</option>
+                            <option value="1998">1998</option>
+                            <option value="1997">1996</option>
+                            <option value="1995">1995</option>
+                            <option value="1994">1994</option>
+                            <option value="1993">1993</option>
+                            <option value="1992">1992</option>
+                            <option value="1991">1991</option>
+                            <option value="1990">1990</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" id="submitRegistrationFormButton" name="submitRegistrationFormButton" class="btn btn-primary col-sm-10 btn-success rounded-lg pt-2 pb-2 mt-3 ml-4 mb-3">Register</button>
+                </form>
+            </div>
+            <!-- The above code is the register form that appears after ajax function is clicked -->
+
+            </div> <!-- The closing div for the entire row -->
+
+        </div> <!-- The closing div for the container -->
+</body>
+
+</html>
