@@ -3,14 +3,18 @@ from .models import *
 from django.contrib import messages
 import bcrypt
 from django.http import JsonResponse #imported in order to display django errors via ajax
+from django.core.files.storage import FileSystemStorage #imported in order to display uploaded images
+from django.urls import reverse #imported in order to pass variables when redirecting
+from django.db.models import Q #imported in order to filter multiple queries at once
 
-#The below line of code is for the login registration.
 
-def loginPage(request):
-    return render(request, "login.html")
+#The below line of code is for the registration and login.
+
+def regAndLoginPage(request):
+    return render(request, "regAndLogin.html")
 
 def processRegistration(request):
-    print("This function processes the form for registering.")
+    print("THIS FUNCTION PROCESSES THE FORM FOR REGISTERING AN ACCOUNT.")
     # print("This is the data submitted on the form via ajax/jquery.")
     # print(request.POST.get)
     print("This is the data submitted on the form.")
@@ -35,10 +39,11 @@ def processRegistration(request):
         hashedPassword = bcrypt.hashpw(request.POST['initialPassword'].encode(), bcrypt.gensalt()).decode()
         newUser = User.objects.create(firstName = request.POST['userFirstName'], lastName = request.POST['userLastName'], birthdayMonth = request.POST.get('userBirthdayMonth'), birthdayDay = request.POST.get('userBirthdayDay'), birthdayYear = request.POST.get('userBirthdayYear'), emailAddress = request.POST['initialEmail'], password = hashedPassword, confirmPassword = hashedPassword)
         request.session['loginInfo'] = newUser.id
-    return redirect("/wall")
+    print("THIS IS THE LAST PRINT STATEMENT IN THE THE PROCESS REGISTRATION ROUTE.")
+    return redirect("/home")
 
 def processLogin(request):
-    print("This function processes the form for logining in")
+    print("THIS FUNCTION PROCESSES THE FORM FOR LOGGING IN.")
     print("*"*50)
     loginErrors = User.objects.loginValidator(request.POST)
     print(loginErrors)
@@ -48,9 +53,11 @@ def processLogin(request):
     #When an error occurs on one field input, the below code keeps the fields that are filled out correctly instead of removing all inputs.
             request.session['rememberEmail'] = request.POST['userEmail']
         return redirect('/')
-    loginUser = User.objects.filter(emailAddress= request.POST['userEmail'])[0] #if no errors hit and the user did successfully register, this filters to get that correctly submitted email and password
-    request.session['loginInfo'] = loginUser.id #now store that info in session into a new variable
-    return redirect("/wall")
+    else:
+        loginUser = User.objects.filter(emailAddress= request.POST['userEmail'])[0] #if no errors hit and the user did successfully register, this filters to get that correctly submitted email and password
+        request.session['loginInfo'] = loginUser.id #now store that info in session into a new variable
+        print("THIS IS THE LAST PRINT STATEMENT IN THE THE PROCESS LOGIN ROUTE.")
+    return redirect("/home")
 
 def success(request):
     #if they are not logged in( if loginInfo is not in session), then direct the user back to the index page
@@ -62,137 +69,234 @@ def success(request):
     }
     return render(request, "loggedInUsersPage.html", context)
 
-#The above line of code is for the login registration.
+#The above line of code is for the registration and login.
 
-#The below line of code is for posts submitted on the wall.
-
-def loggedInUsersPage(request):
+# def loggedInUsersPage(request):
+def loggedInUsersPage(request, messageId=0):
 #if they are not logged in (if loginInfo is not in session), then direct the user back to the index page
     if 'loginInfo' not in request.session:
         return redirect('/')
-    print("*"*50)
-    print("This prints the currently logged in user.")
+    print("THIS IS THE LOGGED IN USERS PAGE ROUTE.")
+    # print("This prints the currently logged in user.")
     loggedInUser = User.objects.get(id=request.session['loginInfo'])
-    print(loggedInUser)
-    print("This prints all the messages by all users.")
+    # print(loggedInUser)
+    #("This prints all the messages posted.")
     allMessages = Message.objects.all()
-    print(allMessages)
-    print("This prints the messages the currently logged in user liked.")
-    messagesUserLikes = Message.objects.filter(userLikes = loggedInUser)
-    print(messagesUserLikes)
-    print("This prints the count of how many messages liked.")
-    likesCount = messagesUserLikes.count()
-    print(likesCount)
-    print("This prints the count of how many messages liked. minus the three display names")
-    totalCountMinusThreeDisplayNames = likesCount - 3
-    print(totalCountMinusThreeDisplayNames)
-    print("This prints the messages the current logged in user unliked.")
+    #print(allMessages)
+    # print("This prints all the messages posted on the wall (by the user and by others) of the logged in user and orders them from latest post created.")
+    wallOfLoggedInUser = Message.objects.filter(userReceivesPost = loggedInUser).order_by('-createdAt')
+    # print(wallOfLoggedInUser)
+    # how to do a multi query #wallOfLoggedInUser = Message.objects.filter(Q(user = (loggedInUser)) | Q(userReceivesPost = (loggedInUser))).order_by('-createdAt')
+    if messageId:
+        # print("This prints the id of the message that was just liked and passed via params from the userLikes function.")
+        messageId = messageId
+        # print(messageId)
+        # print("This prints the message object.")
+        messageBeingLiked = Message.objects.get(id=messageId)
+        # print(messageBeingLiked)
+        # print("This prints the amount of likes the message has.")
+        # print(messageBeingLiked.likeMessageCount)
+        if messageBeingLiked.likeMessageCount > 3:
+                likesCountMinusDisplayNames = (messageBeingLiked.likeMessageCount) - 2
+                print("This is the like count minus the display names:", likesCountMinusDisplayNames)
+                displayCount = Message.objects.filter(id=messageId).update(likeMessageCountMinusDisplayNames=likesCountMinusDisplayNames) 
+    # print("This prints the messages the current logged in user unliked.")
     messagesUserUnliked= Message.objects.exclude(userLikes = loggedInUser)
-    print(messagesUserUnliked)
-    print("This prints the messages created by the logged in user and orders them my from latest post made.")
-    userMessages = Message.objects.filter(user = loggedInUser).order_by('-createdAt')
-    print("This prints all the users that have an account")
-    allUsers = User.objects.all()
-    print(allUsers)
-    print("This prints the profile photo of the user.")
-    userProfilePic = User.objects.filter(profilePic = loggedInUser)
-    print(userProfilePic)
-    print("*"*50)
+    # print(messagesUserUnliked)
+    # print("This prints all the users that have an account except the logged in user.")
+    allUsers = User.objects.exclude(id=request.session['loginInfo'])
+    # print(allUsers)
+    # print("*"*50)
+    print("THIS IS THE LAST PRINT STATEMENT IN THE LOGGED IN USER'S PAGE ROUTE.")
     context = {
-        'allMessages': allMessages,
-        'userMessages': userMessages,
+        'wallOfLoggedInUser': wallOfLoggedInUser,
         'loggedInUser': User.objects.get(id=request.session['loginInfo']),
-        'loggedInUserLikes': messagesUserLikes,
-        'likesCount': likesCount,
+        'allMessages': allMessages,
         'allUsers': allUsers,
     }
     return render(request, "loggedInUsersPage.html", context)
 
 def processProfilePic(request):
-    print("This is the route that handles the uploading of a profile picture.")
-    print(request.POST)
-    #store the request.post in a variable
-    # userProfilePic = request.POST['profilePicInputID'] Not sure if this would work Not the name but it is the ID??
+    print("THIS FUNCTION PROCESSES THE FORM/UPLOADING OF A PROFILE PICTURE.")
+    # print("This is the the submitted image by the user as a base64stringimage with <QueryDict: {'theFile': ['data:image/jpeg;base64,/9j/ before it.")
+    # print("This is the submitted image by the user")
     # print("*"*50)
-    # print(userProfilePic)
+    # print(request.FILES)
+    submittedProfilePic = request.FILES.get('userProfilePic')
+    # print(submittedProfilePic)
     # print("*"*50)
-    #retreive the user
-    loggedInUser = User.objects.get(id=request.session['loginInfo'])
-    return redirect("/wall")
+    if request.method == 'POST' and request.FILES.get('userProfilePic'):
+        userProfilePic = request.FILES['userProfilePic']
+        fileSystem = FileSystemStorage()
+        uploadedImage = fileSystem.save(userProfilePic.name, userProfilePic)
+        uploadedImageURL = fileSystem.url(uploadedImage)
+        addProfilePic = User.objects.filter(id=request.session['loginInfo']).update(profilePic=uploadedImageURL) 
+    print("THIS IS THE LAST PRINT STATEMENT IN THE PROCESS PROFILE PIC ROUTE.")
+    return redirect("/home")
 
-def processMessage(request):
-    print("This is the route that handles the post a message request.")
-    print(request.POST)
-    #store the request.post in a variable
+def userDeletesProfilePic(request):
+    print("THIS FUNCTION REMOVES THE PROFILE PIC OF THE USER FROM THE USER FROM THE DATABASE.")
+    deleteProfilePic = User.objects.filter(id=request.session['loginInfo']).update(profilePic="") 
+    print("THIS IS THE LAST PRINT STATEMENT IN THE USER DELETES PROFILE PIC ROUTE.")
+    return redirect("/home")
+
+def processProfileInfo(request):
+    print("THIS FUNCTION PROCESSES THE FORM FOR UPLOADING PROFILE INFORMATION.")
+    # print("*"*50)
+    # print(request.POST)
+    submittedProfileInfo = request.POST['userProfileInfo']
+    # print(submittedProfileInfo)
+    # print("*"*50)
+    addProfileInfo = User.objects.filter(id=session['loginInfo']).update(profileInfo=submittedProfileInfo) 
+    print("THIS IS THE LAST PRINT STATEMENT IN THE PROCESS PROFILE INFO ROUTE.")    
+    return redirect("/home")
+
+# def processMessageOnLoggedInUsersPage(request):
+def processMessage(request, userFirstName, userLastName, userId):
+    print("THIS FUNCTION PROCESSES THE FORM FOR CREATING A POST ON THE WALL OF THE LOGGED IN USER.")
+    # print("*"*50)
+    # postAMessageErrors = Message.objects.messageValidator(request.POST)
+    # print(postAMessageErrors)
+    # if len(postAMessageErrors) > 0:
+    #     for key, value in postAMessageErrors.items():
+    #         messages.error(request,value)
+    #         return redirect('/home')
+    # else:
+    #print("This prints the messaged created by the logged in user.")
     userMessage = request.POST['userMessage']
-    print("*"*50)
-    print(userMessage)
-    print("*"*50)
-    #retreive the user so the user can be corresponded with the correct post.
-    user = User.objects.get(id=request.session['loginInfo'])
-    #now that I have the message and user in a variable, I need to put it in a query so it can be stored in the database.
-    Message.objects.create(message = userMessage, user = user)
-    return redirect("/wall")
+    # print(userMessage)
+    #print("This prints the logged in user.")
+    loggedInUser = User.objects.get(id=request.session['loginInfo'])
+    #print(loggedInUser)
+    recipientOfPost = request.POST['userWhoReceivesPost']
+    # print(recipientOfPost)
+    if loggedInUser.id == recipientOfPost:
+        #this creates the message and saves it to the database
+        submittedMessageByUser = Message.objects.create(message = userMessage, user = loggedInUser, userReceivesPost_id = recipientOfPost)
+        print("THIS IS THE LAST PRINT STATEMENT IN THE PROCESS PROFILE INFO ROUTE.")    
+        return redirect("/home")
+    else:
+        #this creates the message and saves it to the database
+        submittedMessageByUser = Message.objects.create(message = userMessage, user = loggedInUser, userReceivesPost_id = recipientOfPost)
+        # # print("*"*50)
+        print("THIS IS THE LAST PRINT STATEMENT IN THE PROCESS PROFILE INFO ROUTE.")    
+    return redirect(reverse('specificUsersPage', args=(userFirstName, userLastName, userId,))) #using the name of the url to redirect and passing the variables/params to the form rendering the template
 
-#The above line of code is for posts submitted on the wall.
+    # if request.method == 'POST':
+    #     # print(request.POST) #This prints as query set: example: <QueryDict: {'userMessage': ['123']}>
+    #     hotdog = Message.objects.filter(message=userMessage, user=loggedInUser)
+    #     # print(newMessage) #This prints as a mesage object: example: Message object(#)
+    #     submittedMessages = {userMessage:[]}
+    #     for message in userMessage:
+    #         print("******" * 50)
+    #         print(submittedMessages[userMessage].append(message)) 
+    #         print(message)
+    #         # submittedMessages[newMessages].append(message)
+    #         print("******" * 50)
+    # return JsonResponse(submittedMessages)
 
-#The below line of code is for the comments posted on the wall.
-
-def processComments(request):
-    print("This is the route that handles the post a comment request.")
-    print(request.POST)
-    #store the request.post in a variable
-    print("This is the comment left by the user")
+def processComment(request, userFirstName, userLastName, userId):
+    print("THIS FUNCTION PROCESSES THE FORM FOR POSTING A COMMENT.")
+    # print("*"* 50)
+    # print("This is the comment left by the logged in user.")
     comment = request.POST['userComment']
-    print(comment)
-    #retreive the post message so the comment is left on the correct post. used a hidden input for this. making the value the post id.
-    print("This is the post id where the comment is made.")
+    # print(comment)
+    # print("This is the post id where the comment is made.")
     messageSelectedForComment = request.POST['postLocationForComment']
-    print(messageSelectedForComment)
-    #retreive the user so the user can be corresponded with the correct comment.
-    print("This is the user that made the comment.")
+    # print(messageSelectedForComment)
+    # print("This is the user that made the comment.")
     user = User.objects.get(id=request.session['loginInfo'])
-    print(user)
-    #Now that I have the post that receives the comment and the user who made the original post in a variable, the comment variable can be a query and stored in the database.
+    # print(user)
+    # print("This prints the id of the specific user who received the comment.")
+    userReceivesComment = request.POST['userReceivesComment']
+    # print(userReceivesComment)
+    #Now that I have the post that receives the comment(messageSelectedForComment), and the user who receives the comment(userReceivesComment), I can use said variables for a query to obtain its' instances.
     #To do that I need to get the message object via id to use for the foreign key/one to many relationship
-    print('This is the specific message where the comment is made.')
     theSpecificPost = Message.objects.get(id = messageSelectedForComment)
-    print(theSpecificPost)
-    commentByUser = Comment.objects.create(comment = comment, message = theSpecificPost, user = user)
-    print("This should print the comment of the user on the message.")
-    return redirect("/wall")
-#The above line of code is for the comments posted on the wall.
+    recipientOfComment = User.objects.get(id = userReceivesComment)
+    if user.id == recipientOfComment: #This means the user is commenting on their own page and should be directed home
+        commentByUser = Comment.objects.create(comment = comment, message = theSpecificPost, user = user, userReceivesComment = recipientOfComment)
+        return redirect("/home")
+    else: #This means the user is commenting on someone else's page and should be directed their
+        commentByUser = Comment.objects.create(comment = comment, message = theSpecificPost, user = user, userReceivesComment = recipientOfComment)
+        # print("*"* 50)
+        print("THIS IS THE LAST PRINT STATEMENT IN THE PROCESS COMMENT ROUTE.")  
+    return redirect(reverse('specificUsersPage', args=(userFirstName, userLastName, userId,))) #using the name of the url to redirect and passing the variables/params to the form rendering the template
+
+def specificUsersPage(request, userFirstName, userLastName, userId, messageId = 0):
+    print("THIS IS THE SPECIFIC USER'S PAGE ROUTE.")
+    # print("*"*50)
+    specificUsersPage = User.objects.get(id=userId) #retreiving from the url
+    specificUsersFirstName = User.objects.get(firstName=userFirstName) #retreiving from the url
+    specificUsersLastName = User.objects.get(lastName=userLastName) #retreiving from the url
+    # print("This prints all the messages posted on a page of a specific user and orders them from latest post created.")
+    specificUsersMessages = Message.objects.filter(userReceivesPost = userId).order_by('-createdAt')
+    if messageId:
+        print("*"*50)
+        print("This prints the id of the message that was just liked and passed via params from the userLikes function.")
+        messageId = messageId
+        print(messageId)
+        print("This prints the message object.")
+        messageBeingLiked = Message.objects.get(id=messageId)
+        print(messageBeingLiked)
+        print("This prints the amount of likes the message has.")
+        print(messageBeingLiked.likeMessageCount)
+        if messageBeingLiked.likeMessageCount > 3:
+                likesCountMinusDisplayNames = (messageBeingLiked.likeMessageCount) - 2
+                print("This is the like count minus the display names:", likesCountMinusDisplayNames)
+                displayCount = Message.objects.filter(id=messageId).update(likeMessageCountMinusDisplayNames=likesCountMinusDisplayNames) 
+    # print(specificUsersMessages)
+    # print("This prints all the users that have an account")
+    allUsers = User.objects.all()
+    # print(allUsers)
+    # print("*"*50)
+    print("THIS IS THE LAST PRINT STATEMENT OF THE SPECIFIC USER'S PAGE ROUTE.")
+    context = {
+        'specificUsersPage': specificUsersPage,
+        'specificUsersMessages': specificUsersMessages,
+        'allUsers': allUsers,
+        'loggedInUser': User.objects.get(id=request.session['loginInfo']),
+        }
+    return render(request, "specificUserPage.html", context)
 
 def userLikes(request, messageId):
+    print("THIS IS THE USER LIKES ROUTE")
+    # print("*"*50)
+    # print("This is the specific message being liked")
     messageBeingLiked = Message.objects.get(id=messageId)
+    print("*"*50)
+    userFirstName = messageBeingLiked.userReceivesPost.firstName # need for params to reroute
+    userLastName = messageBeingLiked.userReceivesPost.lastName # need for params to reroute
+    userId = messageBeingLiked.userReceivesPost.id # need for params to reroute
+    print("*"*50)
+    # print(messageBeingLiked) #prints as a Message Object(#)
+    # print("This is the user liking the message")
     userWhoLikes = User.objects.get(id=request.session['loginInfo'])
-    messageBeingLiked.userLikes.add(userWhoLikes)
-    return redirect("/wall")
+    print("The user who likes id", userWhoLikes.id)
+    print("The message being liked id", messageBeingLiked.userReceivesPost.id)
+    # print(userWhoLikes) # prints as a User Object(#)
+    #The below code creates the like 
+    messageBeingLiked.userLikes.add(userWhoLikes) #userLikes is the instance name in the Message model holding the many to many relationship
+    # print("*"*50)
+    if userWhoLikes.id != messageBeingLiked.userReceivesPost.id: #if this line of code runs it means the like occurred on the specific user's page
+        messageBeingLiked = Message.objects.get(id = messageId)
+        messageBeingLiked.likeMessageCount += 1
+        messageBeingLiked.save()
+        print("THIS IS THE LAST PRINT STATEMENT OF THE USER LIKES ROUTE.")
+        return redirect(reverse('specificUsersPage', args=(userFirstName, userLastName, userId, messageId,))) #using the name of the url to redirect and passing the variables/params to the form rendering the template
+    else: #if these lines of code run it means the like occurred on logged in user's home page
+        messageBeingLiked = Message.objects.get(id = messageId)
+        messageBeingLiked.likeMessageCount += 1
+        messageBeingLiked.save()
+        print("THIS IS THE LAST PRINT STATEMENT OF THE USER LIKES ROUTE.")
+    return redirect(reverse('home', args=(messageId,))) #using the name of the url to redirect and passing the variables/params to the form rendering the template
+    # return redirect("/home")
 
 def userUnlikes(request, messageId):
     messageBeingUnliked = Message.objects.get(id=messageId)
     userWhoUnlikes = User.objects.get(id=request.session['loginInfo'])
     messageBeingUnliked.userLikes.remove(userWhoUnlikes)
-    return redirect("/wall")
-
-def specificUserPage(request, userId):
-    print("*"*50)
-    print("This prints the profile of a specific user.")
-    specificUserPage = User.objects.get(id=userId)
-    print(specificUserPage)
-    print("This prints the messages created by the logged in user and orders them my from latest post made.")
-    specificUserMessages = Message.objects.filter(user = userId).order_by('-createdAt')
-    print(specificUserMessages)
-    print("This prints all the users that have an account")
-    allUsers = User.objects.all()
-    print(allUsers)
-    print("*"*50)
-    context = {
-        'specificUserPage': specificUserPage,
-        'specificUserMessages': specificUserMessages,
-        'allUsers': allUsers
-        }
-    return render(request, "specificUserPage.html", context)
+    return redirect("/home")
 
 def logout(request):
     request.session.clear()

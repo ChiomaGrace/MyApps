@@ -2,16 +2,6 @@
     vertical-align: top;
 }
 
-
-.avatar{
-    display: inline-block;
-    vertical-align: middle;
-    width: 60px;
-    height: 60px;
-    margin-left: 50px;
-    border-radius: 50%;
-}
-
 #birthdayInfoBox{
     border: 1px solid #f1f1f1;
     /* position: fixed; */
@@ -25,20 +15,70 @@
     display: inline-block
 }
 
-.cameraPhoto{
-    display: inline-block;
+
+#button{  /*The button holding the save symbol */
     width: 30px;
     height: 30px;
-    margin-left: 50px;
+    border-radius: 50%;
+    margin-top: 100px;
+    position: absolute;
+    transform: translateX(-90%);
 }
 
-/* #createAccount{ */
-    /* margin-right: 80px; Not working */
-/* } */
+.buttonOfNavIcons{
+    border-color: transparent;
+    margin-top: 8px;
+}
+
+.clearImage{ /*For when the image is in the database */
+    font-weight: bolder; 
+    color: black;
+    top: 4px;
+    right: 140px;
+    font-size: small;
+    position: absolute;
+    transform: translateX(40%);   
+    /* background-color: grey; */
+}
+
+#clearImage{ /*For when the image is only a preview */
+    font-weight: bolder; 
+    color: black;
+    top: 4px;
+    right: 140px;
+    font-size: small;
+    position: absolute;
+    transform: translateX(40%);   
+    /* background-color: grey; */
+}
 
 #closeBirthdayInfoBoxButton{
     margin-left: 20%;
     /* background-color: pink; */
+}
+
+.commentHeadText{
+    /* margin-top: 4px; */
+    margin-left: 10px;
+    margin-top: 2px;
+    padding-bottom: 2px;
+    text-align: left;   
+    font-weight: bold;
+}
+
+.commentSectionDiv{
+    width: 500px;
+    height: 40px;
+}
+
+.commentSection{
+    width: 230px;
+    height: 40px;
+}
+.commentSubText{
+    text-align: left;   
+    font-weight: normal;
+    margin-left: 10px;
 }
 
 .decoratedErrorField{
@@ -49,9 +89,131 @@
     color: #DADDE1;
 }
 
+#errorDialogForFileSize{ /*The div containing the message of the error dialog box for an uploaded image*/
+    display: none;
+} 
+
+#errorDialogForFileType{ /*The div containing the message of the error dialog box for an uploaded image*/
+    display: none;
+} 
+
+/* #dropdownSymbol{
+    font-size: 22px;
+    font-weight: bolder;
+} */
+
+.hide {
+    display: none;
+}
+
+#logoIcon{
+    width: 30px;
+    height: 30px;
+    border-radius: 60%;
+}
+
+.messageContentsDiv{
+    height: 48px;
+    margin-bottom: -2px;
+}
+
+small.messageCreatedAtWithThumbnail{
+    position: relative;
+    top: -14px; 
+    left: 8px;
+}
+
+small.messageCreatedAt{
+    position: relative;
+    top: -4px; 
+    left: 8px;
+}
+
+.messageText{
+    top: -4px;
+}
+
+#navBar{
+    height: 58px;
+}
+
+/* .navIcons{
+    width: 54px;
+    height: 54px;
+    border-radius: 60%;
+    /* margin-top: 2px; */
+    /* margin-left: 8px; */
+/* } */ 
+
+#navIconsDiv{
+    height: 60px;
+    width: 1000px;
+}
+
+#navIconGroups{
+    width: 54px;
+    height: 54px;
+    border-radius: 60%;
+    /* margin-top: -1px; */
+}
+
+#navIconHome{
+    width: 54px;
+    height: 54px;
+    border-radius: 60%;
+}
+
+#navIconMarketplace{
+    width: 60px;
+    height: 50px;
+    margin-top: 6px;
+    border-radius: 60%;
+}
+
+#navIconPage{
+    width: 50px;
+    height: 40px;
+    border-radius: 60%;
+    margin-top: -4px;
+}
+
+#navIconProfPic{
+    width: 30px;
+    height: 30px;
+    border-radius: 60%;
+    margin-top: 6px;
+}
+
+/* .thumbnail{ TRY TO CHANGE THIS INSTEAD OF NAVICONPROF PIC LATER FOR BETTER CODING DICTION BUT NOT CRAZY IMPORTANT SAME 
+    width: 30px;
+    height: 30px;
+    border-radius: 60%;
+    margin-top: 6px;
+} */
+
+#navIconWatch{
+    width: 60px;
+    height: 60px;
+    border-radius: 60%;
+    margin-top: -2px;
+}
+
+#postACommentForm{
+    top: -10px;
+}
+
+#postAMessageButton{
+    margin-left:430px;
+}
+
+.profilePicBanner{
+    background-color: white;
+    height: 350px;
+    /* margin-bottom: 80px; */
+}
 #profilePicContainer{
-    height: 100px;
-    width: 100px;
+    height: 160px;
+    width: 160px;
     border: 3px dashed darkgray;
     background-color: #fafafa;
     font-family: "Calibri";
@@ -62,18 +224,27 @@
     color: darkgrey;
     cursor: pointer;
     border-radius: 50%;
-    margin-left: 50px;
+    margin-left: 92px;
     margin-bottom: 25px;
     position: relative;
     overflow: hidden;
 }
 
+#profilePicContainer.dragging {
+    border-color: green;
+    border-width: 10px;
+    opacity: .3;
+}
+
+#profilePicForm{
+    height: 160px;    
+}
 #questionMark{
     display: inline-block;
     background-color: #616870;
     border-radius: 50%;
     color: white;
-
+    
 }
 
 #regForm{ /*The actual form*/
@@ -92,50 +263,108 @@
     border: 4px solid #f1f1f1;
     height: 550px;
     width: 500px;
-    /* overflow: scroll; adds scrollbar(s) only when necessary */
 }
 
-.theImageTagProperties {
+.save{
+    /* display: inline-block; */
+    height: 18px;
+    width: 18px;
+    transform: translateX(-12%);
+}
+
+#searchBarForm{
+    height: 38px;
+    width: 180px;
+} 
+
+/* #searchBarInput{ */
+    /* height: 30px; */
+    /* width: 30px; */
+    /* background-color: blue; */
+/* }  */
+    
+/* #searchBarFromDiv{ */
+    /* height: 38px; */
+    /* width: 40px; */
+    /* background-color: red; */
+/* }  */
+        
+
+
+.ui-dialog .ui-dialog-buttonpane button{ /*The css for the okay button on the error dialog box for uploading an image*/
+    background-color: blue;
+    color: white;
+    border-color: white;
+    border-width: 1px;
+}
+
+.ui-button .ui-icon{ /*The css for the X on the error dialog box for uploading an image*/
+    background-image: url(../CSS/redIcons.png);
+}
+
+/* .ui-dialog .ui-dialog-buttonpane{ */ /*The css for the bottom section on the error dialog box for uploading an image*/
+    /* background-color: #EEEEEE; */
+/* } */
+
+.ui-dialog .ui-dialog-titlebar{ /*The css for the top section on the error dialog box for uploading an image*/
+    background-color: blue;
+    color: white;
+}
+
+.ui-dialog .ui-dialog-titlebar-close { /*The css for the close button on the error dialog box for uploading an image*/
+    /* background-color: red; */
+    border-color: white;
+    border-width: 1px;
+}
+
+.ui-icon.ui-icon-alert{ /*The css for the error icon on the error dialog box for uploading an image*/
+    float:left; 
+    margin:0 7px 20px 0;
+    /* background-image: url(http://download.jqueryui.com/themeroller/images/ui-icons_ff0000_256x240.png
+    ); */ /*another way to change the color of the icon above w this link but better to save the file locally*/
+    background-image: url(../CSS/redIcons.png);
+}
+
+.ui-widget.ui-widget-content{  /*The div of the entire error dialog box for an uploaded image */
+    left: 480px; 
+    top: 80px; 
+    text-align: left;
+    vertical-align: top; 
+}
+
+.uploadedPhotoProperties {
     position: absolute;
     top: -10px;
     left: 50%;
     width: 110%;
     transform: translateX(-50%);
-    /* background-color: purple; */
 }
+
+#userNameText{
+    text-align: center;
+}
+
+#userProfileInfoButtons{
+    margin-left: 184px;
+    margin-top: 8px;
+}
+
+#userProfileInfoEditLink{
+    margin-left: 160px;
+}
+
+#userProfileInfoForm{
+    display: none;
+}
+
+#userProfileInfoTextArea{
+    width: 250px;
+    text-align: center;
+    margin-left: 50px;
+}
+
 
 #XForRegistrationForm{
     margin-left: 80%;
     cursor: pointer;
 }
-
-/* #birthdayDayOnRegistrationForm{ */
-    /* margin-right: 1%; */
-    /* background-color: red; */
-/* } */
-
-/* #birthdayYearOnRegistrationForm{
-    margin-left: 2%;
-} */
-
-/* #registrationFormButton{ */
-    /* background-color: red; */
-    /* margin-left: 80%; */
-/* } */
-
-/* .profilePhotoWrapper {
-    width: 100px;
-    height: 100px;
-    position: relative;
-    overflow: hidden;
-    border-radius: 50%;
-} */
-
-/* .profilePhoto{ */
-    /* display: inline; */
-    /* margin: 0 auto; */
-    /* margin-left: -25%;  */
-    /* This centers the image */
-    /* height: 100%; */
-    /* width: auto; */
-/* } */

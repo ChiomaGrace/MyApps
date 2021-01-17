@@ -101,6 +101,8 @@ class UserManager(models.Manager):
 
         # print('This is the registrationValidation from models with the errors.')
         # print(errors)
+
+        #TIME TO DO PHOTO IMAGE ERRORS
         return errors
     
     def loginValidator(self, postData):
@@ -148,6 +150,20 @@ class UserManager(models.Manager):
 
 #The above code is for the login registration
 
+#The below code is for the validations of posting a message
+
+# class MessageManager(models.Manager):
+#     def messageValidator(self, postData):
+#         errors = {}
+#         print("*"*50)
+#         print('This is the postingAMessageValidator from models.')
+#         #The below line of code makes sure a message is submitted. 
+#         if len(postData['userMessage']) == 0:
+#             errors['messageRequired'] = "Must type a message! Please try again."
+#         return errors
+
+#The above code is for the validations of posting a message
+
 class User(models.Model):
     firstName = models.CharField(max_length = 255)
     lastName = models.CharField(max_length = 255)
@@ -158,9 +174,8 @@ class User(models.Model):
     emailAddress = models.CharField(max_length = 255)
     password = models.CharField(max_length = 255)
     confirmPassword = models.CharField(max_length = 255)
-    profilePic= models.FileField(upload_to='media/', null=True, verbose_name="")
-    # profilePhoto= models.FileField(upload_to='images/', null=True, verbose_name="")
-    # profilePhoto= models.ImageField(upload_to = 'images/')
+    profilePic= models.ImageField(upload_to='submittedProfilePicImages/', null=True, verbose_name="")
+    profileInfo = models.CharField(max_length = 255, default = "")
     objects = UserManager()
     createdAt = models.DateTimeField(auto_now_add = True)
     updatedAt = models.DateTimeField(auto_now = True)
@@ -170,8 +185,12 @@ class User(models.Model):
 
 class Message(models.Model):
     message = models.TextField()
-    user = models.ForeignKey(User, related_name = "messages", on_delete=models.CASCADE)
-    userLikes = models.ManyToManyField(User, related_name = 'likeMessages')
+    user = models.ForeignKey(User, related_name = "messages", on_delete=models.CASCADE) #the user who makes the post
+    userReceivesPost = models.ForeignKey(User, related_name = "postRecipient", on_delete=models.CASCADE, null=True,) #the user who receives the post
+    userLikes = models.ManyToManyField(User, related_name = 'theLiker') # the user who likes the post
+    likeMessageCount = models.IntegerField(default = 0)
+    likeMessageCountMinusDisplayNames = models.IntegerField(default = 0)
+    # objects = MessageManager()
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
 
@@ -181,7 +200,8 @@ class Message(models.Model):
 class Comment(models.Model):
     comment = models.TextField()
     message = models.ForeignKey(Message, related_name = "comments", on_delete=models.CASCADE)
-    user = models.ForeignKey(User, related_name = "comments", on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name = "comments", on_delete=models.CASCADE) #the user who makes the comment
+    userReceivesComment = models.ForeignKey(User, related_name = "commentee", on_delete=models.CASCADE, null=True,) #the user who receives the comment
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
 

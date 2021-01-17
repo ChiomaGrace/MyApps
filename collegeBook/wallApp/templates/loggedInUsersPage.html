@@ -4,27 +4,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
-        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" 
+    integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <title>CollegeBook</title>
     {% load static %}	<!-- Need this line to use static images -->
     <link rel="stylesheet" href="{% static 'css/collegeWall.css' %}">  <!-- Need this line to use external stylesheet -->
-    <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js'></script>
-
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script> <!-- Order matters..important to load bootstrap before jquery ui to avoid button method conflicts -->
+    <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.min.js"></script> <!-- Need this line to use pop up dialog boxes -->
     <script>
 
         $(document).ready(function() { 
 
+    //The below code is the list of variables involved in the scripted code.
+
+            var $crf_token = $('[name="csrfmiddlewaretoken"]').attr('value'); //this defines the token form the form so it can be used in the jquery/ajax code below
             var profilePicForm = document.querySelector('#profilePicForm'); //The id for the profile photo form
             var profilePicInputID = document.querySelector('#profilePicInputID'); //The id for the field/input of the profile photo that is within the form
-            var profilePicContainer = document.querySelector('#profilePicContainer'); //the id for the label within the form that is posing as a container for the input field 
-            var profilePicErrorMessage = document.querySelector('#profilePicErrorMessage');
-            var profilePicSuccessMessage = document.querySelector('#profilePicErrorMessage');
-            var theClearImageLink = document.querySelector('#clearImage');
-            var $crf_token = $('[name="csrfmiddlewaretoken"]').attr('value'); //this defines the token form the form so it can be used in the jquery/ajax code below
+            var profilePicContainer = document.querySelector('#profilePicContainer'); //The id for the label within the form that is posing as a container for the input field 
+            var navIconProfPic = document.querySelector('#navIconProfPic'); //The id that contains the css style for the thumbnail in the nav bar
+            var navIconProfilePicContainer = document.querySelector('#linkForNavIconProfPic'); //The id for the label within the form that is posing as a container for the input field 
+            var thumbnail = $('#thumbnail').attr('src'); //The id for the img src that will display the uploaded profile photo by the user
+            var userProfileInfoEditLink = document.querySelector('#userProfileInfoEditLink'); //The id for the link that displays and hides the user profile info form
+            var userProfileInfoCancelButton= document.querySelector('#userProfileInfoCancelButton'); //The id for the link that displays and hides the user profile info form
+            var XForProfilePicForm = document.querySelector('#clearImage'); //The id for the X that clears the preview of the selected image
 
+    //The above code is the list of variables involved in the scripted code. 
 
-            var submittedPhoto = "";
+            showThumbnail(); // a function I created that determines whether or not a photo has been uploaded by a user and then acts accordingly
+
+    //The below code enables the user to drag an image to be uploaded
+
+            function preventDragDefault(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
 
             [ 
                 'drag', 
@@ -52,270 +68,552 @@
                 })
             });
 
-            profilePicContainer.addEventListener('drop', function (e) {
-                console.log("This console log appears if the current user has dropped a file/photo inside of the profile photo container.")
-                if(e.dataTransfer.files.length > 1) { //This prevents the logged in user from selecting more than one photo at a time
-                    profilePicErrorMessage.innerHTML = "Must Select One Photo";
-                    profilePicErrorMessage.classList.remove('hide');
-                    return false;
-                }
-                var usersSelectedPhoto = e.dataTransfer.files[0]; //The event.target.files property provides the list of files the user has selected, so in this instance an image file.
-                profilePicInputID.files[0] = usersSelectedPhoto;
+    //The above code enables the user to drag an image to be uploaded.
 
-                if(checkImageProperties(usersSelectedPhoto)) { //This runs the function checkImageProperties when a user drops an image file in the profile pic container
-                    processingUploadedPhoto(usersSelectedPhoto); 
-                }
-                theImageTag.classList.add('theImageTagProperties'); //Adds CSS to make the picture fit in the profile pic container .
-
-            })
-
-            profilePicInputID.onchange = function (e) { // when a user clicks the profile pic container versus dropping an image
-                var usersSelectedPhoto = e.target.files[0];
-
-                if(checkImageProperties(usersSelectedPhoto)) { //This runs the function checkImageProperties when a user clicks the profile pic container
-                    processingUploadedPhoto(usersSelectedPhoto); 
-                }
-
-                theImageTag.classList.add('theImageTagProperties'); //Adds CSS to make the picture fit in the profile pic container .
-
-
-            }
+    //The below code is to check the file the user is submitting is an image.
 
             function checkImageProperties(usersSelectedPhoto) {
-                profilePicErrorMessage.classList.add('hide');
-                profilePicSuccessMessage.classList.add('hide');
-
                 if (usersSelectedPhoto.type !== "image/png" && usersSelectedPhoto.type !== "image/jpeg") {
-                    console.log('File type mismatch');
-                    profilePicErrorMessage.innerHTML = "File type should be png or jpg/jpeg...";
-                    profilePicErrorMessage.classList.remove('hide');
+                // if (usersSelectedPhoto.type !== "image/png") { //used this to check if error(s) work
+                    console.log('This console log appears because there was an error in uploading the file. It was not a png or jpg/jpeg');
+                    $( "#errorDialogForFileType" ).dialog({
+                        title: 'Uh-Oh!',
+                        modal: true, //Prevents the user from being able to interact with the rest of the webpage until closing the dialog box
+                        buttons: {
+                            Ok: function() {
+                                $( this ).dialog( "close" );
+                            }
+                        },
+                        width: 400,
+                        draggable: false, //Prevents the dialog box from being able to be moved from its fixed position
+                        resizeable: false, //PRevents the dialog box from being able to be resized from its fixed measurements
+                    });
+                    console.log("After dialog box")
                     return false;
                 }
-
                 if (usersSelectedPhoto.size > 500000) { //This restrict the image from being greater than 500 kb
-                    console.log('File too large');
-                    profilePicErrorMessage.innerHTML = "File too large, cannot be more than 500KB...";
-                    profilePicErrorMessage.classList.remove('hide');
+                    console.log('This console log appears because there was an error in uploading the file. It is too large');
+                    $( "#errorDialogForFileSize" ).dialog({
+                        title: 'Uh-Oh!',
+                        modal: true, //Prevents the user from being able to interact with the rest of the webpage until closing the dialog box
+                        buttons: {
+                            Ok: function() {
+                                $( this ).dialog( "close" );
+                            }
+                        },
+                        width: 400,
+                        draggable: false, //Prevents the dialog box from being able to be moved from its fixed position
+                        resizeable: false, //PRevents the dialog box from being able to be resized from its fixed measurements
+                    });
+                    console.log("After dialog box")
                     return false;
                 }
-
                 return true;
             }
 
-            profilePicForm.onsubmit = function (e) {
-                e.preventDefault(); //prevents the default browser behavior of the form submitting normally
-                var theImageTag = document.querySelector('#theImageTag');
-                jQuery.ajax({
-                    method: 'POST',
-                    url: '/processProfilePic',
-                    headers:{"X-CSRFToken": $crf_token}, //this relates to the variabe defined above/CSRF token in the form. Needed to process to backend
-                    data: {
-                        theFile: theImageTag.getAttribute('src'),
-                        // window.onload = function () { 
-                        //         theImageTag.getAttribute('src'),
-                        //     },
-                        name: fileName
-                    }
-                })
-                .done(function (resp) {
-                    if(resp === "UPLOADED") {
-                        profilePicSuccessMessage.innerHTML = "Image uploaded successfully";
-                        profilePicSuccessMessage.classList.remove('hide');
-                    }
-                })
-            }
+    //The above code is to check the file the user is submitting is an image.
 
-            theClearImageLink.onclick = clearImage;
+    //The below code processes and displays the image that was submitted by the user as a preview (still not in database).
 
-            function preventDragDefault(e) {
-                e.preventDefault();
-                e.stopPropagation();
-            }
-
+        // if (checkImageProperties == true) {
             function processingUploadedPhoto(file) {
                 fileName = file.name;
                 clearImage();
                 var img = document.createElement("img");
-                img.setAttribute('id', 'theImageTag');
+                img.setAttribute('id', 'uploadedPhoto');
                 img.file = file;
                 profilePicContainer.appendChild(img);
-                
+                // $("#linkForNavIconProfPic").append('<li class= "text-danger small">' + "test"+ '</li>') //can't append image twice
+                // console.log("after the pending of nav thumb nail")
                 var reader = new FileReader();
                 reader.onload = (function(aImg) { return function(e) { aImg.src = e.target.result; }; })(img);
                 reader.readAsDataURL(file);
             }
+        // }   
 
+    //The above code processes and displays the image that was submitted by the user.
+
+
+    //The below code is for the uploading by the user whether by dragging the image or clicking the image upload
+
+            profilePicContainer.addEventListener('drop', function (e) {
+                console.log("This console log appears if the current user has dropped a file/photo inside of the profile photo container.")
+                if(e.dataTransfer.files.length > 1) { //This prevents the logged in user from selecting more than one photo at a time
+                    return false;
+                }
+                userProfilePic = e.dataTransfer.files[0]; //The event.target.files property provides the list of files the user has selected, so in this instance a single file.
+                profilePicInputID.files[0] = userProfilePic;
+                // console.log("This is the photo that was just dragged into the profile pic container", userProfilePic)
+                if(checkImageProperties(userProfilePic)) { //This runs the function checkImageProperties when a user drops an image file in the profile pic container.
+                    processingUploadedPhoto(userProfilePic); //If the image passes the validations in the above function, it is then processed.
+                }
+                uploadedPhoto.classList.add('uploadedPhotoProperties'); //Adds CSS to make the picture fit in the profile pic container .
+            })
+            profilePicInputID.onchange = function (e) { // when a user clicks the profile pic container versus dropping an image
+                var userProfilePic = e.target.files[0];
+                if(checkImageProperties(userProfilePic)) { //This runs the function checkImageProperties when a user clicks the profile pic container
+                    processingUploadedPhoto(userProfilePic); 
+                    uploadedPhoto.classList.add('uploadedPhotoProperties'); //Adds CSS to make the picture fit in the profile pic container.
+                }
+            }
+
+    //The above code is for the uploading by the user whether by dragging the image or clicking the image upload
+
+    //The below code removes the preview of the image submitted by a user.
+            // XForProfilePicForm.onclick = clearImage; // Function called when the user clicks the "X" to remove the preview
             function clearImage(e) {
                 if(e) {
                     e.preventDefault();
                 }
-
-                var theImageTag = document.querySelector('#theImageTag');
-
-                if(theImageTag) {
-                    profilePicContainer.removeChild(theImageTag);
+                var uploadedPhoto = document.querySelector('#uploadedPhoto');
+                if(uploadedPhoto) {
+                    profilePicContainer.removeChild(uploadedPhoto);
                     profilePicInputID.value = null;
+                    // $('#linkForNavIconProfPic').hide()
                 }
-
-                profilePicErrorMessage.classList.add('hide');
-                profilePicSuccessMessage.classList.add('hide');
             }
 
-        });
+    //The above code removes the preview of the image submitted by a user.
+
+    //The below code submits the submitted photo by the user to the the backend/database via ajax.
+
+            $("#profilePicForm").submit(function(e){
+                console.log("The upload button was clicked.")
+                // var userProfilePic = e.dataTransfer.files[0];
+                // profilePicInputID.files[0] = userProfilePic;
+                // console.log("Testing",userProfilePic)
+                e.preventDefault(); //prevents the default browser behavior of the form submitting normally
+                var userProfilePic = new FormData($('#profilePicForm').get(0)); //have to use FormData to retrieve the uploaded image otherwise get a multi value dict key error OR views displays none
+                // var userProfilePic = new FormData($('#profilePicInputID').get(0)); //have to use FormData to retrieve the uploaded image otherwise get a multi value dict key error OR views displays none
+                console.log("The user uploaded an image file.", userProfilePic)
+                $.ajax({
+                    type: 'POST',
+                    url: '/processProfilePic',
+                    headers:{"X-CSRFToken": $crf_token}, //this relates to the variable defined above/CSRF token in the form. Needed to process to backend
+                    data: userProfilePic,
+                    processData: false,
+                    contentType: false,
+                    success: function (userProfilePic) {
+                        console.log("This is the data successfully submitted")
+                        uploadedPhoto.classList.remove('hide'); //prevents the thumbnail from moving out of position on the html
+                        $('#profilePicContainer').css("border", "3px solid white") //This changes the border of the thumbnail when a photo is successfully uploaded
+                        // var imgUrl = $("#profilePicInputID").val(); attempting to show smaller version of the submitted photo in the
+                        // console.log(imgUrl)
+                        // $("#linkForNavIconProfPic").append('<img src= " '+ imgUrl +' ">')
+                        // $('#navIconProfPic').hide()
+                        console.log("End of success function")
+                    },
+                    error: function(data){
+                        console.log("If this console log is displaying, it means errors occurred in submitting an image.")
+                    }
+                })
+            })
+
+    //The above code submits the submitted photo by the user to the the backend/database via ajax.
+
+    //The below code checks if there is an image or not, and changes the border of the profile pic container accordingly.
+
+            function showThumbnail(e) {
+                $('#navIconProfPic').hide()
+                console.log("Show Thumbnail function")
+                console.log("This is the thumbnail uploaded:",thumbnail)
+                console.log("Length", thumbnail.length)
+                if (thumbnail.length > 0) {
+                    console.log("There is an image")
+                    $('#profilePicContainer').css("border", "3px solid white") //This changes the border of the thumbnail when a photo is successfully uploaded
+                    // $('#linkForNavIconProfPic').show() //Shows a smaller version of the submitted profile pic in the navigation bar
+                    console.log("End of if statement")
+                }
+                else{
+                // if (thumbnail.length < 0){
+                    console.log("There is not an image.")
+                    // $('#linkForNavIconProfPic').hide() //This hides the default thumbnail in the navigation bar if there is no photo currently
+                    // $('#navIconProfPic').hide() //This hides the default thumbnail in the navigation bar if there is no photo currently
+                    console.log("End of if statement")
+                }
+            };
+
+    //The above code checks if there is an image or not, and changes the border of the profile pic container accordingly.
+
+    //The below code shows and hides the user profile info form depending on the amount of times the user clicks the edit link.
+        
+        userProfileInfoEditLink.onclick = showUserProfileInfoForm;
+            function showUserProfileInfoForm(e) {
+                console.log("This console log means the edit button was clicked. ")
+                $('#userProfileInfoTextArea').hide() //hides the info that is currently being displayed so the edit form can fit properly in its designated area
+                $('#userProfileInfoEditLink').hide() //hides the edit link that the user clicked on to show the edit form
+                if(e) {
+                    e.preventDefault(); //prevents the form from hiding right after it begins to show after the link is clicked
+                $('#userProfileInfoForm').show()
+                }
+            }
+        userProfileInfoCancelButton.onclick = hideUserProfileInfoForm;
+            function hideUserProfileInfoForm(e) {
+                if(e) {
+                    e.preventDefault(); //prevents the form from only temporarily hiding
+                $('#userProfileInfoForm').hide() //hides the form until the user clicks the edit form
+                $('#userProfileInfoEditLink').show() //shows the edit link button
+                $('#userProfileInfoTextArea').show() //shows the current info the user has entered
+
+                }
+            }
+
+    //The above code shows and hides the user profile info form depending on if the user clicks the edit link or not
+
+    //The below code is submitting the user profile info form via jquery/ajax
+
+        $("#userProfileInfoForm").submit(function(e){// the id name given to the form action in the below html
+                console.log("The save user profile info was clicked.")
+                e.preventDefault(); //prevents the default browser behavior of the form submitting normally
+                var userProfileInfoData = {
+                    "userProfileInfo": $('#userProfileInfoID').val(), //the key name must match the name in the views/form but the value name must differentiate
+                };
+                console.log("The form data was submitted.", userProfileInfoData)
+                $.ajax({
+                    type: "POST",
+                    url: '/processProfileInfo',
+                    headers:{"X-CSRFToken": $crf_token}, //this relates to the CSRF token in the form
+                    data: userProfileInfoData,
+                    success: function(data) {
+                            console.log("This is the data successfully submitted", data)
+                            window.location.href = '/home'; //if the data is submitted correctly, this directs the user to their homepage       
+                    },
+                    error: function(data){
+                        console.log("If this console log is displaying, it means errors occurred in submitting the user profile info data.")
+                    },
+                });
+            });
+    //The above code is the function for submitting the user profile info form via jquery/ajax
+
+    //The below code is the function for posting a message via jquery/ajax
+
+        // $("#postAMessageForm").submit(function(e){// the id name given to the form action in the below html
+        //             console.log("The post a message button was clicked.")
+        //             e.preventDefault(); //prevents the default browser behavior of the form submitting normally
+        //             var messageData = {
+        //                 "userMessage": $('#userMessageID').val(),
+        //             };
+        //             console.log("The form data was submitted.", messageData)
+        //             $.ajax({
+        //                 type: "POST",
+        //                 url: '/processMessageOnLoggedInUsersPage',
+        //                 headers:{"X-CSRFToken": $crf_token}, //this relates to the CSRF token in the form
+        //                 data: messageData,
+        //                 success: function(data) {
+        //                         console.log("This is the data successfully submitted", data)
+        //                         window.location.href = '/home'; //if the data is submitted correctly, this directs the user to their homepage       
+        //                 },
+        //                 error: function(data){
+        //                     console.log("If this console log is displaying, it means errors occurred in submitting the user profile info data.")
+        //                 },
+        //             });
+        //         });
+    //The above code is the function for posting a message via jquery/ajax
+
+        }); //end of entire code in the script
     
     </script>
 
 </head>
 
 <body class="bg-light">
-    <a class="navbar-brand ml-2" href="/wall">College Book</a>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light float-right">
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
-            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"><span
-                class="navbar-toggler-icon"></span></button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
+<!--The below code is for the navigation bar  -->
+
+    <nav class="navbar navbar-expand-lg navbar-blue bg-white" id="navBar">
+        <a class="navbar-brand" href="#">
+            <img id="logoIcon" src="{% static 'Images/logo.png' %}" alt="A stock image of a logo with the two letters CB to represent Collegebook." />
+        </a>
+        <!-- <div class="col-sm-3" id="searchBarFromDiv"> -->
+            <form class="form-inline col-sm-3" id="searchBarForm">
+                <input class="form-control rounded-pill " id="searchBarInput" type="search" placeholder="Search CollegeBook" aria-label="Search">
+                <button class="btn btn-outline-primary btn-sm ml-2" id="searchBarButton" type="submit">Search</button>
+            </form>
+        <!-- </div> -->
+        <div class="col-sm-5 "  id="navIconsDiv mt-2">
+            <button class="btn btn-outline-light my-2 my-sm-0 buttonOfNavIcons">
+                <img class=" mr-3" id="navIconHome" src="{% static 'Images/home.png' %}" alt="A stock image of a logo with the two letters CB to represent Collegebook." />
+            </button>
+            <button class="btn btn-outline-light my-2 my-sm-0 pl-2 pr-2 buttonOfNavIcons">
+                <img class="mr-3" id="navIconPage" src="{% static 'Images/pages.png' %}" alt="A stock image of a logo with the two letters CB to represent Collegebook." />
+            </button>
+            <button class="btn btn-outline-light my-2 my-sm-0 pl-2 pr-2 buttonOfNavIcons">
+                <img class="mr-3" id="navIconWatch" src="{% static 'Images/watch.png' %}" alt="A stock image of a logo with the two letters CB to represent Collegebook." />
+            </button>
+            <button class="btn btn-outline-light my-2 my-sm-0 pl-2 pr-2 buttonOfNavIcons">
+                <img class="mr-3" id="navIconMarketplace" src="{% static 'Images/marketplace.png' %}" alt="A stock image of a logo with the two letters CB to represent Collegebook." />
+            </button>
+            <button class="btn btn-outline-light my-2 my-sm-0 pl-2 pr-4 buttonOfNavIcons">
+                <img class="mr-3" id="navIconGroups" src="{% static 'Images/groups.png' %}" alt="A stock image of a logo with the two letters CB to represent Collegebook." />
+            </button>
+        </div>
+        <!-- <div class="col-sm-5">
+            <!-One of three columns -->
+        <!-- </div> --> 
+        <div class="col-sm-3 mb-2" id="">
+            <ul class="navbar-nav mr-auto">
                 <li class="nav-item active">
-                    <a class="nav-link float-right" href="/wall">Home <span class="sr-only"></span></a>
+                    <a id="linkForNavIconProfPic" href="#" class="d-inline ">
+                    <!-- This if statement only displays the image src when an image is uploaded -->
+                        {% if not loggedInUser.profilePic == "" %} 
+                        <img src='{{ loggedInUser.profilePic }}' id="navIconProfPic" class="d-inline "> 
+                        {% endif %}
+                    </a>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/home">{{loggedInUser.firstName}}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/home">Messenger</a>
+                    </li>
+                    <!-- <li class="nav-item">
+                        <a class="nav-link" href="#">Account</a>
+                    </li> -->
                 </li>
-                <li class="nav-item float-right"><a class="nav-link" href="/logout">Log Out</a>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="dropdownSymbol" role="button" data-toggle="dropdown">Account</a>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="/home">Settings</a>
+                        <a class="dropdown-item" href="/home">Support</a>
+                        <a class="dropdown-item" href="/home">Give Feedback</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="/logout">Log Out</a>
+                    </div>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="/logout">Logout <span class="sr-only">(current)</span></a>
                 </li>
             </ul>
         </div>
     </nav>
-    <div class="container">
-        <h4 class="ml-5">Hello, {{loggedInUser.firstName}}! </h4>
-        <!-- <div class="profilePhotoWrapper">
-            <img src='{{ MEDIA_URL }}{{ loggedInUser.profilePhoto }}' class="avatar"> 
-        </div> -->
-        <div>
-            <!-- <form enctype="multipart/form-data" method="POST" action="">
-            {% csrf_token %}
-                <label>
-                    <!- <input type="file">   -->
-                    <!-- This hides the basic format "Choose file input and allows the camera photo to represent this instead" -->
-                    <!-- <img class="cameraPhoto" src="{% static 'Images/Camera.png' %}" alt="A black and white symbol of a camera." /> -->
-                    <!-- <input type="file" style="display: none;"> -->
-                </label>
-                <!-- <input type="submit" class="form-control d-inline col-sm-1 btn-info btn-sm mt-1" value="Upload"/> -->
-            <!-- </form> --> 
-            <form enctype="multipart/form-data" method="POST" action="" id="profilePicForm">
-            {% csrf_token %}
-                <label for="profilePicInputID" id="profilePicContainer"> <!-- Important to use "label for" attribute to get the feature of clicking on the circle to bring up the file explorer. ID needs to match the ID of the input below  -->
-                    <input type="file" id="profilePicInputID" accept="image/png, image/jpeg" style="display: none;"> <!-- The style hides the basic format "Choose file input and allows the circular border to represent the "file selector" instead" -->
-                    Click here to upload or <b>drag-and-drop</b> <br> an image...</br>
-                </label>
-                <p id="profilePicErrorMessage" class="hide"></p>
-                <p id="profilePicSuccessMessage" class="hide"></p>
-                <button class="btn btn-lg btn-primary" type="submit">Upload</button>
-                <a href="" id="clearImage">Clear</a>
-            </form>
-        </div>
-        <small class="ml-5 d-block"> 1. Click the camera to select a photo. </small>
-        <small class="ml-5 d-block"> 2. Click upload to set the photo as a profile picture</small>
+<!-- The above code is for the navigation bar -->
 
-        <div class="row ml-5">
+    <div class="container">
+        <div class="row bg-white mt-5">
+            <div class="col-sm bg-white">
+                <!-- One of three columns -->
+            </div>
+            <div class="col-sm profilePicBanner">
+                <form enctype="multipart/form-data" method="POST" action="" class="mb-0" id="profilePicForm">
+                    {% csrf_token %}
+                    <label for="profilePicInputID" id="profilePicContainer"> <!-- Important to use "label for" attribute to get the feature of clicking on the circle to bring up the file explorer. ID needs to match the ID of the input below  -->
+                        <img src='{{ loggedInUser.profilePic }}' id="thumbnail" class="uploadedPhotoProperties"> 
+                        
+                        <input type="file" id="profilePicInputID" name="userProfilePic" accept="image/png, image/jpeg" style="display: none;"> <!-- The style hides the basic format "Choose file input and allows the circular border to represent the "file selector" instead" -->
+                            <p class="mt-4">Click here to upload or <b>drag-and-drop</b> <br> an image...</br></p>
+                    </label>
+                    <button class="btn btn-sm btn btn-secondary" id="button" type="submit">
+                        <img class="save" src="{% static 'Images/save.png' %}" alt="A black and white illustration of the save symbol." />
+                    </button>
+                </form>
+                <form class="" action="userDeletesProfilePic" method="post">
+                    {% csrf_token %}
+                    <!-- This if statement only displays the image src when an image is uploaded -->
+                        {% if loggedInUser.profilePic == "" %}
+                        <button class="btn btn-sm" id="clearImage">X</button> <!--The X button removes the preview of the photo via ajax-->
+                        {% else %}
+                        <button class="btn btn-sm clearImage" type="submit">X</button> <!--This X button removes the photo from the database-->
+                        {% endif %}
+                    </form>
+                    <div id="errorDialogForFileType">
+                        <p><span class="ui-icon ui-icon-alert"></span>File type must be a png or jpeg/jpg. Please try again.</p>
+                    </div>
+                    <div id="errorDialogForFileSize">
+                        <p><span class="ui-icon ui-icon-alert"></span>File size is too big. Please try again.</p>
+                    </div>
+                    <h3 class="" id="userNameText">{{loggedInUser.firstName}} {{loggedInUser.lastName}}</h3>
+                    <p class="mb-0" id="userProfileInfoTextArea">{{loggedInUser.profileInfo}}</p>
+                    <a href="" class="" id="userProfileInfoEditLink">Edit</a>
+                    <form class="" action="" id="userProfileInfoForm" method="post">
+                        {% csrf_token %}
+                        <!-- Important to use different names for the id(userProfileInfoID) and name(userProfileInfo) field for the textarea(or any form input) otherwise there will be a multidictkey error in the backend when trying to submit -->
+                        <textarea class="form-control" id="userProfileInfoID" name="userProfileInfo" rows="3">{{loggedInUser.profileInfo}}</textarea>
+                        <div id="userProfileInfoButtons">
+                            <button id="userProfileInfoCancelButton" class=" ml-5 btn btn-primary btn-sm">Cancel</button>
+                            <button type="submit" class="btn btn-primary btn-sm">Save</button>
+                        </div>
+                    </form>
+            </div>
+            <div class="col-sm bg-white">
+                <!-- One of three columns -->
+            </div>
+        </div>
+
+        <div class="row ml-5 mt-4">
             <div class="col-sm-3 mt-4 bg-white">
                 <p class="lead mr-2 pl-2">Friends</p>
                 {% for user in allUsers %}
-                <a href="/user/{{user.id}}">{{user.firstName}}</a>
+                    <a href="/{{user.firstName}}/{{user.lastName}}/{{user.id}}">{{user.firstName}}
+                        <!-- <img src="{{user.profilePic}}" class="uploadedPhotoProperties" alt=""> -->
+                    </a>
                 {% endfor %}
             </div>
             <div class="col-sm-7 ml-5">
-                <h6 class="mb-2 ml-3">What's On Your Mind?</h6>
-
                 <!-- The below code is for the post a message form -->
-                <form class="mb-2 bg-white col-sm-12" action="/processMessage" method="post">
+                <form class="mb-2 bg-white col-sm-12" action="{% url 'processMessage' userFirstName=loggedInUser.firstName userLastName=loggedInUser.lastName userId=loggedInUser.id %}" method="post" id="postAMessageForm">
                     {% csrf_token %}
                     <div class="form-group">
                         <label for="textArea"></label>
-                        <textarea class="form-control" id="" name="userMessage" rows="2"></textarea>
+                        <input type="hidden" id="" name="userWhoReceivesPost" value="{{loggedInUser.id}}">
+                        <textarea class="form-control rounded-pill" id="userMessageID" name="userMessage" rows="2" placeholder="What's On Your Mind, {{loggedInUser.firstName}}?"></textarea>
                     </div>
-                    <button type="submit" class="btn btn-primary mb-2 btn-sm">Post A Message</button>
+                    <button type="submit" class="btn btn-primary mb-2 btn-sm" id="postAMessageButton">Post A Message</button>
                 </form>
                 <small class="font-weight-bold">Posts</small>
                 <!-- The above code is for the post a message form -->
-
+                
                 <table class="table table-borderless">
-                    <tbody>
+                    <tbody class="">
                         <tr>
-                            <td class="border border border-light bg-white">
-                                <h6 class="col-sm-10 mb-0">
-                                    {% for message in userMessages %}
-                                    <a href="user/{{message.id}}">{{message.user.firstName}}
-                                        {{message.user.lastName}}</a>
-                                </h6>
-                                <small class="ml-3">{{message.user.createdAt}}</small>
-                                <p class="col-sm mb-0 ml-0">{{message.message}} </p>
-                                <!-- <div class="bg-light"> FIGURE OUT HOW TO FLOAT THIS TO THE RIGHT
-                                    <a class="" href=""> # Comments</a>
-                                    <a class="" href="">Share</a>
-                                </div> -->
+                            <td class="bg-white">
+                                {% for message in wallOfLoggedInUser %}
+                                        {% if message.user.id == loggedInUser.id %}
+                                        <div class="messageContentsDiv">
+                                            <a href="/home">
+                                                <img src="{{message.user.profilePic}}" id="navIconProfPic" alt="">
+                                                {{message.user.firstName}} {{message.user.lastName}}
+                                            </a>
+                                        {% if loggedInUser.profilePic == "" %}
+                                            <small class="d-block ml-4 text-secondary messageCreatedAt">{{message.createdAt}}</small>
+                                        {% else %}
+                                            <small class="d-block ml-4 text-secondary messageCreatedAtWithThumbnail">{{message.createdAt}}</small>
+                                        {% endif %}
+                                        </div>
+                                        {% else%}
+                                        <div class="messageContentsDiv">
+                                            <a href="/{{message.user.firstName}}/{{message.user.lastName}}/{{message.user.id}}">
+                                                <img src="{{message.user.profilePic}}" id="navIconProfPic" alt="" class="">
+                                                {{message.user.firstName}} {{message.user.lastName}}
+                                            </a>
+                                            <small class="d-block ml-4 text-secondary messageCreatedAt">{{message.createdAt}}</small>
+                                        </div>
+                                        {% endif %}
+                                <p class="col-sm mb-0 mt-0 ml-0  messageText">{{message.message}} </p>
 
-                                <div class=" col-sm-12 mr-3 pl-5 bg-light">
+                                <div class=" col-sm-12 mr-3 pl-5 mt-0 bg-light">
                                     <a class="mr-2 hover" href="/like/{{message.id}}">Like</a>
                                     <a class="mr-2" href="/unlike/{{message.id}}">Unlike</a>
                                     <a class="" href="">Comment</a>
                                 </div>
 
                                 <div class="col-sm ml-5">
-                                    <!-- The below line of code displays what the user would see when they like a message -->
-                                    {% if loggedInUser in message.userLikes.all %}
-                                    <small class=""> You </small>
-                                    {% endif %}
-                                    <!-- The above line of code displays what the user would see when they like a message -->
+                                <!-- The below line of code displays when a single user likes a message on the logged in user's page -->
+                                    {% for user in message.userLikes.all%} <!--the message.userLikes.all is the many to many relationship in the message model containing all the likes the users did  -->
+                                        {% if loggedInUser.id == user.id and message.likeMessageCount == 1 %}
+                                        <small class=""> You like this </small>
+                                        {% endif %}
+                                        {% if loggedInUser.id != user.id and message.likeMessageCount == 1 %}
+                                        <small class=""> {{user.firstName}} likes this </small>
+                                        {% endif %}
+                                <!-- The above line of code displays when a single user likes a message on the logged in user's page  -->
+                                    
+                                <!-- The below line of code displays when two users(either a user and logged in user OR two other users) like a message on the logged in user's page -->
+                                        {% if loggedInUser.id == user.id and message.likeMessageCount == 2 %}
+                                                    <small class=""> You and </small>
+                                                    {% if forloop.last %}
+                                                    <small class=""> {{user.firstName}} like this </small>
+                                                    {% endif %}
+                                        {% endif %}
 
-                                    <!-- The below line of code does not display the logged in user's like(code above does) and the word 'others' if there is only one like -->
-                                    {% for name in message.userLikes.all %}
-                                    {% if loggedInUser != name %}
-                                    {% if likesCount < 2 %}
-                                    <small class=""> {{name.firstName}} liked your message </small>
-                                    <!-- The above line of code does not display the logged in user's like(code above does) and the word 'others' if there is only one like -->
-                                    {% else %}
-                                    <!-- The below line of code displays the word 'others' if there is more than one like -->
-                                    <small class=""> ,{{name.firstName}}, & {{likesCount}} others </small>
-                                    <!-- The above line of code displays the word 'others' if there is more than one like -->
+                                        {% if loggedInUser.id != user.id and message.likeMessageCount == 2 %}
+                                            {% if forloop.first %}
+                                                <small class=""> {{user.firstName}} and </small>
+                                            {% endif %}
+                                            {% if forloop.last %}
+                                                <small class=""> {{user.firstName}} like this </small>
+                                            {% endif %}
+                                        {% endif %}
+                                <!-- The above line of code displays when two users likes a message on the logged in user's page  -->
 
+                                <!-- The below line of code displays when three users(1 being the logged in user) like a message on the logged in user's page -->
+                                        {% if loggedInUser.id == user.id and message.likeMessageCount == 3 %}
+                                            {% if forloop.first %}
+                                                <small class=""> You, </small>
+                                            {% endif %}
+                                        {% endif %}
 
-                                    <!-- <small class=""> {{name.firstName}}, & {{likesCount}} others </small> -->
-                                    {% endif %}
-                                    {% endif %}
-                                    {% endfor %}
+                                        {% if loggedInUser.id != user.id and message.likeMessageCount == 3 %}
+                                            {% if forloop.last %}
+                                                <small class=""> {{user.firstName}}, and 1 other </small>
+                                            {% endif %}
+                                        {% endif %}
+                                <!-- The above line of code displays when three users(1 being the logged in user) like a message on the logged in user's page -->
 
+                                <!-- The below line of code displays when three users(none being the logged in user) like a message on the logged in user's page -->
+                                        {% if loggedInUser.id != user.id and message.likeMessageCount == 3 %}
+                                            {% if forloop.first %}
+                                                <small class=""> {{user.firstName}}, </small>
+                                                {% if loggedInUser.id != user.id and message.likeMessageCount == 3 %}
+                                                    {% if forloop.last %}
+                                                        <small class=""> {{user.firstName}}, and 1 other </small>
+                                                    {% endif %}
+                                                {% endif %}
+                                            {% endif %}
+                                        {% endif %}
+                                <!-- The above line of code displays when three users(none being the logged in user) like a message on the logged in user's page -->
+
+                                <!-- The below line of code displays when more than three users(1 being the logged in user) like a message on the logged in user's page -->
+                                        {% if loggedInUser.id == user.id and message.likeMessageCount > 3 %}
+                                            {% if forloop.first %}
+                                                <small class=""> You, </small>
+                                            {% endif %}
+                                        {% endif %}
+
+                                        {% if loggedInUser.id != user.id and message.likeMessageCount > 3 %}
+                                            {% if forloop.last %}
+                                                <small class=""> {{user.firstName}}, and {{message.likeMessageCountMinusDisplayNames}} others </small>
+                                            {% endif %}
+                                        {% endif %}
+                                <!-- The above line of code displays when three users(1 being the logged in user) like a message on the logged in user's page -->
+                                
+                                <!-- The below line of code displays when more than three users(none being the logged in user) like a message on the logged in user's page -->
+                                        {% if loggedInUser.id != user.id and message.likeMessageCount > 3 %}
+                                            {% if forloop.first %}
+                                                <small class=""> {{user.firstName}}, </small>
+                                            {% if loggedInUser.id != user.id and message.likeMessageCount > 3 %}
+                                                {% if forloop.last %}
+                                                    <small class=""> {{user.firstName}}, and {{message.likeMessageCountMinusDisplayNames}} others </small>
+                                                {% endif %}
+                                            {% endif %}
+                                            {% endif %}
+                                        {% endif %}
+                                <!-- The above line of code displays when more than three users(none being the logged in user) like a message on the logged in user's page -->
+
+                                    {% endfor %} <!-- The end of the message.userLikes.all loop -->
                                 </div>
 
                                 {% for comment in message.comments.all %}
-                                <!-- <p class="col-sm ml-4 sm mb-0">{{comment.user.firstName}} {{comment.user.lastName}}
-                                    {{message.user.createdAt}}</p> -->
-                                <p class="col-sm-8 ml-5 mb-0 rounded-pill bg-light">
-                                    <a href="/user/{{comment.user.id}}">{{comment.user.firstName}}
-                                        {{comment.user.lastName}}</a>
-                                    {{comment.comment}}
-                                </p>
+                                <div class="commentSectionDiv row mt-2 ml-3">
+                                    <!-- <div class=""> -->
+                                        <!-- </div> -->
+                                        <img src="{{comment.user.profilePic}}" id="navIconProfPic" alt="" class="d-inline ml-3">
+                                        <div class="badge rounded-pill bg-light commentSection ">
+                                            <a href="/{{comment.user.firstName}}/{{comment.user.lastName}}/{{comment.user.id}}" class="commentHeadText d-block">{{comment.user.firstName}} {{comment.user.lastName}}</a>
+                                            <p class="commentSubText d-block">{{comment.comment}}</p>
+                                        </div>
+                                </div>
                                 {% endfor %}
 
                                 <!-- The below line of code is the form to post a comment. -->
-                                <form class="col-sm ml-0 sm mb-0 mt-0 pt-0 pb-0" action="/processComments"
-                                    method="post">
+                                <form class="col-sm ml-0 sm mb-0 mt-0 pt-0 pb-0" action="{% url 'processComment' userFirstName=loggedInUser.firstName userLastName=loggedInUser.lastName userId=loggedInUser.id %}" method="post" id="postACommentForm">
                                     {% csrf_token %}
-                                    <div class="form-group">
+                                    <div class="form-group mt-0 mb-0">
                                         <label for="textArea"></label>
-                                        <input type="hidden" id="" name="postLocationForComment" value="{{message.id}}">
-                                        <textarea
-                                            class="form-control form-control-sm col-sm-8 rounded-pill bg-light text-black"
-                                            id="exampleFormControlTextarea1" rows="1" name="userComment"></textarea>
-                                        <button type="submit"
-                                            class="btn btn-primary mb-0 mt-1 btn-success btn-sm">Comment</button>
+                                        <input type="hidden" id="postLocationForCommentID" name="postLocationForComment" value="{{message.id}}">
+                                        <input type="hidden" id="" name="userReceivesComment" value="{{message.user.id}}">
+                                    {% if not loggedInUser.profilePic == "" %} 
+                                        <img src="{{loggedInUser.profilePic}}" id="navIconProfPic" alt="" class="d-inline mt-3 ml-3">
+                                    {% endif %}
+                                        <textarea class="form-control form-control-sm col-sm-8 mt-3 rounded-pill bg-light text-black d-inline commentTextAreaOnForm" rows="1" name="userComment"></textarea>
+                                        <button type="submit" class="btn btn-primary mt-3 btn-success btn-sm d-inline postACommentButton">Comment</button>
                                     </div>
                                 </form>
                                 <!-- This above line of code is the form to post a comment. -->
-                                {% endfor %}
+
+                                {% endfor %} <!-- the end of the for statement for the 'message in wallOfLoggedInUser' loop -->
                             </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-
         </div>
     </div>
 </body>
