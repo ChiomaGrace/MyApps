@@ -167,10 +167,11 @@ def processMessage(request, userFirstName, userLastName, userId):
     # print(userMessage)
     #print("This prints the logged in user.")
     loggedInUser = User.objects.get(id=request.session['loginInfo'])
-    #print(loggedInUser)
-    recipientOfPost = request.POST['userWhoReceivesPost']
-    # print(recipientOfPost)
-    if loggedInUser.id == recipientOfPost:
+    print(loggedInUser)
+    recipientOfPost = request.POST['userWhoReceivesPost'] # is a string so need to convert before comparison   
+    print(recipientOfPost)
+    print(loggedInUser.id)
+    if loggedInUser.id == int(recipientOfPost):
         #this creates the message and saves it to the database
         submittedMessageByUser = Message.objects.create(message = userMessage, user = loggedInUser, userReceivesPost_id = recipientOfPost)
         print("THIS IS THE LAST PRINT STATEMENT IN THE PROCESS PROFILE INFO ROUTE.")    

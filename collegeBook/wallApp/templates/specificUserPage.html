@@ -128,13 +128,27 @@
         </div>
 
         <div class="row ml-5 mt-4">
-            <div class="col-sm-3 bg-white">
+            <div class="col-sm-3 mt-4 ml-5 bg-white friendsDiv">
                 <p class="lead mr-2 pl-2">Friends</p>
                 {% for user in allUsers %}
                     {% if loggedInUser.id != user.id  %} <!-- to prevent the logged in user's name displaying in the friends section -->
-                    <a href="/{{user.firstName}}/{{user.lastName}}/{{user.id}}">{{user.firstName}}
-                        <!-- <img src="{{user.profilePic}}" class="uploadedPhotoProperties" alt=""> -->
-                    </a>
+                        {% if user.profilePic == "" %}
+                            <figure class="ml-2 d-inline-block">
+                                <a href="/{{user.firstName}}/{{user.lastName}}/{{user.id}}">
+                                    <img src="{% static 'Images/blankAvatar.png' %}" id="" class="friendsIconProfPic ml-2" alt="A thumbnail photo of the user">
+                                    <figcaption class="ml-2">{{user.firstName}}</figcaption>
+                                </a>
+                            </figure>
+                        {% else %}
+                            <div class="d-inline-block">
+                                <figure class="ml-2">
+                                    <a href="/{{user.firstName}}/{{user.lastName}}/{{user.id}}">
+                                        <img src="{{user.profilePic}}" id="" class="friendsIconProfPic" alt="A thumbnail photo of the user">
+                                        <figcaption class="ml-2">{{user.firstName}}</figcaption>
+                                    </a>
+                                </figure>
+                            </div>
+                        {% endif%}
                     {% endif %}
                 {% endfor %}
             </div>
@@ -158,15 +172,29 @@
                             <td class="border border border-light bg-white">
                             {% for message in specificUsersMessages %}
                                 <div class="messageContentsDiv">
-                                        <a href="/{{message.user.firstName}}/{{message.user.lastName}}/{{message.user.id}}" class="">
-                                            {% if not message.user.profilePic == "" %}
-                                            <img src="{{message.user.profilePic}}" id="navIconProfPic" alt="" class="">
+                                    {% if message.user.id == loggedInUser.id %}
+                                            <a href="/home">
+                                                {% if not message.user.profilePic == "" %}
+                                                    <img src="{{message.user.profilePic}}" id="navIconProfPic" alt="">
+                                                {% endif %}
+                                                    {{message.user.firstName}} {{message.user.lastName}}
+                                            </a>
+                                    {% else %}
+                                    <a href="/{{message.user.firstName}}/{{message.user.lastName}}/{{message.user.id}}">
+                                        {% if not message.user.profilePic == "" %}
+                                        <img src="{{message.user.profilePic}}" id="navIconProfPic" alt="">
+                                        {% endif %}
+
+                                        {{message.user.firstName}} {{message.user.lastName}}
+                                    </a>
+                                    {% endif %}
+                                            {% if message.user.profilePic == "" %}
+                                                <small class="d-block ml-4 text-secondary messageCreatedAt">{{message.createdAt}}</small>
+                                            {% else %}
+                                                <small class="d-block ml-4 text-secondary messageCreatedAtWithThumbnail">{{message.createdAt}}</small>
                                             {% endif %}
-                                            {{message.user.firstName}} {{message.user.lastName}}
-                                        </a>
-                                        <small class="d-block ml-4 text-secondary  messageCreatedAt">{{message.createdAt}}</small>
-                                    </div>
-                                    <p class="col-sm mb-0 mt-0 ml-0 messageText">{{message.message}} </p>
+                                </div>
+                                <p class="col-sm mb-0 mt-0 ml-0  messageText">{{message.message}} </p>
 
                                 <div class=" col-sm-12 mr-3 pl-5 mt-0 bg-light">
                                     <a class="mr-2 hover" href="/like/{{message.id}}">Like</a>

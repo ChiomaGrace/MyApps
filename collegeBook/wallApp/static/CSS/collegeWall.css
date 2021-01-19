@@ -97,11 +97,18 @@
     display: none;
 } 
 
-/* #dropdownSymbol{
-    font-size: 22px;
-    font-weight: bolder;
-} */
+.friendsIconProfPic{
+    width: 64px;
+    height: 64px;
+    border-radius: 30%;
+    /* margin-top: 6px; */
+    /* margin: 20px, 20px, 20px, 20px; */
+}
 
+.friendsDiv{
+    display: table;    
+    width: 254px;
+}
 .hide {
     display: none;
 }
@@ -136,14 +143,6 @@ small.messageCreatedAt{
 #navBar{
     height: 58px;
 }
-
-/* .navIcons{
-    width: 54px;
-    height: 54px;
-    border-radius: 60%;
-    /* margin-top: 2px; */
-    /* margin-left: 8px; */
-/* } */ 
 
 #navIconsDiv{
     height: 60px;
@@ -276,20 +275,6 @@ small.messageCreatedAt{
     height: 38px;
     width: 180px;
 } 
-
-/* #searchBarInput{ */
-    /* height: 30px; */
-    /* width: 30px; */
-    /* background-color: blue; */
-/* }  */
-    
-/* #searchBarFromDiv{ */
-    /* height: 38px; */
-    /* width: 40px; */
-    /* background-color: red; */
-/* }  */
-        
-
 
 .ui-dialog .ui-dialog-buttonpane button{ /*The css for the okay button on the error dialog box for uploading an image*/
     background-color: blue;
