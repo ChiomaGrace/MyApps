@@ -89,6 +89,11 @@
     color: #DADDE1;
 }
 
+.displayCommentErrors{
+    margin-left: 40px;
+    margin-bottom: 0px;
+}
+
 #errorDialogForFileSize{ /*The div containing the message of the error dialog box for an uploaded image*/
     display: none;
 } 
@@ -103,6 +108,7 @@
     border-radius: 30%;
     /* margin-top: 6px; */
     /* margin: 20px, 20px, 20px, 20px; */
+    position: relative;
 }
 
 .friendsDiv{
@@ -122,6 +128,7 @@
 .messageContentsDiv{
     height: 48px;
     margin-bottom: -2px;
+    font-weight: bold;
 }
 
 small.messageCreatedAtWithThumbnail{

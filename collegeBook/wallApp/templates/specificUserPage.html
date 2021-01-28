@@ -17,7 +17,18 @@
     <script>
         $(document).ready(function() { 
 
-            showThumbnail();
+            var $crf_token = $('[name="csrfmiddlewaretoken"]').attr('value'); //this defines the token form the form so it can be used in the jquery/ajax code below
+
+        //The below code are function calls that run as soon as the window is loaded.
+
+            showThumbnail(); // a function that determines whether or not a photo has been uploaded by a user and then acts accordingly
+
+            enableDisableMessageButton(); // a function that enables and disables the post a message button
+
+            $('.postACommentButton').prop('disabled', true); //This disables the comment button to start
+
+
+        //The above code are function calls that run as soon as the window is loaded.
 
             function showThumbnail(e) {
                 $('#navIconProfPic').hide()
@@ -38,7 +49,103 @@
                     console.log("End of if statement")
                 }
             };
-        });
+
+            //The below code is the function for posting a message via jquery/ajax
+
+            $("#postAMessageForm").submit(function(e){// the id name given to the form action in the below html
+                    console.log("The post a message button was clicked.")
+                    e.preventDefault(); //prevents the default browser behavior of the form submitting normally
+                    var messageData = {
+                        "userMessage": $('#userMessageID').val(), //the key name must match the name in the views/form but the value name must differentiate
+                        "userWhoReceivesPost": $('#userWhoReceivesPostID').val(), //the key name must match the name in the views/form but the value name must differentiate
+                    };
+                    console.log("The form data was submitted.", messageData)
+                    $.ajax({
+                        type: "POST",
+                        url: "{% url 'processMessage' userFirstName=specificUsersPage.firstName userLastName=specificUsersPage.lastName userId=specificUsersPage.id %}",
+                        headers:{"X-CSRFToken": $crf_token}, //this relates to the CSRF token in the form
+                        data: messageData,
+                        success: function(data) {
+                                console.log("This is the data successfully submitted", data)
+                                location.reload(); //reloads the page and displays the new data.
+                        },
+                        error: function(data){
+                            console.log("If this console log is displaying, it means errors occurred in submitting the user profile info data.")
+                        },
+                    });
+                });
+
+            //The above code is the function for posting a message via jquery/ajax
+
+    //The below code is the function that enables and disables the post a message button depending on if the textarea contains characters
+        function enableDisableMessageButton(e){
+            console.log("This is the enableDisableMessageButton function.")
+            $('#postAMessageButton').prop('disabled', true); //This disables the button
+            var submittedPost = document.getElementById("userMessageID"); //element that will be the focus of the keyup
+            var showMessageButton = function() { 
+                if (submittedPost.value !== '') {
+                    console.log("This console log means the text area is not blank, and the post a message button should be enabled.")
+                    $("#postAMessageButton").attr('disabled',false)
+                } 
+                else if (submittedPost.value == '')  {
+                    console.log("This console log means the text area is blank, and the post a message button should be disabled.")
+                    $("#postAMessageButton").attr('disabled',true)
+                }
+            }
+            submittedPost.onkeyup = showMessageButton; //The keyup event is sent to an element when the user releases a key on the keyboard. This will then trigger the showMessageButton()
+        }
+
+    //The above code is the function that enables and disables the post a message button depending on if the textarea contains characters
+
+            //The below code is the function for posting a comment via jquery/ajax
+
+            $("#postACommentForm").submit(function(e){// the id name given to the form action in the below html
+                    console.log("The post a comment button was clicked.")
+                    e.preventDefault(); //prevents the default browser behavior of the form submitting normally
+                    var commentData = {
+                        "userComment": $('#userCommentID').val(), //the key name must match the name in the views/form but the value name must differentiate
+                        "userReceivesComment": $('#userReceivesCommentID').val(), //the key name must match the name in the views/form but the value name must differentiate
+                        "postLocationForComment": $('#postLocationForCommentID').val(), //the key name must match the name in the views/form but the value name must differentiate
+                    };
+                    console.log("The form data was submitted.", commentData)
+                    $.ajax({
+                        type: "POST",
+                        url: "{% url 'processComment' userFirstName=specificUsersPage.firstName userLastName=specificUsersPage.lastName userId=specificUsersPage.id %}",
+                        headers:{"X-CSRFToken": $crf_token}, //this relates to the CSRF token in the form
+                        data: commentData,
+                        success: function(data) {
+                                console.log("This is the data successfully submitted", data)
+                                location.reload(); //reloads the page and displays the new data.
+                        },
+                        error: function(data){
+                            console.log("If this console log is displaying, it means errors occurred in submitting the user profile info data.")
+                        },
+                    });
+                });
+
+            //The above code is the function for posting a comment via jquery/ajax
+        
+//The below code is the function that enables and disables the post a comment button depending on if the textarea contains characters
+
+            $('.commentSubDiv').find('textarea').each(function(){  //This function creates a loop finding all the text areas within the div
+                $(".commentTextAreaOnForm").keyup(function() { //This function then tracks the user's typing within said text area
+                        console.log("inside the keyup function")
+                        typedComment = $(this).val();
+                        // console.log(typedComment)
+                    if (typedComment == '')  {
+                        console.log("This console log means the text area is blank, and the post a comment button should be disabled.")
+                        $(this).siblings('.postACommentButton').attr('disabled',true)
+                    }
+                    else if (typedComment !== '') {
+                        console.log("This console log means the text area is not blank, and the post a comment button should be enabled.")
+                        $(this).siblings('.postACommentButton').attr('disabled',false)
+                    } 
+                })
+            });
+
+//The above code is the function that enables and disables the post a comment button depending on if the textarea contains characters
+
+        });//end of entire code in the script
     </script>
 </head>
 
@@ -133,33 +240,48 @@
                 {% for user in allUsers %}
                     {% if loggedInUser.id != user.id  %} <!-- to prevent the logged in user's name displaying in the friends section -->
                         {% if user.profilePic == "" %}
-                            <figure class="ml-2 d-inline-block">
-                                <a href="/{{user.firstName}}/{{user.lastName}}/{{user.id}}">
-                                    <img src="{% static 'Images/blankAvatar.png' %}" id="" class="friendsIconProfPic ml-2" alt="A thumbnail photo of the user">
-                                    <figcaption class="ml-2">{{user.firstName}}</figcaption>
-                                </a>
-                            </figure>
-                        {% else %}
-                            <div class="d-inline-block">
-                                <figure class="ml-2">
-                                    <a href="/{{user.firstName}}/{{user.lastName}}/{{user.id}}">
-                                        <img src="{{user.profilePic}}" id="" class="friendsIconProfPic" alt="A thumbnail photo of the user">
-                                        <figcaption class="ml-2">{{user.firstName}}</figcaption>
-                                    </a>
-                                </figure>
-                            </div>
+                <figure class="ml-4 d-inline-block">
+                    <a href="/{{user.firstName}}/{{user.lastName}}/{{user.id}}">
+                        <img src="{% static 'Images/blankAvatar.png' %}" id="" class="friendsIconProfPic " alt="A thumbnail photo of the user">
+                        <figcaption class="ml-2">{{user.firstName}}</figcaption>
+                    </a>
+                </figure>
+                    <a href="/home">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-plus" viewBox="0 0 16 16">
+                            <path d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H1s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C9.516 10.68 8.289 10 6 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
+                            <path fill-rule="evenodd" d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z"/>
+                        </svg>                                
+                    </a>
+                    {% else %}
+                <div class="d-inline-block">
+                    <figure class="ml-4">
+                        <a href="/{{user.firstName}}/{{user.lastName}}/{{user.id}}">
+                            <img src="{{user.profilePic}}" id="" class="friendsIconProfPic" alt="A thumbnail photo of the user">
+                        </a>
+                        <a href="/home">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-plus" viewBox="0 0 16 16">
+                                <path d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H1s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C9.516 10.68 8.289 10 6 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
+                                <path fill-rule="evenodd" d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z"/>
+                            </svg>                                    
+                        </a>
+                        <a href="/{{user.firstName}}/{{user.lastName}}/{{user.id}}">
+                            <figcaption class="ml-2">{{user.firstName}}</figcaption>
+                        </a>
+                    </figure>
+                </div>
                         {% endif%}
                     {% endif %}
                 {% endfor %}
             </div>
+        
             <div class="col-sm-7 ml-5">
                 <!-- The below code is for the post a message form --> 
-                <form class="mb-2 bg-white col-sm-12" action="{% url 'processMessage' userFirstName=specificUsersPage.firstName userLastName=specificUsersPage.lastName userId=specificUsersPage.id %}" method="post" id="postAMessageForm">
+                <form class="mb-2 bg-white col-sm-12" action="" method="post" id="postAMessageForm">
                     {% csrf_token %}
                     <div class="form-group">
                         <label for="textArea"></label>
-                        <input type="hidden" id="" name="userWhoReceivesPost" value="{{specificUsersPage.id}}">
-                        <textarea class="form-control rounded-pill" id="userMessageID"  placeholder="Write something to {{specificUsersPage.firstName}}... " name="userMessage" rows="2"></textarea>
+                        <input type="hidden" id="userWhoReceivesPostID" name="userWhoReceivesPost" value="{{specificUsersPage.id}}">
+                        <textarea class="form-control rounded-pill" id="userMessageID" name="userMessage" rows="2" placeholder="Write something to {{specificUsersPage.firstName}}... "></textarea>
                     </div>
                     <button type="submit" class="btn btn-primary mb-2 btn-sm" id="postAMessageButton">Post A Message</button>
                 </form>
@@ -305,15 +427,15 @@
                                 <!-- The below line of code is the form to post a comment. -->
                                 <form class="col-sm ml-0 sm mb-0 mt-0 pt-0 pb-0" action="{% url 'processComment' userFirstName=specificUsersPage.firstName userLastName=specificUsersPage.lastName userId=specificUsersPage.id %}" method="post" id="postACommentForm">
                                     {% csrf_token %}
-                                    <div class="form-group mt-0 mb-0">
+                                    <div class="form-group mt-0 mb-0 commentSubDiv">
                                         <label for="textArea"></label>
                                         <input type="hidden" id="postLocationForCommentID" name="postLocationForComment" value="{{message.id}}">
-                                        <input type="hidden" id="" name="userReceivesComment" value="{{message.user.id}}">
+                                        <input type="hidden" id="userReceivesCommentID" name="userReceivesComment" value="{{message.user.id}}">
                                     {% if not loggedInUser.profilePic == "" %}
                                         <img src="{{loggedInUser.profilePic}}" id="navIconProfPic" alt="" class="d-inline mt-3 ml-3">
                                     {% endif %}
-                                        <textarea class="form-control form-control-sm col-sm-8 mt-3 rounded-pill bg-light text-black d-inline commentTextAreaOnForm" rows="1" name="userComment"></textarea>
-                                        <button type="submit" class="btn btn-primary mt-3 btn-success btn-sm d-inline postACommentButton">Comment</button>
+                                        <textarea class="form-control form-control-sm col-sm-8 mt-3 rounded-pill bg-light text-black d-inline commentTextAreaOnForm" rows="1" id="userCommentID" name="userComment"></textarea>
+                                        <button type="submit" id="" class="btn btn-primary mt-3 btn-success btn-sm d-inline postACommentButton">Comment</button>
                                     </div>
                                 </form>
                                 <!-- This above line of code is the form to post a comment. -->

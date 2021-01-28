@@ -18,5 +18,6 @@ urlpatterns = [
     path('<str:userFirstName>/<str:userLastName>/<int:userId>/<int:messageId>', views.specificUsersPage, name='specificUsersPage'), #route used when a message is like
     path('like/<int:messageId>', views.userLikes),
     path('unlike/<int:messageId>', views.userUnlikes),
+    path('addFriend/<int:userId>', views.addFriend),
     path('logout', views.logout)
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)# I added this to be able to provide an upload photo feature for the user profile pic. This specifically links to the media file that I defined in the settings.py

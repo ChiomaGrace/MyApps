@@ -152,17 +152,33 @@ class UserManager(models.Manager):
 
 #The below code is for the validations of posting a message
 
-# class MessageManager(models.Manager):
-#     def messageValidator(self, postData):
-#         errors = {}
-#         print("*"*50)
-#         print('This is the postingAMessageValidator from models.')
-#         #The below line of code makes sure a message is submitted. 
-#         if len(postData['userMessage']) == 0:
-#             errors['messageRequired'] = "Must type a message! Please try again."
-#         return errors
+class MessageManager(models.Manager):
+    def messageValidator(self, postData):
+        print("*"*50)
+        errors = {}
+        # print('This is the postingAMessageValidator from models.')
+        #The below line of code makes sure a message is submitted. 
+        if len(postData['userMessage']) == 0:
+            errors['messageRequired'] = "Oops, you forgot to write something!"
+        print("*"*50)
+        return errors
 
 #The above code is for the validations of posting a message
+
+#The below code is for the validations of posting a comment
+
+class CommentManager(models.Manager):
+    def commentValidator(self, postData):
+        print("*"*50)
+        errors = {}
+        # print('This is the postingAMessageValidator from models.')
+        #The below line of code makes sure a comment is submitted. 
+        if len(postData['userComment']) == 0:
+            errors['commentRequired'] = "Oops, you forgot to reply!"
+        print("*"*50)
+        return errors
+
+#The above code is for the validations of posting a comment
 
 class User(models.Model):
     firstName = models.CharField(max_length = 255)
@@ -176,6 +192,7 @@ class User(models.Model):
     confirmPassword = models.CharField(max_length = 255)
     profilePic= models.ImageField(upload_to='submittedProfilePicImages/', null=True, verbose_name="")
     profileInfo = models.CharField(max_length = 255, default = "")
+    friends = models.ManyToManyField('self', related_name="friendship") # Self states this ManyToManyField is symmetrical – that is, if I am your friend, then you are my friend.
     objects = UserManager()
     createdAt = models.DateTimeField(auto_now_add = True)
     updatedAt = models.DateTimeField(auto_now = True)
@@ -190,7 +207,7 @@ class Message(models.Model):
     userLikes = models.ManyToManyField(User, related_name = 'theLiker') # the user who likes the post
     likeMessageCount = models.IntegerField(default = 0)
     likeMessageCountMinusDisplayNames = models.IntegerField(default = 0)
-    # objects = MessageManager()
+    objects = MessageManager()
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
 
@@ -202,6 +219,7 @@ class Comment(models.Model):
     message = models.ForeignKey(Message, related_name = "comments", on_delete=models.CASCADE)
     user = models.ForeignKey(User, related_name = "comments", on_delete=models.CASCADE) #the user who makes the comment
     userReceivesComment = models.ForeignKey(User, related_name = "commentee", on_delete=models.CASCADE, null=True,) #the user who receives the comment
+    objects = CommentManager()
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
 

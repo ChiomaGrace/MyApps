@@ -153,75 +153,68 @@ def processProfileInfo(request):
 
 # def processMessageOnLoggedInUsersPage(request):
 def processMessage(request, userFirstName, userLastName, userId):
-    print("THIS FUNCTION PROCESSES THE FORM FOR CREATING A POST ON THE WALL OF THE LOGGED IN USER.")
-    # print("*"*50)
-    # postAMessageErrors = Message.objects.messageValidator(request.POST)
-    # print(postAMessageErrors)
-    # if len(postAMessageErrors) > 0:
-    #     for key, value in postAMessageErrors.items():
-    #         messages.error(request,value)
-    #         return redirect('/home')
-    # else:
-    #print("This prints the messaged created by the logged in user.")
-    userMessage = request.POST['userMessage']
-    # print(userMessage)
-    #print("This prints the logged in user.")
-    loggedInUser = User.objects.get(id=request.session['loginInfo'])
-    print(loggedInUser)
-    recipientOfPost = request.POST['userWhoReceivesPost'] # is a string so need to convert before comparison   
-    print(recipientOfPost)
-    print(loggedInUser.id)
-    if loggedInUser.id == int(recipientOfPost):
-        #this creates the message and saves it to the database
-        submittedMessageByUser = Message.objects.create(message = userMessage, user = loggedInUser, userReceivesPost_id = recipientOfPost)
-        print("THIS IS THE LAST PRINT STATEMENT IN THE PROCESS PROFILE INFO ROUTE.")    
-        return redirect("/home")
+    print("*"*50)
+    postAMessageErrors = Message.objects.messageValidator(request.POST) #linking the messageValidator instance in the model that's containing the errors
+    print(postAMessageErrors)
+    if len(postAMessageErrors) > 0:
+        for key, value in postAMessageErrors.items():
+            messages.error(request,value)
+        return JsonResponse({"errors": postAMessageErrors}, status=400)
     else:
-        #this creates the message and saves it to the database
-        submittedMessageByUser = Message.objects.create(message = userMessage, user = loggedInUser, userReceivesPost_id = recipientOfPost)
-        # # print("*"*50)
-        print("THIS IS THE LAST PRINT STATEMENT IN THE PROCESS PROFILE INFO ROUTE.")    
-    return redirect(reverse('specificUsersPage', args=(userFirstName, userLastName, userId,))) #using the name of the url to redirect and passing the variables/params to the form rendering the template
-
-    # if request.method == 'POST':
-    #     # print(request.POST) #This prints as query set: example: <QueryDict: {'userMessage': ['123']}>
-    #     hotdog = Message.objects.filter(message=userMessage, user=loggedInUser)
-    #     # print(newMessage) #This prints as a mesage object: example: Message object(#)
-    #     submittedMessages = {userMessage:[]}
-    #     for message in userMessage:
-    #         print("******" * 50)
-    #         print(submittedMessages[userMessage].append(message)) 
-    #         print(message)
-    #         # submittedMessages[newMessages].append(message)
-    #         print("******" * 50)
-    # return JsonResponse(submittedMessages)
+        #print("This prints the messaged created by the logged in user.")
+        userMessage = request.POST['userMessage']
+        # print(userMessage)
+        #print("This prints the logged in user.")
+        loggedInUser = User.objects.get(id=request.session['loginInfo'])
+        print(loggedInUser)
+        recipientOfPost = request.POST['userWhoReceivesPost'] # is a string so need to convert before comparison   
+        print(recipientOfPost)
+        print(loggedInUser.id)
+        if loggedInUser.id == int(recipientOfPost):
+            #this creates the message and saves it to the database
+            submittedMessageByUser = Message.objects.create(message = userMessage, user = loggedInUser, userReceivesPost_id = recipientOfPost)
+            print("THIS IS THE LAST PRINT STATEMENT IN THE PROCESS PROFILE INFO ROUTE.")    
+            return redirect("/home")
+        else:
+            #this creates the message and saves it to the database
+            submittedMessageByUser = Message.objects.create(message = userMessage, user = loggedInUser, userReceivesPost_id = recipientOfPost)
+            # # print("*"*50)
+            print("THIS IS THE LAST PRINT STATEMENT IN THE PROCESS PROFILE INFO ROUTE.")    
+        return redirect(reverse('specificUsersPage', args=(userFirstName, userLastName, userId,))) #using the name of the url to redirect and passing the variables/params to the form rendering the template
 
 def processComment(request, userFirstName, userLastName, userId):
-    print("THIS FUNCTION PROCESSES THE FORM FOR POSTING A COMMENT.")
-    # print("*"* 50)
-    # print("This is the comment left by the logged in user.")
-    comment = request.POST['userComment']
-    # print(comment)
-    # print("This is the post id where the comment is made.")
-    messageSelectedForComment = request.POST['postLocationForComment']
-    # print(messageSelectedForComment)
-    # print("This is the user that made the comment.")
-    user = User.objects.get(id=request.session['loginInfo'])
-    # print(user)
-    # print("This prints the id of the specific user who received the comment.")
-    userReceivesComment = request.POST['userReceivesComment']
-    # print(userReceivesComment)
-    #Now that I have the post that receives the comment(messageSelectedForComment), and the user who receives the comment(userReceivesComment), I can use said variables for a query to obtain its' instances.
-    #To do that I need to get the message object via id to use for the foreign key/one to many relationship
-    theSpecificPost = Message.objects.get(id = messageSelectedForComment)
-    recipientOfComment = User.objects.get(id = userReceivesComment)
-    if user.id == recipientOfComment: #This means the user is commenting on their own page and should be directed home
-        commentByUser = Comment.objects.create(comment = comment, message = theSpecificPost, user = user, userReceivesComment = recipientOfComment)
-        return redirect("/home")
-    else: #This means the user is commenting on someone else's page and should be directed their
-        commentByUser = Comment.objects.create(comment = comment, message = theSpecificPost, user = user, userReceivesComment = recipientOfComment)
+    postACommentErrors = Comment.objects.commentValidator(request.POST)
+    print(postACommentErrors)
+    if len(postACommentErrors) > 0:
+        for key, value in postACommentErrors.items():
+            messages.error(request,value)
+        return JsonResponse({"errors": postACommentErrors}, status=400)
+    else:
+        print("THIS FUNCTION PROCESSES THE FORM FOR POSTING A COMMENT.")
         # print("*"* 50)
-        print("THIS IS THE LAST PRINT STATEMENT IN THE PROCESS COMMENT ROUTE.")  
+        # print("This is the comment left by the logged in user.")
+        comment = request.POST['userComment']
+        # print(comment)
+        # print("This is the post id where the comment is made.")
+        messageSelectedForComment = request.POST['postLocationForComment']
+        # print(messageSelectedForComment)
+        # print("This is the user that made the comment.")
+        user = User.objects.get(id=request.session['loginInfo'])
+        # print(user)
+        # print("This prints the id of the specific user who received the comment.")
+        userReceivesComment = request.POST['userReceivesComment']
+        # print(userReceivesComment)
+        #Now that I have the post that receives the comment(messageSelectedForComment), and the user who receives the comment(userReceivesComment), I can use said variables for a query to obtain its' instances.
+        #To do that I need to get the message object via id to use for the foreign key/one to many relationship
+        theSpecificPost = Message.objects.get(id = messageSelectedForComment)
+        recipientOfComment = User.objects.get(id = userReceivesComment)
+        if user.id == recipientOfComment: #This means the user is commenting on their own page and should be directed home
+            commentByUser = Comment.objects.create(comment = comment, message = theSpecificPost, user = user, userReceivesComment = recipientOfComment)
+            return redirect("/home")
+        else: #This means the user is commenting on someone else's page and should be directed their
+            commentByUser = Comment.objects.create(comment = comment, message = theSpecificPost, user = user, userReceivesComment = recipientOfComment)
+            # print("*"* 50)
+            print("THIS IS THE LAST PRINT STATEMENT IN THE PROCESS COMMENT ROUTE.")  
     return redirect(reverse('specificUsersPage', args=(userFirstName, userLastName, userId,))) #using the name of the url to redirect and passing the variables/params to the form rendering the template
 
 def specificUsersPage(request, userFirstName, userLastName, userId, messageId = 0):
@@ -265,20 +258,17 @@ def userLikes(request, messageId):
     # print("*"*50)
     # print("This is the specific message being liked")
     messageBeingLiked = Message.objects.get(id=messageId)
-    print("*"*50)
     userFirstName = messageBeingLiked.userReceivesPost.firstName # need for params to reroute
     userLastName = messageBeingLiked.userReceivesPost.lastName # need for params to reroute
     userId = messageBeingLiked.userReceivesPost.id # need for params to reroute
-    print("*"*50)
     # print(messageBeingLiked) #prints as a Message Object(#)
     # print("This is the user liking the message")
     userWhoLikes = User.objects.get(id=request.session['loginInfo'])
-    print("The user who likes id", userWhoLikes.id)
-    print("The message being liked id", messageBeingLiked.userReceivesPost.id)
     # print(userWhoLikes) # prints as a User Object(#)
+    # print("The id of the user giving the like", userWhoLikes.id)
+    # print("The id of the user receiving the like", messageBeingLiked.userReceivesPost.id)
     #The below code creates the like 
     messageBeingLiked.userLikes.add(userWhoLikes) #userLikes is the instance name in the Message model holding the many to many relationship
-    # print("*"*50)
     if userWhoLikes.id != messageBeingLiked.userReceivesPost.id: #if this line of code runs it means the like occurred on the specific user's page
         messageBeingLiked = Message.objects.get(id = messageId)
         messageBeingLiked.likeMessageCount += 1
@@ -297,6 +287,37 @@ def userUnlikes(request, messageId):
     messageBeingUnliked = Message.objects.get(id=messageId)
     userWhoUnlikes = User.objects.get(id=request.session['loginInfo'])
     messageBeingUnliked.userLikes.remove(userWhoUnlikes)
+    likeCount = messageBeingUnliked.likeMessageCount
+    print("This is the message's current like count", likeCount)
+    # messageBeingUnliked.likeMessageCount -= 1
+    # messageBeingUnliked.save
+    # print("New count:", messageBeingUnliked.likeMessageCount)
+    return redirect("/home")
+
+def addFriend(request, userId):
+    print("THIS IS THE ADD A FRIEND ROUTE")
+    # print("*"*50)
+    # print("This prints the user object of the user receiving the friend request.")
+    userReceivesRequest = User.objects.get(id=userId) #the recipient of the friend request
+    userFirstName = userReceivesRequest.firstName # need for params to reroute
+    userLastName = userReceivesRequest.lastName # need for params to reroute
+    userId = userReceivesRequest.id # need for params to reroute
+    # print(userReceivesRequest) #prints as a User Object(#)
+    # print("This prints the user object of the user sending the friend request aka the logged in user.")
+    userWhoSentFriendRequest = User.objects.get(id=request.session['loginInfo'])
+    # print(userWhoSentFriendRequest) # prints as a User Object(#)
+    friendships = userReceivesRequest.friends
+    if userWhoSentFriendRequest in userReceivesRequest.friends.all():
+        print("You're already friends!")
+    else:
+        #This creates the friend request.
+        userReceivesRequest.friends.add(userWhoSentFriendRequest)
+        print("THIS IS THE LAST PRINT STATEMENT OF THE ADD A FRIEND ROUTE.")
+        # if user.id != loggedInUser.id:
+        #     return redirect(reverse('specificUsersPage', args=(userFirstName, userLastName, userId,))) #using the name of the url to redirect and passing the variables/params to the form rendering the template
+        # else: #if these lines of code run it means the like occurred on logged in user's home page
+        # return redirect(reverse('home', args=(userId,))) #using the name of the url to redirect and passing the variables/params to the form rendering the template
+        # print("*"*50)
     return redirect("/home")
 
 def logout(request):
