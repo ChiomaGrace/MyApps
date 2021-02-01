@@ -16,7 +16,7 @@ urlpatterns = [
     path('processComment/<str:userFirstName>/<str:userLastName>/<int:userId>', views.processComment, name='processComment'),
     path('<str:userFirstName>/<str:userLastName>/<int:userId>', views.specificUsersPage, name='specificUsersPage'),
     path('<str:userFirstName>/<str:userLastName>/<int:userId>/<int:messageId>', views.specificUsersPage, name='specificUsersPage'), #route used when a message is like
-    path('like/<int:messageId>', views.userLikes),
+    path('like/<int:messageId>', views.userLikes, name='processLike'),
     path('unlike/<int:messageId>', views.userUnlikes),
     path('addFriend/<int:userId>', views.addFriend),
     path('logout', views.logout)
