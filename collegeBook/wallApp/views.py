@@ -87,22 +87,19 @@ def loggedInUsersPage(request, messageId=0):
     wallOfLoggedInUser = Message.objects.filter(userReceivesPost = loggedInUser).order_by('-createdAt')
     # print(wallOfLoggedInUser)
     # how to do a multi query #wallOfLoggedInUser = Message.objects.filter(Q(user = (loggedInUser)) | Q(userReceivesPost = (loggedInUser))).order_by('-createdAt')
-    if messageId:
-        # print("This prints the id of the message that was just liked and passed via params from the userLikes function.")
+    if messageId: #if these lines of code run it means a like occurred
+        print("This prints the id of the message that was just liked and passed via params from the userLikes function.")
         messageId = messageId
-        # print(messageId)
-        # print("This prints the message object.")
+        print(messageId)
+        print("This prints the message object.")
         messageBeingLiked = Message.objects.get(id=messageId)
-        # print(messageBeingLiked)
+        print(messageBeingLiked)
         # print("This prints the amount of likes the message has.")
         # print(messageBeingLiked.likeMessageCount)
         if messageBeingLiked.likeMessageCount > 3:
                 likesCountMinusDisplayNames = (messageBeingLiked.likeMessageCount) - 2
                 print("This is the like count minus the display names:", likesCountMinusDisplayNames)
                 displayCount = Message.objects.filter(id=messageId).update(likeMessageCountMinusDisplayNames=likesCountMinusDisplayNames) 
-    # print("This prints the messages the current logged in user unliked.")
-    messagesUserUnliked= Message.objects.exclude(userLikes = loggedInUser)
-    # print(messagesUserUnliked)
     # print("This prints all the users that have an account except the logged in user.")
     allUsers = User.objects.exclude(id=request.session['loginInfo'])
     # print(allUsers)
@@ -226,8 +223,8 @@ def specificUsersPage(request, userFirstName, userLastName, userId, messageId = 
     # print("This prints all the messages posted on a page of a specific user and orders them from latest post created.")
     specificUsersMessages = Message.objects.filter(userReceivesPost = userId).order_by('-createdAt')
     if messageId:
-        print("THIS IS THE SPECIFIC USER'S PAGE ROUTE THAT WAS REACHED BY THE LOGGED IN USER LIKING A MESAGE ON THE PAGE.")
-        # print("*"*50)
+        print("THIS IS THE SPECIFIC USER'S PAGE ROUTE THAT WAS REACHED BY THE LOGGED IN USER LIKING A MESAGE ON THE SPECIFIC USER'S PAGE.")
+        print("*"*50)
         # print("This prints the id of the message that was just liked and passed via params from the userLikes function.")
         messageId = messageId
         # print(messageId)
@@ -254,15 +251,20 @@ def specificUsersPage(request, userFirstName, userLastName, userId, messageId = 
         }
     return render(request, "specificUserPage.html", context)
 
-def userLikes(request, messageId):
+def userLikes(request, userFirstName='firstName', userLastName='lastName', userId=0, messageId = 0): #need to have positional arguments in order to do the reroute to the specific page
     print("THIS IS THE USER LIKES ROUTE")
-    # print("*"*50)
+    print("*"*50)
+    print("THIS IS THE MESSAGE ID:",messageId)
+    print("*"*50)
     # print("This is the specific message being liked")
     messageBeingLiked = Message.objects.get(id=messageId)
     # print(messageBeingLiked) #prints as a Message Object(#)
     userFirstName = messageBeingLiked.userReceivesPost.firstName # need for params to reroute
+    # print(userFirstName)
     userLastName = messageBeingLiked.userReceivesPost.lastName # need for params to reroute
+    # print(userLastName)
     userId = messageBeingLiked.userReceivesPost.id # need for params to reroute
+    # print(userId)
     # print("This is the user liking the message")
     userWhoLikes = User.objects.get(id=request.session['loginInfo'])
     # print(userWhoLikes) # prints as a User Object(#)
@@ -271,28 +273,28 @@ def userLikes(request, messageId):
     # print("The id of the users who have liked messages:", messageBeingLiked.userLikes.all())
     if userWhoLikes in messageBeingLiked.userLikes.all():
         print("You've already liked the message!")
-        if userWhoLikes.id != messageBeingLiked.userReceivesPost.id: #if this line of code runs it means the like occurred on the specific user's page
+        if userWhoLikes.id != messageBeingLiked.userReceivesPost.id: #if this line of code runs it means the repetitive like attempt occurred on the specific user's page
             return redirect(reverse('specificUsersPage', args=(userFirstName, userLastName, userId, messageId,))) #using the name of the url to redirect and passing the variables/params to the form rendering the template
-        else:
+        else: #if this line of code runs it means the repetitive like attempt occurred on the logged in user's page
             return redirect(reverse('home', args=(messageId,))) #using the name of the url to redirect and passing the variables/params to the form rendering the template
     else:
         if userWhoLikes.id != messageBeingLiked.userReceivesPost.id: #if this line of code runs it means the like occurred on the specific user's page
                 messageBeingLiked.userLikes.add(userWhoLikes) #This creates the like - userLikes is the instance name in the Message model holding the many to many relationship
-                messageBeingLiked = Message.objects.get(id = messageId)
                 messageBeingLiked.likeMessageCount += 1
                 messageBeingLiked.save()
-                print("THIS IS THE LAST PRINT STATEMENT OF THE USER LIKES ROUTE.")
-                return redirect(reverse('specificUsersPage', args=(userFirstName, userLastName, userId, messageId,))) #using the name of the url to redirect and passing the variables/params to the form rendering the template
+                print("THIS IS THE LAST PRINT STATEMENT OF THE USER LIKES ROUTE (LIKE IS OCCURING ON A SPECIFIC USER'S PAGE).")
+                # return redirect(reverse('specificUsersPage', args=(userFirstName, userLastName, userId, messageId,))) #using the name of the url to redirect and passing the variables/params to the form rendering the template
+                return redirect(reverse('specificUsersPage', args=(userFirstName, userLastName, messageId,))) #using the name of the url to redirect and passing the variables/params to the form rendering the template
         else: #if these lines of code run it means the like occurred on logged in user's home page
             messageBeingLiked.userLikes.add(userWhoLikes) #userLikes is the instance name in the Message model holding the many to many relationship
-            messageBeingLiked = Message.objects.get(id = messageId)
             messageBeingLiked.likeMessageCount += 1
             messageBeingLiked.save()
-            print("THIS IS THE LAST PRINT STATEMENT OF THE USER LIKES ROUTE.")
+            print("THIS IS THE LAST PRINT STATEMENT OF THE USER LIKES ROUTE (LIKE IS OCCURRING ON THE LOGGED IN USER'S PAGE).")
         return redirect(reverse('home', args=(messageId,))) #using the name of the url to redirect and passing the variables/params to the form rendering the template
     # return redirect("/home")
 
-def userUnlikes(request, messageId):
+# def userUnlikes(request, messageId):
+def userUnlikes(request, userFirstName='firstName', userLastName='lastName', userId=0, messageId = 0): #need to have positional arguments in order to do the reroute to the specific page
     messageBeingUnliked = Message.objects.get(id=messageId)
     userWhoUnlikes = User.objects.get(id=request.session['loginInfo'])
     userFirstName = messageBeingUnliked.userReceivesPost.firstName # need for params to reroute
@@ -302,16 +304,20 @@ def userUnlikes(request, messageId):
         if userWhoUnlikes.id != messageBeingUnliked.userReceivesPost.id: #if this line of code runs it means the 'unliking' occurred on the specific user's page
             messageBeingUnliked.userLikes.remove(userWhoUnlikes) #userLikes is the instance name in the Message model holding the many to many relationship
             messageBeingUnliked = Message.objects.get(id = messageId)
-            messageBeingUnliked.likeMessageCount -= 1
-            messageBeingUnliked.save()
-            print("THIS IS THE LAST PRINT STATEMENT OF THE USER UNLIKES ROUTE.")
+            if messageBeingUnliked.likeMessageCount > 0: #this prevents the subtraction when the user tries to unlike a message they have never liked initially
+                print("This is the amount of likes the message has:", messageBeingUnliked.likeMessageCount)
+                messageBeingUnliked.likeMessageCount -= 1
+                print("This is the amount of likes the message has after subtracting one:", messageBeingUnliked.likeMessageCount)
+                messageBeingUnliked.save()
+                print("THIS IS THE LAST PRINT STATEMENT OF THE USER UNLIKES ROUTE THAT REDIRECTS TO THE SPECIFIC USER'S PAGE.")
             return redirect(reverse('specificUsersPage', args=(userFirstName, userLastName, userId, messageId,))) #using the name of the url to redirect and passing the variables/params to the form rendering the template
         else: #if these lines of code run it means the 'unliking' occurred on logged in user's home page
             messageBeingUnliked.userLikes.remove(userWhoUnlikes) #userLikes is the instance name in the Message model holding the many to many relationship
             messageBeingUnliked = Message.objects.get(id = messageId)
-            messageBeingUnliked.likeMessageCount -= 1
-            messageBeingUnliked.save()
-            print("THIS IS THE LAST PRINT STATEMENT OF THE USER UNLIKES ROUTE.")
+            if messageBeingUnliked.likeMessageCount > 0: #this prevents the subtraction when the user tries to unlike a message they have never liked initially
+                messageBeingUnliked.likeMessageCount -= 1
+                messageBeingUnliked.save()
+                print("THIS IS THE LAST PRINT STATEMENT OF THE USER UNLIKES ROUTE THAT REDIRECTS TO LOGGED IN USER'S PAGE.")
         return redirect(reverse('home', args=(messageId,))) #using the name of the url to redirect and passing the variables/params to the form rendering the template
     else:
         print("You've never liked the message, so you cannot unlike it!")
@@ -319,6 +325,31 @@ def userUnlikes(request, messageId):
             return redirect(reverse('specificUsersPage', args=(userFirstName, userLastName, userId, messageId,))) #using the name of the url to redirect and passing the variables/params to the form rendering the template
         else:
             return redirect(reverse('home', args=(messageId,))) #using the name of the url to redirect and passing the variables/params to the form rendering the template
+
+def sendFriendRequest(request, userId):
+    print("THIS IS THE SEND A FRIEND REQUEST ROUTE")
+    # print("*"*50)
+    # print("This prints the user object of the user receiving the friend request.")
+    userReceivesRequest = User.objects.get(id=userId) #the recipient of the friend request
+    userFirstName = userReceivesRequest.firstName # need for params to reroute
+    userLastName = userReceivesRequest.lastName # need for params to reroute
+    userId = userReceivesRequest.id # need for params to reroute
+    # print(userReceivesRequest) #prints as a User Object(#)
+    # print("This prints the user object of the user sending the friend request aka the logged in user.")
+    userWhoSentFriendRequest = User.objects.get(id=request.session['loginInfo'])
+    # print(userWhoSentFriendRequest) # prints as a User Object(#)
+    if userWhoSentFriendRequest in userReceivesRequest.friends.all():
+        print("You're already friends!")
+    else:
+        #This sends the friend request.
+        userReceivesRequest.friends.add(userWhoSentFriendRequest)
+        # if user.id != loggedInUser.id:
+        #     return redirect(reverse('specificUsersPage', args=(userFirstName, userLastName, userId,))) #using the name of the url to redirect and passing the variables/params to the form rendering the template
+        # else: #if these lines of code run it means the like occurred on logged in user's home page
+        # return redirect(reverse('home', args=(userId,))) #using the name of the url to redirect and passing the variables/params to the form rendering the template
+        # print("*"*50)
+        print("THIS IS THE LAST PRINT STATEMENT OF THE ADD A FRIEND ROUTE.")
+    return redirect("/home")
 
 def addFriend(request, userId):
     print("THIS IS THE ADD A FRIEND ROUTE")

@@ -145,6 +145,60 @@
 
 //The above code is the function that enables and disables the post a comment button depending on if the textarea contains characters
 
+//The below code is the function for liking a posted message via jquery/ajax
+$('.likeAPostLink').click(function(e) {
+                e.preventDefault(); //prevents the default browser behavior of the form submitting normally
+                valueOfLinkClicked = $(this).data("index"); //the vale is corresponding message id
+                console.log("The link to like a post was clicked.", valueOfLinkClicked)
+                $('.likeDislikeMessageDiv').find('input').each(function(){  //This function creates a loop finding all the text areas within the div
+                    messageID = $(this).val()
+                    console.log("This displays the messageID AND the value of the link being clicked(same messageID)", messageID, valueOfLinkClicked)
+                    if(messageID == valueOfLinkClicked) { //This makes sure the like is only displayed on the message that is clicked
+                        $.ajax({
+                            type: "POST",
+                            url: 'like' + '/' + messageID, 
+                            headers:{"X-CSRFToken": $crf_token}, //this relates to the CSRF token in the form
+                            data: messageID,
+                            success: function(data) {
+                                    console.log("This console log means the posted messaged was liked successfully.", messageID)
+                                    location.reload(); //reloads the page and displays the new data.
+                            },
+                            error: function(data){
+                                console.log("If this console log is displaying, it means errors occurred in the user attempting a like.", messageID)                       },
+                        })
+                    }
+                })
+            });
+
+//The above code is the function for liking a posted message via jquery/ajax
+
+//The below code is the function for liking a posted message via jquery/ajax
+$('.unlikeAPostLink').click(function(e) {
+                e.preventDefault(); //prevents the default browser behavior of the form submitting normally
+                valueOfLinkClicked = $(this).data("index"); //the vale is corresponding message id
+                console.log("The link to unlike a post was clicked.", valueOfLinkClicked)
+                $('.likeDislikeMessageDiv').find('input').each(function(){  //This function creates a loop finding all the text areas within the div
+                    messageID = $(this).val()
+                    console.log("This displays the messageID AND the value of the link being clicked(same messageID)", messageID, valueOfLinkClicked)
+                    if(messageID == valueOfLinkClicked) { //This makes sure the like is only displayed on the message that is clicked
+                        $.ajax({
+                            type: "POST",
+                            url: 'unlike' + '/' + messageID, 
+                            headers:{"X-CSRFToken": $crf_token}, //this relates to the CSRF token in the form
+                            data: messageID,
+                            success: function(data) {
+                                    console.log("This console log means the posted message was unliked successfully.")
+                                    location.reload(); //reloads the page and displays the new data.
+                            },
+                            error: function(data){
+                                console.log("If this console log is displaying, it means errors occurred in the user attempting to unlike a posted message.")                       },
+                        })
+                    }
+                })
+            });
+
+//The above code is the function for liking a posted message via jquery/ajax
+
         });//end of entire code in the script
     </script>
 </head>
@@ -318,11 +372,19 @@
                                 </div>
                                 <p class="col-sm mb-0 mt-0 ml-0  messageText">{{message.message}} </p>
 
-                                <div class=" col-sm-12 mr-3 pl-5 mt-0 bg-light">
-                                    <a class="mr-2 hover" href="/like/{{message.id}}">Like</a>
-                                    <a class="mr-2" href="/unlike/{{message.id}}">Unlike</a>
+                                <div class=" col-sm-12 mr-3 pl-5 mt-0 bg-light likeDislikeMessageDiv">
+                                    <form action="" class="d-inline"> 
+                                        <a class="mr-2 hover likeAPostLink" data-index="{{message.id}}" href="">Like</a><!-- The a tag also needs the message id value so it can be compared to the hidden message id value in ajax otherwise when one message is clicked all will receive likes   -->
+                                        <input type="hidden" value="{{message.id}}">
+                                    </form>
+                                    <form action="" class="d-inline"> 
+                                        <a class="mr-2 hover unlikeAPostLink" data-index="{{message.id}}" href="">Unlike</a><!-- The a tag also needs the message id value so it can be compared to the hidden message id value in ajax otherwise when one message is clicked all will receive likes   -->
+                                        <input type="hidden" value="{{message.id}}">
+                                    </form>
                                     <a class="" href="">Comment</a>
                                 </div>
+
+
 
                                 <div class="col-sm ml-5">
                                     <!-- The below line of code displays when a single user likes a message on the logged in user's page -->

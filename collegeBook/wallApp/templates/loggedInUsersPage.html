@@ -422,58 +422,70 @@
 //The above code is the function that enables and disables the post a comment button depending on if the textarea contains characters
 
 //The below code is the function for liking a posted message via jquery/ajax
+
             $('.likeAPostLink').click(function(e) {
                 e.preventDefault(); //prevents the default browser behavior of the form submitting normally
-                valueOfLinkClicked = $(this).data("index"); //the vale is corresponding message id
-                console.log("The link to like a post was clicked.", valueOfLinkClicked)
-                $('.likeDislikeMessageDiv').find('input').each(function(){  //This function creates a loop finding all the text areas within the div
-                    messageID = $(this).val()
-                    console.log("This displays the messageID AND the value of the link being clicked(same messageID)", messageID, valueOfLinkClicked)
-                    if(messageID == valueOfLinkClicked) { //This makes sure the like is only displayed on the message that is clicked
-                        $.ajax({
-                            type: "POST",
-                            url: 'like' + '/' + messageID, 
-                            headers:{"X-CSRFToken": $crf_token}, //this relates to the CSRF token in the form
-                            data: messageID,
-                            success: function(data) {
-                                    console.log("This console log means the posted messaged was liked successfully.")
-                                    location.reload(); //reloads the page and displays the new data.
-                            },
-                            error: function(data){
-                                console.log("If this console log is displaying, it means errors occurred in the user attempting a like.")                       },
-                        })
-                    }
+                messageId = $(this).data("index"); //this the value retrieved when the link is clicked
+                console.log("The link to like a post was clicked, and the message id is:", messageId)
+                $.ajax({
+                    type: "POST",
+                    url: 'like' + '/' + messageId, 
+                    headers:{"X-CSRFToken": $crf_token}, //this relates to the CSRF token in the form
+                    data: messageId,
+                    success: function(data) {
+                            console.log("This console log means the posted messaged was liked successfully.")
+                            location.reload(); //reloads the page and displays the new data.
+                    },
+                    error: function(data){
+                        console.log("If this console log is displaying, it means errors occurred in the user attempting a like.")                       },
                 })
             });
 
 //The above code is the function for liking a posted message via jquery/ajax
 
-//The below code is the function for liking a posted message via jquery/ajax
+//The below code is the function for unliking a posted message via jquery/ajax
+
             $('.unlikeAPostLink').click(function(e) {
-                e.preventDefault(); //prevents the default browser behavior of the form submitting normally
-                valueOfLinkClicked = $(this).data("index"); //the vale is corresponding message id
-                console.log("The link to unlike a post was clicked.", valueOfLinkClicked)
-                $('.likeDislikeMessageDiv').find('input').each(function(){  //This function creates a loop finding all the text areas within the div
-                    messageID = $(this).val()
-                    console.log("This displays the messageID AND the value of the link being clicked(same messageID)", messageID, valueOfLinkClicked)
-                    if(messageID == valueOfLinkClicked) { //This makes sure the like is only displayed on the message that is clicked
-                        $.ajax({
-                            type: "POST",
-                            url: 'unlike' + '/' + messageID, 
-                            headers:{"X-CSRFToken": $crf_token}, //this relates to the CSRF token in the form
-                            data: messageID,
-                            success: function(data) {
-                                    console.log("This console log means the posted message was unliked successfully.")
-                                    location.reload(); //reloads the page and displays the new data.
-                            },
-                            error: function(data){
-                                console.log("If this console log is displaying, it means errors occurred in the user attempting to unlike a posted message.")                       },
-                        })
-                    }
+                e.preventDefault(); //prevents the default a tag behavior of refreshing
+                messageId = $(this).data("index"); //this is the value retrieved when the link is clicked
+                console.log("The link to like a post was clicked, and the message id is:", messageId)
+                $.ajax({
+                    type: "POST",
+                    url: 'unlike' + '/' + messageId, 
+                    headers:{"X-CSRFToken": $crf_token}, //this relates to the CSRF token in the form
+                    data: messageId,
+                    success: function(data) {
+                            console.log("This console log means the posted messaged was unliked successfully.")
+                            location.reload(); //reloads the page and displays the new data.
+                    },
+                    error: function(data){
+                        console.log("If this console log is displaying, it means errors occurred in the user unliking a message.")                       },
                 })
             });
 
-//The above code is the function for liking a posted message via jquery/ajax
+//The above code is the function for unliking a posted message via jquery/ajax
+
+//The above code is the function for sending a friend request  via jquery/ajax
+
+            $('.sendFriendRequestLink').click(function(e) {
+                e.preventDefault(); //prevents the default a tag behavior of refreshing
+                userID = $(this).data("index"); //this is the value retrieved when the link is clicked
+                console.log("The link to send a friend request was clicked.", userID)
+                $.ajax({
+                    type: "POST",
+                    url: 'unlike' + '/' + userID, 
+                    headers:{"X-CSRFToken": $crf_token}, //this relates to the CSRF token in the form
+                    data: userID,
+                    success: function(data) {
+                            console.log("This console log means ")
+                            location.reload(); //reloads the page and displays the new data.
+                    },
+                    error: function(data){
+                        console.log("If this console log is displaying")                       },
+                })
+            });
+
+//The below code is the function for sending a friend request  via jquery/ajax
 
         }); //end of entire code in the script
     
@@ -607,19 +619,24 @@
                 <p class="lead mr-2 pl-2">Friends</p>
                 {% for user in allUsers %}
                     {% if loggedInUser.id != user.id  %} <!-- to prevent the logged in user's name displaying in the friends section -->
-                        {% if user.profilePic == "" %}
+                        {% if user.profilePic == "" %} 
+                <!-- if a user does not have an uploaded profile pic the below code will run -->
                 <figure class="ml-4 d-inline-block">
-                    <a href="/{{user.firstName}}/{{user.lastName}}/{{user.id}}">
-                        <img src="{% static 'Images/blankAvatar.png' %}" id="" class="friendsIconProfPic " alt="A thumbnail photo of the user">
-                        <figcaption class="ml-2">{{user.firstName}}</figcaption>
-                    </a>
+                        <a href="/{{user.firstName}}/{{user.lastName}}/{{user.id}}" class="">
+                            <img src="{% static 'Images/blankAvatar.png' %}" id="" class="friendsIconProfPic " alt="A thumbnail photo of the user">
+                            <figcaption class="ml-2">{{user.firstName}}</figcaption>
+                        </a>
                 </figure>
-                <a href="/addFriend/{{user.id}}">
+                                <!-- the below code  is to add or cancel a friend request -->
+                <a href="" class="sendFriendRequestLink" data-index="{{user.id}}">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-plus" viewBox="0 0 16 16">
                         <path d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H1s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C9.516 10.68 8.289 10 6 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
                         <path fill-rule="evenodd" d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z"/>
                     </svg>                                
                 </a>
+                                <!-- the above code  is to add or cancel a friend request -->
+
+                <!-- if a user does not have an uploaded profile pic the above code will run -->
                     {% else %}
                 <div class="d-inline-block">
                     <figure class="ml-4">
@@ -699,7 +716,6 @@
                                         <a class="mr-2 hover unlikeAPostLink" data-index="{{message.id}}" href="">Unlike</a><!-- The a tag also needs the message id value so it can be compared to the hidden message id value in ajax otherwise when one message is clicked all will receive likes   -->
                                         <input type="hidden" value="{{message.id}}">
                                     </form>
-                                    <!-- <a class="mr-2" href="/unlike/{{message.id}}">Unlike</a> -->
                                     <a class="" href="">Comment</a>
                                 </div>
 

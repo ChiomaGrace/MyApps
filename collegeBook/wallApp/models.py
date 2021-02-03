@@ -192,13 +192,23 @@ class User(models.Model):
     confirmPassword = models.CharField(max_length = 255)
     profilePic= models.ImageField(upload_to='submittedProfilePicImages/', null=True, verbose_name="")
     profileInfo = models.CharField(max_length = 255, default = "")
-    friends = models.ManyToManyField('self', related_name="friendship") # Self states this ManyToManyField is symmetrical – that is, if I am your friend, then you are my friend.
+    # friends = models.ManyToManyField('self', related_name="friendship") # Self states this ManyToManyField is symmetrical – that is, if I am your friend, then you are my friend.
+    friends = models.ManyToManyField('self', through="friendRequest", symmetrical=False) # Self states this ManyToManyField is symmetrical – that is, if I am your friend, then you are my friend.
     objects = UserManager()
     createdAt = models.DateTimeField(auto_now_add = True)
     updatedAt = models.DateTimeField(auto_now = True)
 
     def __repr__(self):
         return f"<User object: {self.firstName} {self.lastName} {self.birthdayMonth} {self.birthdayDay} {self.birthdayYear} {self.emailAddress} {self.password} {self.confirmPassword} {str(self.profilePic)} ({self.id})>"
+
+class friendRequest(models.Model):
+    senderOfFriendRequest = models.ForeignKey(User, related_name = "sender", on_delete=models.CASCADE)
+    receiverOfFriendRequest = models.ForeignKey(User, related_name = "receiver", on_delete=models.CASCADE)
+    createdAt = models.DateTimeField(auto_now_add = True)
+    updatedAt = models.DateTimeField(auto_now = True)
+
+    def __repr__(self):
+        return f"<User object: {self.senderOfFriendRequest} {self.receiverOfFriendRequest} ({self.id})>"
 
 class Message(models.Model):
     message = models.TextField()
