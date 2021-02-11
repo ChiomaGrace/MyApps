@@ -21,6 +21,8 @@ urlpatterns = [
     path('unlike/<int:messageId>', views.userUnlikes),
     path('<str:userFirstName>/<str:userLastName>/unlike/<int:messageId>', views.userUnlikes), #route that processes the removal of a like made on the specific user's page
     path('sendFriendRequest/<int:userId>', views.sendFriendRequest),
-    path('addFriend/<int:userId>', views.addFriend),
+    path('removeFriendRequest/<int:userId>', views.removeFriendRequest),
+    path('search', views.searchForUsersProfile),
+    path('notifications', views.notifications),
     path('logout', views.logout)
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)# I added this to be able to provide an upload photo feature for the user profile pic. This specifically links to the media file that I defined in the settings.py

@@ -2,6 +2,10 @@
     vertical-align: top;
 }
 
+.allUsersDiv{
+    display: table;    
+    /* width: 254px; */
+}
 #birthdayInfoBox{
     border: 1px solid #f1f1f1;
     /* position: fixed; */
@@ -27,7 +31,7 @@
 
 .buttonOfNavIcons{
     border-color: transparent;
-    margin-top: 8px;
+    /* margin-top: 8px; */
 }
 
 .clearImage{ /*For when the image is in the database */
@@ -81,6 +85,10 @@
     margin-left: 10px;
 }
 
+.commentTextAreaOnForm{
+    resize: none;
+}
+
 .decoratedErrorField{
     border:1px solid red;
 }
@@ -94,6 +102,17 @@
     margin-bottom: 0px;
 }
 
+.dropdown-item{
+    /* background-color: blue; */
+    border-radius: 6px;
+}
+
+.dropdown-menu{
+    /* background-color: red; */
+    left: -70px;
+    border-radius: 6px;
+}
+
 #errorDialogForFileSize{ /*The div containing the message of the error dialog box for an uploaded image*/
     display: none;
 } 
@@ -102,9 +121,14 @@
     display: none;
 } 
 
+.friendsIconName{
+    font-size: 12px;
+    text-align: left;
+}
+
 .friendsIconProfPic{
-    width: 64px;
-    height: 64px;
+    width: 44px;
+    height: 44px;
     border-radius: 30%;
     /* margin-top: 6px; */
     /* margin: 20px, 20px, 20px, 20px; */
@@ -113,8 +137,9 @@
 
 .friendsDiv{
     display: table;    
-    width: 254px;
+    /* width: 254px; */
 }
+
 .hide {
     display: none;
 }
@@ -129,6 +154,11 @@
     height: 48px;
     margin-bottom: -2px;
     font-weight: bold;
+}
+
+.pendingFriendRequestButton{
+font-size: 8px;
+text-align: center;
 }
 
 small.messageCreatedAtWithThumbnail{
@@ -147,40 +177,8 @@ small.messageCreatedAt{
     top: -4px;
 }
 
-#navBar{
+#navBar{ /* Manages the length of the navigation bar */
     height: 58px;
-}
-
-#navIconsDiv{
-    height: 60px;
-    width: 1000px;
-}
-
-#navIconGroups{
-    width: 54px;
-    height: 54px;
-    border-radius: 60%;
-    /* margin-top: -1px; */
-}
-
-#navIconHome{
-    width: 54px;
-    height: 54px;
-    border-radius: 60%;
-}
-
-#navIconMarketplace{
-    width: 60px;
-    height: 50px;
-    margin-top: 6px;
-    border-radius: 60%;
-}
-
-#navIconPage{
-    width: 50px;
-    height: 40px;
-    border-radius: 60%;
-    margin-top: -4px;
 }
 
 #navIconProfPic{
@@ -197,13 +195,6 @@ small.messageCreatedAt{
     margin-top: 6px;
 } */
 
-#navIconWatch{
-    width: 60px;
-    height: 60px;
-    border-radius: 60%;
-    margin-top: -2px;
-}
-
 #postACommentForm{
     top: -10px;
 }
@@ -214,7 +205,7 @@ small.messageCreatedAt{
 
 .profilePicBanner{
     background-color: white;
-    height: 350px;
+    height: 300px;
     /* margin-bottom: 80px; */
 }
 #profilePicContainer{
@@ -330,6 +321,10 @@ small.messageCreatedAt{
     left: 50%;
     width: 110%;
     transform: translateX(-50%);
+}
+
+#userMessageID{
+    resize: none;
 }
 
 #userNameText{

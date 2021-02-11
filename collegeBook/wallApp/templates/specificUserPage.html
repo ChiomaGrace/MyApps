@@ -211,7 +211,7 @@ $('.unlikeAPostLink').click(function(e) {
             <img id="logoIcon" src="{% static 'Images/logo.png' %}" alt="A stock image of a logo with the two letters CB to represent Collegebook." />
         </a>
         <!-- <div class="col-sm-3" id="searchBarFromDiv"> -->
-            <form class="form-inline col-sm-3" id="searchBarForm">
+            <form action="/search" method="GET" class="form-inline col-sm-3" id="searchBarForm">
                 <input class="form-control rounded-pill " id="searchBarInput" type="search" placeholder="Search CollegeBook" aria-label="Search">
                 <button class="btn btn-outline-primary btn-sm ml-2" id="searchBarButton" type="submit">Search</button>
             </form>

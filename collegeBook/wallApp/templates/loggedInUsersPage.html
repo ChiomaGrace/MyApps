@@ -18,7 +18,7 @@
 
         $(document).ready(function() {
 
-    //The below code is the list of variables involved in the scripted code.
+        //The below code is the list of variables involved in the scripted code.
 
             var $crf_token = $('[name="csrfmiddlewaretoken"]').attr('value'); //this defines the token form the form so it can be used in the jquery/ajax code below
             var profilePicForm = document.querySelector('#profilePicForm'); //The id for the profile photo form
@@ -31,9 +31,9 @@
             var userProfileInfoCancelButton= document.querySelector('#userProfileInfoCancelButton'); //The id for the link that displays and hides the user profile info form
             var XForProfilePicForm = document.querySelector('#clearImage'); //The id for the X that clears the preview of the selected image
 
-    //The above code is the list of variables involved in the scripted code. 
+        //The above code is the list of variables involved in the scripted code. 
 
-    //The below code are function calls that run as soon as the window is loaded.
+        //The below code are function calls that run as soon as the window is loaded.
 
             showThumbnail(); // a function that determines whether or not a photo has been uploaded by a user and then acts accordingly
 
@@ -41,9 +41,9 @@
 
             $('.postACommentButton').prop('disabled', true); //This disables the comment button to start
 
-    //The above code are function calls that run as soon as the window is loaded.
+        //The above code are function calls that run as soon as the window is loaded.
 
-    //The below code enables the user to drag an image to be uploaded
+        //The below code enables the user to drag an image to be uploaded
 
             function preventDragDefault(e) {
                 e.preventDefault();
@@ -76,9 +76,9 @@
                 })
             });
 
-    //The above code enables the user to drag an image to be uploaded.
+        //The above code enables the user to drag an image to be uploaded.
 
-    //The below code is to check the file the user is submitting is an image.
+        //The below code is to check the file the user is submitting is an image.
 
             function checkImageProperties(usersSelectedPhoto) {
                 if (usersSelectedPhoto.type !== "image/png" && usersSelectedPhoto.type !== "image/jpeg") {
@@ -119,9 +119,9 @@
                 return true;
             }
 
-    //The above code is to check the file the user is submitting is an image.
+        //The above code is to check the file the user is submitting is an image.
 
-    //The below code processes and displays the image that was submitted by the user as a preview (still not in database).
+        //The below code processes and displays the image that was submitted by the user as a preview (still not in database).
 
         // if (checkImageProperties == true) {
             function processingUploadedPhoto(file) {
@@ -139,10 +139,9 @@
             }
         // }   
 
-    //The above code processes and displays the image that was submitted by the user.
+        //The above code processes and displays the image that was submitted by the user.
 
-
-    //The below code is for the uploading by the user whether by dragging the image or clicking the image upload
+        //The below code is for the uploading by the user whether by dragging the image or clicking the image upload
 
             profilePicContainer.addEventListener('drop', function (e) {
                 console.log("This console log appears if the current user has dropped a file/photo inside of the profile photo container.")
@@ -165,9 +164,9 @@
                 }
             }
 
-    //The above code is for the uploading by the user whether by dragging the image or clicking the image upload
+        //The above code is for the uploading by the user whether by dragging the image or clicking the image upload
 
-    //The below code removes the preview of the image submitted by a user.
+        //The below code removes the preview of the image submitted by a user.
             // XForProfilePicForm.onclick = clearImage; // Function called when the user clicks the "X" to remove the preview
             function clearImage(e) {
                 if(e) {
@@ -181,9 +180,9 @@
                 }
             }
 
-    //The above code removes the preview of the image submitted by a user.
+        //The above code removes the preview of the image submitted by a user.
 
-    //The below code submits the submitted photo by the user to the the backend/database via ajax.
+        //The below code submits the submitted photo by the user to the the backend/database via ajax.
 
             $("#profilePicForm").submit(function(e){
                 console.log("The upload button was clicked.")
@@ -217,9 +216,9 @@
                 })
             })
 
-    //The above code submits the submitted photo by the user to the the backend/database via ajax.
+        //The above code submits the submitted photo by the user to the the backend/database via ajax.
 
-    //The below code checks if there is an image or not, and changes the border of the profile pic container accordingly.
+        //The below code checks if there is an image or not, and changes the border of the profile pic container accordingly.
 
             function showThumbnail(e) {
                 $('#navIconProfPic').hide()
@@ -241,9 +240,9 @@
                 }
             };
 
-    //The above code checks if there is an image or not, and changes the border of the profile pic container accordingly.
+        //The above code checks if there is an image or not, and changes the border of the profile pic container accordingly.
 
-    //The below code shows and hides the user profile info form depending on the amount of times the user clicks the edit link.
+        //The below code shows and hides the user profile info form depending on the amount of times the user clicks the edit link.
         
             userProfileInfoEditLink.onclick = showUserProfileInfoForm;
                 function showUserProfileInfoForm(e) {
@@ -266,9 +265,9 @@
                     }
                 }
 
-    //The above code shows and hides the user profile info form depending on if the user clicks the edit link or not
+        //The above code shows and hides the user profile info form depending on if the user clicks the edit link or not
 
-    //The below code is submitting the user profile info form via jquery/ajax
+        //The below code is submitting the user profile info form via jquery/ajax
 
             $("#userProfileInfoForm").submit(function(e){// the id name given to the form action in the below html
                 console.log("The save user profile info was clicked.")
@@ -291,16 +290,16 @@
                     },
                 });
             });
-    //The above code is the function for submitting the user profile info form via jquery/ajax
+        //The above code is the function for submitting the user profile info form via jquery/ajax
 
-    //The below code is the function for posting a message via jquery/ajax
+        //The below code is the function for posting a message via jquery/ajax
 
             $("#postAMessageForm").submit(function(e){// the id name given to the form action in the below html
                 console.log("The post a message button was clicked.")
                 e.preventDefault(); //prevents the default browser behavior of the form submitting normally
                 if ($(".displayMessageErrors").is(':visible')) {
-                        console.log("This console log means errors occurred and are visible on the html")
-                        $(".displayMessageErrors").empty() // This resets the current errors and prevents them from appending multiple times upon a submit (register attempt)
+                    console.log("This console log means errors occurred and are visible on the html")
+                    $(".displayMessageErrors").empty() // This resets the current errors and prevents them from appending multiple times upon a submit (register attempt)
                 }
                 var messageData = {
                     "userMessage": $('#userMessageID').val(), //the key name must match the name in the views/form but the value name must differentiate
@@ -319,27 +318,27 @@
                     error: function(data){
                         console.log("If this console log is displaying, it means errors occurred in submitting the user profile info data.")
                         var postAMessageErrors = data.responseJSON.errors //Name of the dictionary.
-                            console.log("This will print the key and value of each pair in the dictionary", postAMessageErrors)
-                            // alert(data.responseJSON.errors)
-                            console.log("Before the for loop of the dictionary")
-                            for(error in postAMessageErrors){ 
-                                console.log(error) //This provides the key name of each error
-                                console.log(postAMessageErrors[error]) //This provides the value of each error (the actual error message)
-                                // console.log(registrationErrors[error][0]) //This provides the value of each character in the error message (a specific letter)
-                                $(".displayMessageErrors").append('<li class= "text-danger small">' + postAMessageErrors[error] + '</li>')
-                                $(".displayMessageErrors").show(); //displays the appended registration errors on the html
-                                if(error == "messageRequired") { //the key name of an error in the dictionary
-                                    console.log("This is inside the if loop for the messageRequired error", error)
-                                }
+                        console.log("This will print the key and value of each pair in the dictionary", postAMessageErrors)
+                        // alert(data.responseJSON.errors)
+                        console.log("Before the for loop of the dictionary")
+                        for(error in postAMessageErrors){ 
+                            console.log(error) //This provides the key name of each error
+                            console.log(postAMessageErrors[error]) //This provides the value of each error (the actual error message)
+                            // console.log(registrationErrors[error][0]) //This provides the value of each character in the error message (a specific letter)
+                            $(".displayMessageErrors").append('<li class= "text-danger small">' + postAMessageErrors[error] + '</li>')
+                            $(".displayMessageErrors").show(); //displays the appended registration errors on the html
+                            if(error == "messageRequired") { //the key name of an error in the dictionary
+                                console.log("This is inside the if loop for the messageRequired error", error)
                             }
-                            console.log("Outside of the for loop of the dictionary")
+                        }
+                        console.log("Outside of the for loop of the dictionary")
                     },
                 });
             });
 
-    //The above code is the function for posting a message via jquery/ajax
+        //The above code is the function for posting a message via jquery/ajax
 
-    //The below code is the function that enables and disables the post a message button depending on if the textarea contains characters
+        //The below code is the function that enables and disables the post a message button depending on if the textarea contains characters
             function enableDisableMessageButton(e){
                 console.log("This is the enableDisableMessageButton function.")
                 $('#postAMessageButton').prop('disabled', true); //This disables the button
@@ -357,57 +356,57 @@
                 submittedPost.onkeyup = showMessageButton; //The keyup event is sent to an element when the user releases a key on the keyboard. This will then trigger the showMessageButton()
             }
 
-    //The above code is the function that enables and disables the post a message button depending on if the textarea contains characters
+        //The above code is the function that enables and disables the post a message button depending on if the textarea contains characters
 
-    //The below code is the function for posting a comment via jquery/ajax
+        //The below code is the function for posting a comment via jquery/ajax
 
             $("#postACommentForm").submit(function(e){// the id name given to the form action in the below html
-                    console.log("The post a comment button was clicked.")
-                    e.preventDefault(); //prevents the default browser behavior of the form submitting normally
-                    var commentData = {
-                        "userComment": $('#userCommentID').val(), //the key name must match the name in the views/form but the value name must differentiate
-                        "userReceivesComment": $('#userReceivesCommentID').val(), //the key name must match the name in the views/form but the value name must differentiate
-                        "postLocationForComment": $('#postLocationForCommentID').val(), //the key name must match the name in the views/form but the value name must differentiate
-                    };
-                    console.log("The form data was submitted.", commentData)
-                    $.ajax({
-                        type: "POST",
-                        url: "{% url 'processComment' userFirstName=loggedInUser.firstName userLastName=loggedInUser.lastName userId=loggedInUser.id %}",
-                        headers:{"X-CSRFToken": $crf_token}, //this relates to the CSRF token in the form
-                        data: commentData,
-                        success: function(data) {
-                                console.log("This is the data successfully submitted", data)
-                                location.reload(); //reloads the page and displays the new data.
-                        },
-                        error: function(data){
-                            console.log("If this console log is displaying, it means errors occurred in submitting the user profile info data.")
-                            var postACommentErrors = data.responseJSON.errors //Name of the dictionary.
-                            console.log("This will print the key and value of each pair in the dictionary", postACommentErrors)
-                            // alert(data.responseJSON.errors)
-                            console.log("Before the for loop of the dictionary")
-                            for(error in postACommentErrors){ 
-                                console.log(error) //This provides the key name of each error
-                                console.log(postACommentErrors[error]) //This provides the value of each error (the actual error message)
-                                // console.log(registrationErrors[error][0]) //This provides the value of each character in the error message (a specific letter)
-                                $(".displayCommentErrors").append('<li class= "text-danger small">' + postACommentErrors[error] + '</li>')
-                                $(".displayCommentErrors").show(); //displays the appended registration errors on the html
-                                if(error == "commentRequired") { //the key name of an error in the dictionary
-                                    console.log("This is inside the if loop for the commentRequired error", error)
-                                }
+                console.log("The post a comment button was clicked.")
+                e.preventDefault(); //prevents the default browser behavior of the form submitting normally
+                var commentData = {
+                    "userComment": $('#userCommentID').val(), //the key name must match the name in the views/form but the value name must differentiate
+                    "userReceivesComment": $('#userReceivesCommentID').val(), //the key name must match the name in the views/form but the value name must differentiate
+                    "postLocationForComment": $('#postLocationForCommentID').val(), //the key name must match the name in the views/form but the value name must differentiate
+                };
+                console.log("The form data was submitted.", commentData)
+                $.ajax({
+                    type: "POST",
+                    url: "{% url 'processComment' userFirstName=loggedInUser.firstName userLastName=loggedInUser.lastName userId=loggedInUser.id %}",
+                    headers:{"X-CSRFToken": $crf_token}, //this relates to the CSRF token in the form
+                    data: commentData,
+                    success: function(data) {
+                        console.log("This is the data successfully submitted", data)
+                        location.reload(); //reloads the page and displays the new data.
+                    },
+                    error: function(data){
+                        console.log("If this console log is displaying, it means errors occurred in submitting the user profile info data.")
+                        var postACommentErrors = data.responseJSON.errors //Name of the dictionary.
+                        console.log("This will print the key and value of each pair in the dictionary", postACommentErrors)
+                        // alert(data.responseJSON.errors)
+                        console.log("Before the for loop of the dictionary")
+                        for(error in postACommentErrors){ 
+                            console.log(error) //This provides the key name of each error
+                            console.log(postACommentErrors[error]) //This provides the value of each error (the actual error message)
+                            // console.log(registrationErrors[error][0]) //This provides the value of each character in the error message (a specific letter)
+                            $(".displayCommentErrors").append('<li class= "text-danger small">' + postACommentErrors[error] + '</li>')
+                            $(".displayCommentErrors").show(); //displays the appended registration errors on the html
+                            if(error == "commentRequired") { //the key name of an error in the dictionary
+                                console.log("This is inside the if loop for the commentRequired error", error)
                             }
-                            console.log("Outside of the for loop of the dictionary")                        },
-                    });
+                        }
+                        console.log("Outside of the for loop of the dictionary")                        },
+                });
                 });
 
-    //The above code is the function for posting a comment via jquery/ajax
+        //The above code is the function for posting a comment via jquery/ajax
 
-//The below code is the function that enables and disables the post a comment button depending on if the textarea contains characters
+        //The below code is the function that enables and disables the post a comment button depending on if the textarea contains characters
 
             $('.commentSubDiv').find('textarea').each(function(){  //This function creates a loop finding all the text areas within the div
                 $(".commentTextAreaOnForm").keyup(function() { //This function then tracks the user's typing within all textareas
-                        console.log("inside the keyup function")
-                        typedComment = $(this).val(); //This helps differentiate which textarea is being typed in because the value will change 
-                        // console.log(typedComment)
+                    console.log("inside the keyup function")
+                    typedComment = $(this).val(); //This helps differentiate which textarea is being typed in because the value will change 
+                    // console.log(typedComment)
                     if (typedComment == '')  {
                         console.log("This console log means the text area is blank, and the post a comment button should be disabled.")
                         $(this).siblings('.postACommentButton').attr('disabled',true) //siblings corresponds the button to the correct textarea box being typed in
@@ -419,9 +418,9 @@
                 })
             });
 
-//The above code is the function that enables and disables the post a comment button depending on if the textarea contains characters
+        //The above code is the function that enables and disables the post a comment button depending on if the textarea contains characters
 
-//The below code is the function for liking a posted message via jquery/ajax
+        //The below code is the function for liking a posted message via jquery/ajax
 
             $('.likeAPostLink').click(function(e) {
                 e.preventDefault(); //prevents the default browser behavior of the form submitting normally
@@ -430,7 +429,7 @@
                 $.ajax({
                     type: "POST",
                     url: 'like' + '/' + messageId, 
-                    headers:{"X-CSRFToken": $crf_token}, //this relates to the CSRF token in the form
+                    headers:{"X-CSRFToken": $crf_token}, //this relates to the CSRF token needed to send data to the backend
                     data: messageId,
                     success: function(data) {
                             console.log("This console log means the posted messaged was liked successfully.")
@@ -441,9 +440,9 @@
                 })
             });
 
-//The above code is the function for liking a posted message via jquery/ajax
+        //The above code is the function for liking a posted message via jquery/ajax
 
-//The below code is the function for unliking a posted message via jquery/ajax
+        //The below code is the function for unliking a posted message via jquery/ajax
 
             $('.unlikeAPostLink').click(function(e) {
                 e.preventDefault(); //prevents the default a tag behavior of refreshing
@@ -452,101 +451,180 @@
                 $.ajax({
                     type: "POST",
                     url: 'unlike' + '/' + messageId, 
-                    headers:{"X-CSRFToken": $crf_token}, //this relates to the CSRF token in the form
+                    headers:{"X-CSRFToken": $crf_token}, //this relates to the CSRF token needed to send data to the backend
                     data: messageId,
                     success: function(data) {
-                            console.log("This console log means the posted messaged was unliked successfully.")
-                            location.reload(); //reloads the page and displays the new data.
+                        console.log("This console log means the posted messaged was unliked successfully.")
+                        location.reload(); //reloads the page and displays the new data.
                     },
                     error: function(data){
                         console.log("If this console log is displaying, it means errors occurred in the user unliking a message.")                       },
                 })
             });
 
-//The above code is the function for unliking a posted message via jquery/ajax
+        //The above code is the function for unliking a posted message via jquery/ajax
 
-//The above code is the function for sending a friend request  via jquery/ajax
+        //The above code is the function for sending a friend request  via jquery/ajax
 
-            $('.sendFriendRequestLink').click(function(e) {
-                e.preventDefault(); //prevents the default a tag behavior of refreshing
-                userID = $(this).data("index"); //this is the value retrieved when the link is clicked
-                console.log("The link to send a friend request was clicked.", userID)
-                $.ajax({
-                    type: "POST",
-                    url: 'unlike' + '/' + userID, 
-                    headers:{"X-CSRFToken": $crf_token}, //this relates to the CSRF token in the form
-                    data: userID,
-                    success: function(data) {
-                            console.log("This console log means ")
-                            location.reload(); //reloads the page and displays the new data.
-                    },
-                    error: function(data){
-                        console.log("If this console log is displaying")                       },
-                })
-            });
+            allFriendRequestButtons = document.querySelectorAll(".sendFriendRequestButton");
+            for (clickedButton of allFriendRequestButtons) {
+                clickedButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    userId = this.value
+                    user= $(this)
+                    console.log("This is the value of the clicked button:", userId);
+                    $.ajax({
+                        type: "POST",
+                        url: 'sendFriendRequest' + '/' + userId, 
+                        headers:{"X-CSRFToken": $crf_token}, //this relates to the CSRF token needed to send data to the backend
+                        data: userId,
+                        success: function(data) {
+                            console.log("This console log means the friend request was sent successfully. userId:", userId)
+                            user.replaceWith("<button type='button' class='btn btn-sm btn-danger pendingFriendRequestButton'>Cancel</button>");
+                            location.reload(); //reloads the page and triggers the dynamic function of the cancel button which was showing but not  working prior unless page was refreshed.
+                        },
+                        error: function(data){
+                            console.log("If this console log is displaying it means there were errors in sending the friend request.")                       
+                        },
+                    })
+                });
+            } 
 
-//The below code is the function for sending a friend request  via jquery/ajax
+        //The below code is the function for sending a friend request  via jquery/ajax
+
+        //The above code is the function for removing a friend request  via jquery/ajax
+
+            allCancelFriendRequestButtons = document.querySelectorAll(".pendingFriendRequestButton");
+                for (clickedButton of allCancelFriendRequestButtons) {
+                    clickedButton.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        userId = this.value
+                        user= $(this)
+                        console.log("This is the value of the clicked button:", userId);
+                        $.ajax({
+                            type: "POST",
+                            url: 'removeFriendRequest' + '/' + userId, 
+                            headers:{"X-CSRFToken": $crf_token}, //this relates to the CSRF token needed to send data to the backend
+                            data: userId,
+                            success: function(data) {
+                                console.log("This console log means the friend request was sent successfully. userId:", userId)
+                                user.replaceWith("<button type='button' class='btn btn-sm sendFriendRequestButton' value='{{user.id}}'><a href='' class='sendFriendRequest'><svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-person-plus' viewBox='0 0 16 16'><path d='M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H1s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C9.516 10.68 8.289 10 6 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z'/><path fill-rule='evenodd' d='M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z'/></svg></a></button>"); 
+                                location.reload(); //reloads the page and triggers the dynamic function of the cancel button which was showing but not  working prior unless page was refreshed.
+                            },
+                            error: function(data){
+                                console.log("If this console log is displaying it means there were errors in sending the friend request.")                       
+                            },
+                        })
+                    });
+                }
+
+        //The below code is the function for removing a friend request via jquery/ajax
+
+        $('#notifications').click(function(e) {
+                    e.preventDefault();
+                    console.log("This console log means the notification symbol was clicked");
+                    $.ajax({
+                        type: "POST",
+                        url: 'notifications', 
+                        headers:{"X-CSRFToken": $crf_token}, //this relates to the CSRF token needed to send data to the backend
+                        data: "mom",
+                        success: function(data) {
+                            console.log("This console log means it was successful.")
+                            // location.reload(); //reloads the page and triggers the dynamic function of the cancel button which was showing but not  working prior unless page was refreshed.
+                        },
+                        error: function(data){
+                            console.log("If this console log is displaying it means there were errors.")                       
+                        },
+                    })
+                });
 
         }); //end of entire code in the script
-    
     </script>
-
 </head>
 
 <body class="bg-light">
 <!--The below code is for the navigation bar  -->
-
     <nav class="navbar navbar-expand-lg navbar-blue bg-white" id="navBar">
-        <a class="navbar-brand" href="#">
+    <!-- The below code is the first third of the navigation bar containing the logo, search textarea, and search button -->
+        <a class="navbar-brand" href="/home">
             <img id="logoIcon" src="{% static 'Images/logo.png' %}" alt="A stock image of a logo with the two letters CB to represent Collegebook." />
         </a>
-        <!-- <div class="col-sm-3" id="searchBarFromDiv"> -->
-            <form class="form-inline col-sm-3" id="searchBarForm">
-                <input class="form-control rounded-pill " id="searchBarInput" type="search" placeholder="Search CollegeBook" aria-label="Search">
-                <button class="btn btn-outline-primary btn-sm ml-2" id="searchBarButton" type="submit">Search</button>
-            </form>
-        <!-- </div> -->
-        <div class="col-sm-5 "  id="navIconsDiv mt-2">
-            <button class="btn btn-outline-light my-2 my-sm-0 buttonOfNavIcons">
-                <img class=" mr-3" id="navIconHome" src="{% static 'Images/home.png' %}" alt="A stock image of a logo with the two letters CB to represent Collegebook." />
+        <form action="/search" method="GET" class="form-inline col-sm-3" id="searchBarForm" >
+            <input class="form-control rounded-pill " name="searchBarInput" type="search" placeholder="Search CollegeBook" aria-label="Search">
+            <button class="btn btn-outline-primary btn-sm ml-2" id="searchBarButton" type="submit">Search</button>
+        </form>
+    <!-- The above code is the first third of the navigation bar containing the logo, search textarea, and search button -->
+    <!-- The below code is the second third of the navigation bar containing the picture buttons to other pages -->
+        <div class="col-sm-5 ml-3" id="navIconsDiv">
+            <button class="btn btn-outline-light buttonOfNavIcons">
+                <a href="/home">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="gray" class="bi bi-house-door-fill" viewBox="0 0 16 16">
+                        <path d="M6.5 14.5v-3.505c0-.245.25-.495.5-.495h2c.25 0 .5.25.5.5v3.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5z"/>
+                    </svg>
+                </a>
             </button>
-            <button class="btn btn-outline-light my-2 my-sm-0 pl-2 pr-2 buttonOfNavIcons">
-                <img class="mr-3" id="navIconPage" src="{% static 'Images/pages.png' %}" alt="A stock image of a logo with the two letters CB to represent Collegebook." />
+            <button class="btn btn-outline-light buttonOfNavIcons ml-5">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="gray" class="bi bi-youtube" viewBox="0 0 16 16">
+                    <path d="M8.051 1.999h.089c.822.003 4.987.033 6.11.335a2.01 2.01 0 0 1 1.415 1.42c.101.38.172.883.22 1.402l.01.104.022.26.008.104c.065.914.073 1.77.074 1.957v.075c-.001.194-.01 1.108-.082 2.06l-.008.105-.009.104c-.05.572-.124 1.14-.235 1.558a2.007 2.007 0 0 1-1.415 1.42c-1.16.312-5.569.334-6.18.335h-.142c-.309 0-1.587-.006-2.927-.052l-.17-.006-.087-.004-.171-.007-.171-.007c-1.11-.049-2.167-.128-2.654-.26a2.007 2.007 0 0 1-1.415-1.419c-.111-.417-.185-.986-.235-1.558L.09 9.82l-.008-.104A31.4 31.4 0 0 1 0 7.68v-.122C.002 7.343.01 6.6.064 5.78l.007-.103.003-.052.008-.104.022-.26.01-.104c.048-.519.119-1.023.22-1.402a2.007 2.007 0 0 1 1.415-1.42c.487-.13 1.544-.21 2.654-.26l.17-.007.172-.006.086-.003.171-.007A99.788 99.788 0 0 1 7.858 2h.193zM6.4 5.209v4.818l4.157-2.408L6.4 5.209z"/>
+                </svg>
             </button>
-            <button class="btn btn-outline-light my-2 my-sm-0 pl-2 pr-2 buttonOfNavIcons">
-                <img class="mr-3" id="navIconWatch" src="{% static 'Images/watch.png' %}" alt="A stock image of a logo with the two letters CB to represent Collegebook." />
+            <button class="btn btn-outline-light buttonOfNavIcons ml-5">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="gray" class="bi bi-bag-fill" viewBox="0 0 16 16">
+                    <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5z"/>
+                </svg>
             </button>
-            <button class="btn btn-outline-light my-2 my-sm-0 pl-2 pr-2 buttonOfNavIcons">
-                <img class="mr-3" id="navIconMarketplace" src="{% static 'Images/marketplace.png' %}" alt="A stock image of a logo with the two letters CB to represent Collegebook." />
+            <button class="btn btn-outline-light buttonOfNavIcons ml-5">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="gray" class="bi bi-people-fill" viewBox="0 0 16 16">
+                    <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                    <path fill-rule="evenodd" d="M5.216 14A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216z"/>
+                    <path d="M4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/>
+                </svg>
             </button>
-            <button class="btn btn-outline-light my-2 my-sm-0 pl-2 pr-4 buttonOfNavIcons">
-                <img class="mr-3" id="navIconGroups" src="{% static 'Images/groups.png' %}" alt="A stock image of a logo with the two letters CB to represent Collegebook." />
+            <button class="btn btn-outline-light buttonOfNavIcons ml-5">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="gray" class="bi bi-joystick" viewBox="0 0 16 16">
+                    <path d="M10 2a2 2 0 0 1-1.5 1.937v5.087c.863.083 1.5.377 1.5.726 0 .414-.895.75-2 .75s-2-.336-2-.75c0-.35.637-.643 1.5-.726V3.937A2 2 0 1 1 10 2z"/>
+                    <path d="M0 9.665v1.717a1 1 0 0 0 .553.894l6.553 3.277a2 2 0 0 0 1.788 0l6.553-3.277a1 1 0 0 0 .553-.894V9.665c0-.1-.06-.19-.152-.23L9.5 6.715v.993l5.227 2.178a.125.125 0 0 1 .001.23l-5.94 2.546a2 2 0 0 1-1.576 0l-5.94-2.546a.125.125 0 0 1 .001-.23L6.5 7.708l-.013-.988L.152 9.435a.25.25 0 0 0-.152.23z"/>
+                </svg>
             </button>
         </div>
-        <!-- <div class="col-sm-5">
-            <!-One of three columns -->
-        <!-- </div> --> 
-        <div class="col-sm-3 mb-2" id="">
-            <ul class="navbar-nav mr-auto">
+    <!-- The above code is the second third of the navigation bar containing the picture buttons to other pages -->
+    <!-- The below code is the last third of the navigation bar containing the links -->
+        <div class="col-sm-3 mb-2 ml-5 mt-2">
+            <ul class="navbar-nav mr-auto ml-4">
                 <li class="nav-item active">
-                    <a id="linkForNavIconProfPic" href="#" class="d-inline ">
+                    <a id="linkForNavIconProfPic" href="/home" class="d-inline ">
                     <!-- This if statement only displays the image src when an image is uploaded -->
-                        {% if not loggedInUser.profilePic == "" %} 
-                        <img src='{{ loggedInUser.profilePic }}' id="navIconProfPic" class="d-inline "> 
-                        {% endif %}
+                    {% if not loggedInUser.profilePic == "" %} 
+                        <img src='{{ loggedInUser.profilePic }}' id="navIconProfPic" class="d-inline"> 
+                    {% endif %}
                     </a>
                     <li class="nav-item">
                         <a class="nav-link" href="/home">{{loggedInUser.firstName}}</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/home">Messenger</a>
+                    <li class="nav-item dropdown"> <!-- This is the notification bell symbol -->
+                        <a class="nav-link" href="" data-toggle="dropdown" id="notifications">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-bell-fill mb-1" viewBox="0 0 16 16">
+                                <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zm.995-14.901a1 1 0 1 0-1.99 0A5.002 5.002 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901z"/>
+                            </svg>
+                        </a>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="/home">Lists of notifications here</a>
+                        </div>
                     </li>
-                    <!-- <li class="nav-item">
-                        <a class="nav-link" href="#">Account</a>
-                    </li> -->
+                    <li class="nav-item"> <!-- This is the messenger symbol -->
+                        <a class="nav-link" href="/home">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-chat-left-dots-fill" viewBox="0 0 16 16">
+                                <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4.414a1 1 0 0 0-.707.293L.854 15.146A.5.5 0 0 1 0 14.793V2zm5 4a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
+                            </svg>
+                        </a>
+                    </li>
                 </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="dropdownSymbol" role="button" data-toggle="dropdown">Account</a>
+                <li class="nav-item dropdown"> <!-- This is the settings symbol -->
+                    <a class="nav-link" href="/home" role="button" data-toggle="dropdown">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-gear-fill mb-1" viewBox="0 0 16 16">
+                            <path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872l-.1-.34zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z"/>
+                        </svg>
+                    </a>
                     <div class="dropdown-menu">
                         <a class="dropdown-item" href="/home">Settings</a>
                         <a class="dropdown-item" href="/home">Support</a>
@@ -560,22 +638,22 @@
                 </li>
             </ul>
         </div>
+    <!-- The above code is the last third of the navigation bar containing the links -->
     </nav>
 <!-- The above code is for the navigation bar -->
 
     <div class="container">
-        <div class="row bg-white mt-5">
+        <div class="row bg-white mt-4">
             <div class="col-sm bg-white">
-                <!-- One of three columns -->
+                <!-- First of the third columns of the profile pic white banner background (needed to center photo)  -->
             </div>
             <div class="col-sm profilePicBanner">
                 <form enctype="multipart/form-data" method="POST" action="" class="mb-0" id="profilePicForm">
                     {% csrf_token %}
                     <label for="profilePicInputID" id="profilePicContainer"> <!-- Important to use "label for" attribute to get the feature of clicking on the circle to bring up the file explorer. ID needs to match the ID of the input below  -->
                         <img src='{{ loggedInUser.profilePic }}' id="thumbnail" class="uploadedPhotoProperties"> 
-                        
                         <input type="file" id="profilePicInputID" name="userProfilePic" accept="image/png, image/jpeg" style="display: none;"> <!-- The style hides the basic format "Choose file input and allows the circular border to represent the "file selector" instead" -->
-                            <p class="mt-4">Click here to upload or <b>drag-and-drop</b> <br> an image...</br></p>
+                        <p class="mt-4">Click here to upload or <b>drag-and-drop</b> <br> an image...</br></p>
                     </label>
                     <button class="btn btn-sm btn btn-secondary" id="button" type="submit">
                         <img class="save" src="{% static 'Images/save.png' %}" alt="A black and white illustration of the save symbol." />
@@ -583,58 +661,141 @@
                 </form>
                 <form class="" action="userDeletesProfilePic" method="post">
                     {% csrf_token %}
-                    <!-- This if statement only displays the image src when an image is uploaded -->
-                        {% if loggedInUser.profilePic == "" %}
-                        <button class="btn btn-sm" id="clearImage">X</button> <!--The X button removes the preview of the photo via ajax-->
-                        {% else %}
-                        <button class="btn btn-sm clearImage" type="submit">X</button> <!--This X button removes the photo from the database-->
-                        {% endif %}
-                    </form>
-                    <div id="errorDialogForFileType">
-                        <p><span class="ui-icon ui-icon-alert"></span>File type must be a png or jpeg/jpg. Please try again.</p>
+                <!-- This if statement only displays the image src when an image is uploaded -->
+                {% if loggedInUser.profilePic == "" %}
+                    <button class="btn btn-sm" id="clearImage">X</button> <!--The X button removes the preview of the photo via ajax-->
+                {% else %}
+                    <button class="btn btn-sm clearImage" type="submit">X</button> <!--This X button removes the photo from the database-->
+                {% endif %}
+                </form>
+                <div id="errorDialogForFileType">
+                    <p><span class="ui-icon ui-icon-alert"></span>File type must be a png or jpeg/jpg. Please try again.</p>
+                </div>
+                <div id="errorDialogForFileSize">
+                    <p><span class="ui-icon ui-icon-alert"></span>File size is too big. Please try again.</p>
+                </div>
+                <h3 class="" id="userNameText">{{loggedInUser.firstName}} {{loggedInUser.lastName}}</h3>
+                <p class="mb-0" id="userProfileInfoTextArea">{{loggedInUser.profileInfo}}</p>
+                <a href="" class="" id="userProfileInfoEditLink">Edit</a>
+                <form class="" action="" id="userProfileInfoForm" method="post">
+                    {% csrf_token %}
+                    <!-- Important to use different names for the id(userProfileInfoID) and name(userProfileInfo) field for the textarea(or any form input) otherwise there will be a multidictkey error in the backend when trying to submit -->
+                    <textarea class="form-control" id="userProfileInfoID" name="userProfileInfo" rows="3">{{loggedInUser.profileInfo}}</textarea>
+                    <div id="userProfileInfoButtons">
+                        <button id="userProfileInfoCancelButton" class=" ml-5 btn btn-primary btn-sm">Cancel</button>
+                        <button type="submit" class="btn btn-primary btn-sm">Save</button>
                     </div>
-                    <div id="errorDialogForFileSize">
-                        <p><span class="ui-icon ui-icon-alert"></span>File size is too big. Please try again.</p>
-                    </div>
-                    <h3 class="" id="userNameText">{{loggedInUser.firstName}} {{loggedInUser.lastName}}</h3>
-                    <p class="mb-0" id="userProfileInfoTextArea">{{loggedInUser.profileInfo}}</p>
-                    <a href="" class="" id="userProfileInfoEditLink">Edit</a>
-                    <form class="" action="" id="userProfileInfoForm" method="post">
-                        {% csrf_token %}
-                        <!-- Important to use different names for the id(userProfileInfoID) and name(userProfileInfo) field for the textarea(or any form input) otherwise there will be a multidictkey error in the backend when trying to submit -->
-                        <textarea class="form-control" id="userProfileInfoID" name="userProfileInfo" rows="3">{{loggedInUser.profileInfo}}</textarea>
-                        <div id="userProfileInfoButtons">
-                            <button id="userProfileInfoCancelButton" class=" ml-5 btn btn-primary btn-sm">Cancel</button>
-                            <button type="submit" class="btn btn-primary btn-sm">Save</button>
-                        </div>
-                    </form>
+                </form>
             </div>
             <div class="col-sm bg-white">
-                <!-- One of three columns -->
+                <!-- Last of the third columns of the profile pic white banner background (needed to center photo)  -->
             </div>
         </div>
 
-        <div class="row ml-5 mt-4">
-            <div class="col-sm-3 mt-4 ml-5 bg-white friendsDiv">
+<!-- the below code is the first row under the profile pic banner containing two columns: all users div and post a message div-->
+        <div class="row ml-5 mt-4"> 
+            <div class="col-sm-3 ml-5 bg-white allUsersDiv">
+                <p class="lead mr-2 pl-2">All Users</p>
+            {% for user in allUsers %}
+                {% if loggedInUser.id != user.id  %} <!-- to prevent the logged in user's name displaying in the friends section -->
+                    {% if user.profilePic == "" %} 
+                <!-- if a user does not have an uploaded profile pic the below code will run -->
+                <figure class="ml-4 d-inline-block">
+                    <a href="/{{user.firstName}}/{{user.lastName}}/{{user.id}}" class="">
+                        <img src="{% static 'Images/blankAvatar.png' %}" id="" class="friendsIconProfPic " alt="A thumbnail photo of the user">
+                        <figcaption class="ml-2 friendsIconName">{{user.firstName}}</figcaption>
+                    </a>
+                </figure>
+                <!-- the below code  is to add or cancel a friend request for a user that does not have an uploaded profile pic -->
+                {% if not loggedInUser in user.friends.all %}  <!-- displays the add friend icon if the logged in user hasn't already-->
+                <button type="button" class="btn btn-sm sendFriendRequestButton" value="{{user.id}}">
+                    <a href="" class="sendFriendRequest">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-plus" viewBox="0 0 16 16">
+                            <path d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H1s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C9.516 10.68 8.289 10 6 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
+                            <path fill-rule="evenodd" d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z"/>
+                        </svg>                                
+                    </a>
+                </button>
+                {% else %} <!-- displays the cancel friend button if the logged in user has clicked the add friend icon-->
+                <button type="button" class="btn btn-sm btn-danger pendingFriendRequestButton" value="{{user.id}}" >Cancel</button>
+                {% endif %}
+                <!-- the above code  is to add or cancel a friend request for a user that does not have an uploaded profile pic -->
+                <!-- if a user does not have an uploaded profile pic the above code will run -->
+                {% else %} <!-- the below code is the same but just for profiles that have uploaded profile photos-->
+                <div class="d-inline-block">
+                    <figure class="ml-4">
+                        <a href="/{{user.firstName}}/{{user.lastName}}/{{user.id}}">
+                            <img src="{{user.profilePic}}" id="" class="friendsIconProfPic" alt="A thumbnail photo of the user">
+                        </a>
+                    {% if not loggedInUser in user.friends.all %}
+                        <button type="button" class="btn btn-sm sendFriendRequestButton" value="{{user.id}}">
+                            <a href="" class="sendFriendRequest">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-plus" viewBox="0 0 16 16">
+                                    <path d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H1s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C9.516 10.68 8.289 10 6 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
+                                    <path fill-rule="evenodd" d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z"/>
+                                </svg>                                
+                            </a>
+                        </button>
+                    {% else %}
+                        <button type="button" class="btn btn-sm btn-danger pendingFriendRequestButton" value="{{user.id}}" >Cancel</button>
+                    {% endif %}
+                        <a href="/{{user.firstName}}/{{user.lastName}}/{{user.id}}">
+                            <figcaption class="friendsIconName ml-1">{{user.firstName}}</figcaption>
+                        </a>
+                    </figure>
+                </div>
+                    {% endif%}
+                {% endif %}
+            {% endfor %}
+            </div>
+        
+            <div class="col-sm-7 ml-5 mt-4">
+                <!-- The below code is for the post a message form -->
+                <form class="mb-2 bg-white col-sm-12" action="" method="post" id="postAMessageForm">
+                    {% csrf_token %}
+                    <div id="postAMessageErrors">
+                        <ul class="displayMessageErrors mb-0">
+                        </ul>
+                    </div>
+                    <div class="form-group">
+                        <label for="textArea"></label>
+                        <input type="hidden" id="userWhoReceivesPostID" name="userWhoReceivesPost" value="{{loggedInUser.id}}">
+                        <textarea class="form-control rounded-pill" id="userMessageID" name="userMessage" rows="2" placeholder="What's On Your Mind, {{loggedInUser.firstName}}?"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary mb-2 btn-sm" id="postAMessageButton">Post A Message</button>
+                </form>
+            </div>
+        </div>
+<!-- the above code is the first row under the profile pic banner containing two columns: all users div and post a message div-->
+
+        <div class="row bg-light ml-5 mt-2">
+            <div class="col-sm-3 ml-5 bg-white friendsDiv">
                 <p class="lead mr-2 pl-2">Friends</p>
                 {% for user in allUsers %}
                     {% if loggedInUser.id != user.id  %} <!-- to prevent the logged in user's name displaying in the friends section -->
                         {% if user.profilePic == "" %} 
                 <!-- if a user does not have an uploaded profile pic the below code will run -->
+                
                 <figure class="ml-4 d-inline-block">
-                        <a href="/{{user.firstName}}/{{user.lastName}}/{{user.id}}" class="">
-                            <img src="{% static 'Images/blankAvatar.png' %}" id="" class="friendsIconProfPic " alt="A thumbnail photo of the user">
-                            <figcaption class="ml-2">{{user.firstName}}</figcaption>
-                        </a>
+                    <a href="/{{user.firstName}}/{{user.lastName}}/{{user.id}}" class="">
+                        <img src="{% static 'Images/blankAvatar.png' %}" id="" class="friendsIconProfPic " alt="A thumbnail photo of the user">
+                        <figcaption class="ml-2 friendsIconName">{{user.firstName}}</figcaption>
+                    </a>
                 </figure>
-                                <!-- the below code  is to add or cancel a friend request -->
-                <a href="" class="sendFriendRequestLink" data-index="{{user.id}}">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-plus" viewBox="0 0 16 16">
-                        <path d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H1s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C9.516 10.68 8.289 10 6 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
-                        <path fill-rule="evenodd" d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z"/>
-                    </svg>                                
-                </a>
-                                <!-- the above code  is to add or cancel a friend request -->
+                <!-- the below code  is to add or cancel a friend request -->
+                {% if not loggedInUser in user.friends.all %}
+                <button type="button" class="btn btn-sm sendFriendRequestButton" value="{{user.id}}">
+                    <a href="" class="sendFriendRequest">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-plus" viewBox="0 0 16 16">
+                            <path d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H1s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C9.516 10.68 8.289 10 6 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
+                            <path fill-rule="evenodd" d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z"/>
+                        </svg>                                
+                    </a>
+                </button>
+                {% else %}
+                <button type="button" class="btn btn-sm btn-danger pendingFriendRequestButton" value="{{user.id}}" >Cancel</button>
+                {% endif %}
+                <!-- the above code  is to add or cancel a friend request -->
 
                 <!-- if a user does not have an uploaded profile pic the above code will run -->
                     {% else %}
@@ -643,14 +804,20 @@
                         <a href="/{{user.firstName}}/{{user.lastName}}/{{user.id}}">
                             <img src="{{user.profilePic}}" id="" class="friendsIconProfPic" alt="A thumbnail photo of the user">
                         </a>
-                            <a href="/addFriend/{{user.id}}">
+                        {% if not loggedInUser in user.friends.all %}
+                        <button type="button" class="btn btn-sm sendFriendRequestButton" value="{{user.id}}">
+                            <a href="" class="sendFriendRequest">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-plus" viewBox="0 0 16 16">
                                     <path d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H1s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C9.516 10.68 8.289 10 6 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
                                     <path fill-rule="evenodd" d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z"/>
-                                </svg>                                    
+                                </svg>                                
                             </a>
+                        </button>
+                        {% else %}
+                        <button type="button" class="btn btn-sm btn-danger pendingFriendRequestButton" value="{{user.id}}" >Cancel</button>
+                        {% endif %}
                         <a href="/{{user.firstName}}/{{user.lastName}}/{{user.id}}">
-                            <figcaption class="ml-2">{{user.firstName}}</figcaption>
+                            <figcaption class="friendsIconName ml-1">{{user.firstName}}</figcaption>
                         </a>
                     </figure>
                 </div>
@@ -658,55 +825,40 @@
                     {% endif %}
                 {% endfor %}
             </div>
-        
+    {% if not wallOfLoggedInUser %}
+<!-- display emptyness  -->
+        {%  else %}
             <div class="col-sm-7 ml-5">
-                <!-- The below code is for the post a message form -->
-                <form class="mb-2 bg-white col-sm-12" action="" method="post" id="postAMessageForm">
-                    <div id="postAMessageErrors">
-                        <ul class="displayMessageErrors mb-0">
-                        </ul>
-                    </div>
-                    {% csrf_token %}
-                    <div class="form-group">
-                        <label for="textArea"></label>
-                        <input type="hidden" id="userWhoReceivesPostID" name="userWhoReceivesPost" value="{{loggedInUser.id}}">
-                        <textarea class="form-control rounded-pill" id="userMessageID" name="userMessage" rows="2" placeholder="What's On Your Mind, {{loggedInUser.firstName}}?"></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary mb-2 btn-sm" id="postAMessageButton">Post A Message</button>
-                </form>
                 <small class="font-weight-bold">Posts</small>
                 <!-- The above code is for the post a message form -->
-                
                 <table class="table table-borderless">
-                    <tbody class="">
+                    <tbody>
                         <tr>
                             <td class="bg-white">
-                                {% for message in wallOfLoggedInUser %}
+                    {% for message in wallOfLoggedInUser %}
                                 <div class="messageContentsDiv">
-                                    {% if message.user.id == loggedInUser.id %}
-                                            <a href="/home">
-                                            {% if not message.user.profilePic == "" %}
-                                                <img src="{{message.user.profilePic}}" id="navIconProfPic" alt="">
-                                            {% endif %}
-                                                    {{message.user.firstName}} {{message.user.lastName}}
-                                            </a>
-                                    {% else %}
+                            {% if message.user.id == loggedInUser.id %}
+                                    <a href="/home">
+                                    {% if not message.user.profilePic == "" %}
+                                        <img src="{{message.user.profilePic}}" id="navIconProfPic" alt="">
+                                    {% endif %}
+                                            {{message.user.firstName}} {{message.user.lastName}}
+                                    </a>
+                            {% else %}
                                     <a href="/{{message.user.firstName}}/{{message.user.lastName}}/{{message.user.id}}">
                                         {% if not message.user.profilePic == "" %}
                                         <img src="{{message.user.profilePic}}" id="navIconProfPic" alt="">
                                         {% endif %}
-
                                         {{message.user.firstName}} {{message.user.lastName}}
                                     </a>
+                            {% endif %}
+                                    {% if message.user.profilePic == "" %}
+                                        <small class="d-block ml-4 text-secondary messageCreatedAt">{{message.createdAt}}</small>
+                                    {% else %}
+                                        <small class="d-block ml-4 text-secondary messageCreatedAtWithThumbnail">{{message.createdAt}}</small>
                                     {% endif %}
-                                            {% if message.user.profilePic == "" %}
-                                                <small class="d-block ml-4 text-secondary messageCreatedAt">{{message.createdAt}}</small>
-                                            {% else %}
-                                                <small class="d-block ml-4 text-secondary messageCreatedAtWithThumbnail">{{message.createdAt}}</small>
-                                            {% endif %}
                                 </div>
                                 <p class="col-sm mb-0 mt-0 ml-0  messageText">{{message.message}} </p>
-
                                 <div class=" col-sm-12 mr-3 pl-5 mt-0 bg-light likeDislikeMessageDiv">
                                     <form action="" class="d-inline"> 
                                         <a class="mr-2 hover likeAPostLink" data-index="{{message.id}}" href="">Like</a><!-- The a tag also needs the message id value so it can be compared to the hidden message id value in ajax otherwise when one message is clicked all will receive likes   -->
@@ -718,7 +870,7 @@
                                     </form>
                                     <a class="" href="">Comment</a>
                                 </div>
-
+                            <!-- the below code contains the logic for displaying specific words dependent on who and how many likes-->
                                 <div class="col-sm ml-5">
                                 <!-- The below line of code displays when a single user likes a message on the logged in user's page -->
                                     {% for user in message.userLikes.all%} <!--the message.userLikes.all is the many to many relationship in the message model containing all the likes the users did  -->
@@ -804,20 +956,18 @@
 
                                     {% endfor %} <!-- The end of the message.userLikes.all loop -->
                                 </div>
+                            <!-- the above code contains the logic for displaying specific words dependent on who and how many likes-->
 
                                 {% for comment in message.comments.all %}
                                 <div class="commentSectionDiv row mt-2 ml-3">
-                                    <!-- <div class=""> -->
-                                        <!-- </div> -->
-                                        <img src="{{comment.user.profilePic}}" id="navIconProfPic" alt="" class="d-inline ml-3">
-                                        <div class="badge rounded-pill bg-light commentSection ">
-                                            <a href="/{{comment.user.firstName}}/{{comment.user.lastName}}/{{comment.user.id}}" class="commentHeadText d-block">{{comment.user.firstName}} {{comment.user.lastName}}</a>
-                                            <p class="commentSubText d-block">{{comment.comment}}</p>
-                                        </div>
+                                    <img src="{{comment.user.profilePic}}" id="navIconProfPic" alt="" class="d-inline ml-3">
+                                    <div class="badge rounded-pill bg-light commentSection ">
+                                        <a href="/{{comment.user.firstName}}/{{comment.user.lastName}}/{{comment.user.id}}" class="commentHeadText d-block">{{comment.user.firstName}} {{comment.user.lastName}}</a>
+                                        <p class="commentSubText d-block">{{comment.comment}}</p>
+                                    </div>
                                 </div>
                                 {% endfor %}
-
-                                <!-- The below line of code is the form to post a comment. -->
+                            <!-- The below line of code is the form to post a comment. -->
                                 <form class="col-sm ml-0 sm mb-0 mt-0 pt-0 pb-0" action="{% url 'processComment' userFirstName=loggedInUser.firstName userLastName=loggedInUser.lastName userId=loggedInUser.id %}" method="post" id="postACommentForm">
                                     {% csrf_token %}
                                     <div id="postACommentErrors mt-5">
@@ -835,14 +985,15 @@
                                         <button type="submit" id="" class="btn btn-primary mt-3 btn-success btn-sm d-inline postACommentButton">Comment</button>
                                     </div>
                                 </form>
-                                <!-- This above line of code is the form to post a comment. -->
-
-                                {% endfor %} <!-- the end of the for statement for the 'message in wallOfLoggedInUser' loop -->
+                            <!-- This above line of code is the form to post a comment. -->
+                    {% endfor %} <!-- the end of the for statement for the 'message in wallOfLoggedInUser' loop -->
                             </td>
                         </tr>
                     </tbody>
                 </table>
-            </div>
+        </div>
+        </div>
+    {% endif %}
         </div>
     </div>
 </body>

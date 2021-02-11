@@ -6,6 +6,9 @@ from django.http import JsonResponse #imported in order to display django errors
 from django.core.files.storage import FileSystemStorage #imported in order to display uploaded images
 from django.urls import reverse #imported in order to pass variables when redirecting
 from django.db.models import Q #imported in order to filter multiple queries at once
+import operator #imported in order to eliminate spaces in the search bar
+from django.db.models.functions import Lower, Replace
+
 
 
 #The below line of code is for the registration and login.
@@ -37,7 +40,7 @@ def processRegistration(request):
         return JsonResponse({"errors": registrationErrors}, status=400)
     else:
         hashedPassword = bcrypt.hashpw(request.POST['initialPassword'].encode(), bcrypt.gensalt()).decode()
-        newUser = User.objects.create(firstName = request.POST['userFirstName'], lastName = request.POST['userLastName'], birthdayMonth = request.POST.get('userBirthdayMonth'), birthdayDay = request.POST.get('userBirthdayDay'), birthdayYear = request.POST.get('userBirthdayYear'), emailAddress = request.POST['initialEmail'], password = hashedPassword, confirmPassword = hashedPassword)
+        newUser = User.objects.create(firstName = request.POST['userFirstName'].capitalize(), lastName = request.POST['userLastName'].capitalize(), birthdayMonth = request.POST.get('userBirthdayMonth'), birthdayDay = request.POST.get('userBirthdayDay'), birthdayYear = request.POST.get('userBirthdayYear'), emailAddress = request.POST['initialEmail'], password = hashedPassword, confirmPassword = hashedPassword)
         request.session['loginInfo'] = newUser.id
     print("THIS IS THE LAST PRINT STATEMENT IN THE THE PROCESS REGISTRATION ROUTE.")
     return redirect("/home")
@@ -115,7 +118,6 @@ def loggedInUsersPage(request, messageId=0):
 
 def processProfilePic(request):
     print("THIS FUNCTION PROCESSES THE FORM/UPLOADING OF A PROFILE PICTURE.")
-    # print("This is the the submitted image by the user as a base64stringimage with <QueryDict: {'theFile': ['data:image/jpeg;base64,/9j/ before it.")
     # print("This is the submitted image by the user")
     # print("*"*50)
     # print(request.FILES)
@@ -293,7 +295,6 @@ def userLikes(request, userFirstName='firstName', userLastName='lastName', userI
         return redirect(reverse('home', args=(messageId,))) #using the name of the url to redirect and passing the variables/params to the form rendering the template
     # return redirect("/home")
 
-# def userUnlikes(request, messageId):
 def userUnlikes(request, userFirstName='firstName', userLastName='lastName', userId=0, messageId = 0): #need to have positional arguments in order to do the reroute to the specific page
     messageBeingUnliked = Message.objects.get(id=messageId)
     userWhoUnlikes = User.objects.get(id=request.session['loginInfo'])
@@ -326,56 +327,88 @@ def userUnlikes(request, userFirstName='firstName', userLastName='lastName', use
         else:
             return redirect(reverse('home', args=(messageId,))) #using the name of the url to redirect and passing the variables/params to the form rendering the template
 
-def sendFriendRequest(request, userId):
+def sendFriendRequest(request, userFirstName='firstName', userLastName='lastName', userId=0, messageId = 0):
     print("THIS IS THE SEND A FRIEND REQUEST ROUTE")
     # print("*"*50)
-    # print("This prints the user object of the user receiving the friend request.")
     userReceivesRequest = User.objects.get(id=userId) #the recipient of the friend request
+    # print(userReceivesRequest) #prints as a User Object(#)
     userFirstName = userReceivesRequest.firstName # need for params to reroute
     userLastName = userReceivesRequest.lastName # need for params to reroute
     userId = userReceivesRequest.id # need for params to reroute
-    # print(userReceivesRequest) #prints as a User Object(#)
-    # print("This prints the user object of the user sending the friend request aka the logged in user.")
     userWhoSentFriendRequest = User.objects.get(id=request.session['loginInfo'])
-    # print(userWhoSentFriendRequest) # prints as a User Object(#)
+    print("This prints the user object of the user sending the friend request aka the logged in user.")
+    print(userWhoSentFriendRequest) # prints as a User Object(#)
     if userWhoSentFriendRequest in userReceivesRequest.friends.all():
         print("You're already friends!")
     else:
-        #This sends the friend request.
         userReceivesRequest.friends.add(userWhoSentFriendRequest)
-        # if user.id != loggedInUser.id:
-        #     return redirect(reverse('specificUsersPage', args=(userFirstName, userLastName, userId,))) #using the name of the url to redirect and passing the variables/params to the form rendering the template
-        # else: #if these lines of code run it means the like occurred on logged in user's home page
-        # return redirect(reverse('home', args=(userId,))) #using the name of the url to redirect and passing the variables/params to the form rendering the template
+        print("User's sent friend requests friends:", userWhoSentFriendRequest.friends.all())
+        print("User receive requests friends:", userReceivesRequest.friends.all())
         # print("*"*50)
-        print("THIS IS THE LAST PRINT STATEMENT OF THE ADD A FRIEND ROUTE.")
+        if userFirstName!= 'firstName':
+            print("THIS IS THE LAST PRINT STATEMENT OF THE SEND A FRIEND REQUEST ROUTE.")
+            return redirect(reverse('specificUsersPage', args=(userFirstName, userLastName, userId,)))
+        else: 
+            print("THIS IS THE LAST PRINT STATEMENT OF THE SEND A FRIEND REQUEST ROUTE.")
+        return redirect("/home")
+
+def removeFriendRequest(request, userFirstName='firstName', userLastName='lastName', userId=0, messageId = 0):
+    print("THIS IS THE REMOVE A FRIEND REQUEST ROUTE")
+    print("*"*50)
+    userReceivesRequest = User.objects.get(id=userId) #the recipient of the friend request
+    print("This prints the user object of the user receiving the friend request.")
+    print(userReceivesRequest) #prints as a User Object(#)
+    userFirstName = userReceivesRequest.firstName # need for params to reroute
+    userLastName = userReceivesRequest.lastName # need for params to reroute
+    userId = userReceivesRequest.id # need for params to reroute
+    userWhoSentFriendRequest = User.objects.get(id=request.session['loginInfo'])
+    print("This prints the user object of the user sending the friend request aka the logged in user.")
+    print(userWhoSentFriendRequest) # prints as a User Object(#)
+    print("*"*50)
+    if userWhoSentFriendRequest in userReceivesRequest.friends.all():
+        userReceivesRequest.friends.remove(userWhoSentFriendRequest)
+    # else:
+    #     print("You never sent a friend request!")
+        # if userFirstName!= 'firstName':
+        #     print("THIS IS THE LAST PRINT STATEMENT OF THE SEND A FRIEND REQUEST ROUTE.")
+        #     return redirect(reverse('specificUsersPage', args=(userFirstName, userLastName, userId,)))
+        # else: 
+        print("THIS IS THE LAST PRINT STATEMENT OF THE REMOVE A FRIEND REQUEST ROUTE.")
     return redirect("/home")
 
-def addFriend(request, userId):
-    print("THIS IS THE ADD A FRIEND ROUTE")
-    # print("*"*50)
-    # print("This prints the user object of the user receiving the friend request.")
-    userReceivesRequest = User.objects.get(id=userId) #the recipient of the friend request
-    userFirstName = userReceivesRequest.firstName # need for params to reroute
-    userLastName = userReceivesRequest.lastName # need for params to reroute
-    userId = userReceivesRequest.id # need for params to reroute
-    # print(userReceivesRequest) #prints as a User Object(#)
-    # print("This prints the user object of the user sending the friend request aka the logged in user.")
-    userWhoSentFriendRequest = User.objects.get(id=request.session['loginInfo'])
-    # print(userWhoSentFriendRequest) # prints as a User Object(#)
-    friendships = userReceivesRequest.friends
-    if userWhoSentFriendRequest in userReceivesRequest.friends.all():
-        print("You're already friends!")
-    else:
-        #This creates the friend request.
-        userReceivesRequest.friends.add(userWhoSentFriendRequest)
-        print("THIS IS THE LAST PRINT STATEMENT OF THE ADD A FRIEND ROUTE.")
-        # if user.id != loggedInUser.id:
-        #     return redirect(reverse('specificUsersPage', args=(userFirstName, userLastName, userId,))) #using the name of the url to redirect and passing the variables/params to the form rendering the template
-        # else: #if these lines of code run it means the like occurred on logged in user's home page
-        # return redirect(reverse('home', args=(userId,))) #using the name of the url to redirect and passing the variables/params to the form rendering the template
-        # print("*"*50)
+def searchForUsersProfile(request):
+    print("THIS IS THE SEARCH FOR A USER PROFILE ROUTE")
+    try: #used so i can incoperate 'except index error' in case the logged in user triggers an index error searching for a user not in the database
+        if request.method == 'GET':
+            # searchForUser = request.GET.get("searchBarInput")
+            searchForUser = request.GET.get('searchBarInput').split() #creates a list of arrays with the names submitted by the logged in user
+            if searchForUser is not None: #use to prevent NoneType object attribute split error
+            # print("The name(s) the logged in user typed", searchForUser)
+                for name in searchForUser: # have to iterate to use title on a list
+                    # print("The name(s) searched:", name.title())
+                    if len(searchForUser) == 1:
+                        searchedName = name.title() #title capitalizes the submitted data
+                        print("This means there was only one name submitted", searchedName)
+                        id = User.objects.filter(Q(firstName = (searchedName))| Q(lastName= (searchedName))).values('id')[0]['id'] 
+                    if len(searchForUser) > 1:
+                        searchedNameOne = searchForUser[0].title()
+                        searchedNameTwo = searchForUser[1].title()
+                        print("This means there was two names submitted", searchedNameOne, searchedNameTwo)
+                        id = User.objects.filter(Q(firstName = (searchedNameOne))| Q(lastName= (searchedNameTwo))| Q(firstName = (searchedNameTwo))| Q(lastName= (searchedNameOne))).values('id')[0]['id'] #switched the order to include all ways the user typers their search
+            userProfile = User.objects.get(id = id) #this retrieves the searched user as an object
+            userProfile.firstName
+            userProfile.lastName
+            print("This is the searched user's first name, last name, and id:", userProfile.firstName, userProfile.lastName, userProfile.id)
+            print("THIS IS THE LAST PRINT STATEMENT OF THE SEARCH FOR A USER PROFILE ROUTE")
+            return redirect(reverse('specificUsersPage', args=(userProfile.firstName, userProfile.lastName, userProfile.id,))) #using the name of the url to redirect and passing the variables/params to the form rendering the template
+    except IndexError:
+        print("No results found!")
     return redirect("/home")
+
+def notifications(request):
+    print("THIS IS THE NOTIFICATIONS ROUTE")
+    print("THIS IS THE LAST PRINT STATEMENT OF THE NOTIFICATIONS ROUTE")
+    return redirect('/home')
 
 def logout(request):
     request.session.clear()
