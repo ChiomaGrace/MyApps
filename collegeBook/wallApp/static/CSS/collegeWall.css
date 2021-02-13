@@ -5,14 +5,15 @@
 .allUsersDiv{
     display: table;    
     /* width: 254px; */
+    border-radius: 10px;
 }
+
 #birthdayInfoBox{
     border: 1px solid #f1f1f1;
     /* position: fixed; */
     margin-left: 30%;
     font-family: Georgia, 'Times New Roman', Times, serif;
     font-size: small;
-
 }
 
 #birthdayLabel{
@@ -61,6 +62,11 @@
     /* background-color: pink; */
 }
 
+.confirmCancelNotificationButton{
+    width: 90px;
+    height: 30px;
+}
+
 .commentHeadText{
     /* margin-top: 4px; */
     margin-left: 10px;
@@ -103,14 +109,24 @@
 }
 
 .dropdown-item{
-    /* background-color: blue; */
     border-radius: 6px;
+    max-width: 100%;
+    white-space: pre-line;
 }
 
 .dropdown-menu{
-    /* background-color: red; */
     left: -70px;
     border-radius: 6px;
+
+
+}
+.notificationMenu{
+    left: -160px;
+    border-radius: 6px;
+    height: 520px;
+    width: 320px;
+    overflow-y: scroll;
+    overflow-x: hidden;
 }
 
 #errorDialogForFileSize{ /*The div containing the message of the error dialog box for an uploaded image*/
@@ -138,6 +154,7 @@
 .friendsDiv{
     display: table;    
     /* width: 254px; */
+    border-radius: 10px;
 }
 
 .hide {
@@ -177,6 +194,10 @@ small.messageCreatedAt{
     top: -4px;
 }
 
+.nameInNotification{
+    font-weight: bold;
+}
+
 #navBar{ /* Manages the length of the navigation bar */
     height: 58px;
 }
@@ -203,11 +224,19 @@ small.messageCreatedAt{
     margin-left:430px;
 }
 
+#postAMessageForm{
+    border-radius: 10px;
+}
+
 .profilePicBanner{
     background-color: white;
     height: 300px;
-    /* margin-bottom: 80px; */
 }
+
+.profilePicBannerThird{
+    border-radius: 10px;
+}
+
 #profilePicContainer{
     height: 160px;
     width: 160px;
@@ -273,6 +302,14 @@ small.messageCreatedAt{
     height: 38px;
     width: 180px;
 } 
+
+.specificNotification{
+    max-width: 100%;
+}
+
+.nameInNotification{
+    max-width: 100%;
+}
 
 .ui-dialog .ui-dialog-buttonpane button{ /*The css for the okay button on the error dialog box for uploading an image*/
     background-color: blue;
