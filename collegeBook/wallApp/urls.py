@@ -11,7 +11,8 @@ urlpatterns = [
     path('home/<int:messageId>', views.loggedInUsersPage, name='home'), #route used when a message is liked
     path('processProfilePic', views.processProfilePic),
     path('userDeletesProfilePic', views.userDeletesProfilePic),
-    path('processProfileInfo', views.processProfileInfo),
+    path('processProfileHeader', views.processProfileHeader), # the caption underneath the profile photo
+    path('processProfileIntro', views.processProfileIntro),
     path('processMessage/<str:userFirstName>/<str:userLastName>/<int:userId>', views.processMessage, name='processMessage'),
     path('processComment/<str:userFirstName>/<str:userLastName>/<int:userId>', views.processComment, name='processComment'),
     path('<str:userFirstName>/<str:userLastName>/<int:userId>', views.specificUsersPage, name='specificUsersPage'),
@@ -21,7 +22,9 @@ urlpatterns = [
     path('unlike/<int:messageId>', views.userUnlikes),
     path('<str:userFirstName>/<str:userLastName>/unlike/<int:messageId>', views.userUnlikes), #route that processes the removal of a like made on the specific user's page
     path('sendFriendRequest/<int:userId>', views.sendFriendRequest),
+    path('acceptFriendRequest/<int:userId>', views.acceptFriendRequest),
     path('removeFriendRequest/<int:userId>', views.removeFriendRequest),
+    path('unfriend/<int:userId>', views.unfriend),
     path('search', views.searchForUsersProfile),
     path('notifications', views.notifications),
     path('logout', views.logout)

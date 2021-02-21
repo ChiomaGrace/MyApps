@@ -148,6 +148,26 @@ class UserManager(models.Manager):
 
         return errors
 
+    def profileIntroValidator(self, postData):
+        errors = {}
+        print("*"*50)
+        #The below line of code makes sure an email is submitted. 
+        
+        if len(postData['userUniversity']) == 0:
+            errors['universityRequired'] = "Must submit a college"
+
+        if len(postData['userHighSchool']) == 0:
+            errors['highSchoolRequired'] = "Must submit a high school"
+        
+        # if len(postData['userDormBuilding']) == 0:
+        #     errors['dormBuildingRequired'] = "Must submit a dorm building"
+
+        if len(postData['userHomeTown']) == 0:
+            errors['homeTownRequired'] = "Must submit a home town"
+        print("*"*50)
+        return errors
+
+
 #The above code is for the login registration
 
 #The below code is for the validations of posting a message
@@ -191,33 +211,20 @@ class User(models.Model):
     password = models.CharField(max_length = 255)
     confirmPassword = models.CharField(max_length = 255)
     profilePic= models.ImageField(upload_to='submittedProfilePicImages/', null=True, verbose_name="")
-    profileInfo = models.CharField(max_length = 255, default = "")
+    profileHeader = models.CharField(max_length = 255, default = "") #The caption underneath the profile picture
     friends = models.ManyToManyField('self', related_name="friendship", symmetrical= False) # Self states this ManyToManyField is symmetrical – that is, if I am your friend, then you are my friend. So setting symmetrical to false makes the 'friendship' one way
+    notifications = models.IntegerField(default = "0")
+    userCheckBox = models.BooleanField(default = False) # An option for the user to not fill out the user intro fields below
+    userUniversity = models.CharField(max_length = 255, default = "")
+    userHighSchool = models.CharField(max_length = 255, default = "")
+    userDormBuilding = models.CharField(max_length = 255, default = "")
+    userHomeTown = models.CharField(max_length = 255, default = "")
     objects = UserManager()
     createdAt = models.DateTimeField(auto_now_add = True)
     updatedAt = models.DateTimeField(auto_now = True)
 
     def __repr__(self):
         return f"<User object: {self.firstName} {self.lastName} {self.birthdayMonth} {self.birthdayDay} {self.birthdayYear} {self.emailAddress} {self.password} {self.confirmPassword} {str(self.profilePic)} ({self.id})>"
-
-# class FriendList(models.Model):
-#     user = models.OneToOneField(User, related_name = "friendlists", on_delete=models.CASCADE)
-#     friends = models.ManyToManyField(User, related_name = 'friends')
-#     createdAt = models.DateTimeField(auto_now_add = True)
-#     updatedAt = models.DateTimeField(auto_now = True)
-
-#     def __repr__(self):
-#         return f"<FriendRequest object: {self.senderOfFriendRequest} {self.receiverOfFriendRequest} ({self.id})>"
-
-# class FriendRequest(models.Model):
-#     senderOfFriendRequest = models.ForeignKey(User, related_name = "loggedInUser", on_delete=models.CASCADE)
-#     receiverOfFriendRequest = models.ForeignKey(User, on_delete=models.CASCADE)
-#     pendingRequest = models.BooleanField(default=False)
-#     createdAt = models.DateTimeField(auto_now_add = True)
-#     updatedAt = models.DateTimeField(auto_now = True)
-
-    # def __repr__(self):
-    #     return f"<FriendRequest object: {self.senderOfFriendRequest} {self.receiverOfFriendRequest} ({self.id})>"
 
 class Message(models.Model):
     message = models.TextField()

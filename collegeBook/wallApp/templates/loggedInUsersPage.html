@@ -27,8 +27,8 @@
             var navIconProfPic = document.querySelector('#navIconProfPic'); //The id that contains the css style for the thumbnail in the nav bar
             var navIconProfilePicContainer = document.querySelector('#linkForNavIconProfPic'); //The id for the label within the form that is posing as a container for the input field 
             var thumbnail = $('#thumbnail').attr('src'); //The id for the img src that will display the uploaded profile photo by the user
-            var userProfileInfoEditLink = document.querySelector('#userProfileInfoEditLink'); //The id for the link that displays and hides the user profile info form
-            var userProfileInfoCancelButton= document.querySelector('#userProfileInfoCancelButton'); //The id for the link that displays and hides the user profile info form
+            var userProfileHeaderEditLink = document.querySelector('#userProfileHeaderEditLink'); //The id for the link that displays and hides the user profile info form
+            var userProfileHeaderCancelButton= document.querySelector('#userProfileHeaderCancelButton'); //The id for the link that displays and hides the user profile info form
             var XForProfilePicForm = document.querySelector('#clearImage'); //The id for the X that clears the preview of the selected image
 
         //The above code is the list of variables involved in the scripted code. 
@@ -44,6 +44,10 @@
         //The above code are function calls that run as soon as the window is loaded.
 
         //The below code enables the user to drag an image to be uploaded
+
+        //This initially hides the edit profile intro form, so it doesn't display until the edit details button is clicked
+            $( '#profileHeaderForm' ).hide();
+            $( '.overlay' ).hide()
 
             function preventDragDefault(e) {
                 e.preventDefault();
@@ -244,23 +248,23 @@
 
         //The below code shows and hides the user profile info form depending on the amount of times the user clicks the edit link.
         
-            userProfileInfoEditLink.onclick = showUserProfileInfoForm;
-                function showUserProfileInfoForm(e) {
+            userProfileHeaderEditLink.onclick = showUserProfileHeaderForm;
+                function showUserProfileHeaderForm(e) {
                     console.log("This console log means the edit button was clicked. ")
-                    $('#userProfileInfoTextArea').hide() //hides the info that is currently being displayed so the edit form can fit properly in its designated area
-                    $('#userProfileInfoEditLink').hide() //hides the edit link that the user clicked on to show the edit form
+                    $('#userProfileHeaderText').hide() //hides the info that is currently being displayed so the edit form can fit properly in its designated area
+                    $('#userProfileHeaderEditLink').hide() //hides the edit link that the user clicked on to show the edit form
                     if(e) {
                         e.preventDefault(); //prevents the form from hiding right after it begins to show after the link is clicked
-                    $('#userProfileInfoForm').show()
+                    $('#userProfileHeaderForm').show()
                     }
                 }
-            userProfileInfoCancelButton.onclick = hideUserProfileInfoForm;
-                function hideUserProfileInfoForm(e) {
+            userProfileHeaderCancelButton.onclick = hideUserProfileHeaderForm;
+                function hideUserProfileHeaderForm(e) {
                     if(e) {
                         e.preventDefault(); //prevents the form from only temporarily hiding
-                    $('#userProfileInfoForm').hide() //hides the form until the user clicks the edit form
-                    $('#userProfileInfoEditLink').show() //shows the edit link button
-                    $('#userProfileInfoTextArea').show() //shows the current info the user has entered
+                    $('#userProfileHeaderForm').hide() //hides the form until the user clicks the edit form
+                    $('#userProfileHeaderEditLink').show() //shows the edit link button
+                    $('#userProfileHeaderText').show() //shows the current info the user has entered
 
                     }
                 }
@@ -269,18 +273,18 @@
 
         //The below code is submitting the user profile info form via jquery/ajax
 
-            $("#userProfileInfoForm").submit(function(e){// the id name given to the form action in the below html
+            $("#userProfileHeaderForm").submit(function(e){// the id name given to the form action in the below html
                 console.log("The save user profile info was clicked.")
                 e.preventDefault(); //prevents the default browser behavior of the form submitting normally
-                var userProfileInfoData = {
-                    "userProfileInfo": $('#userProfileInfoID').val(), //the key name must match the name in the views/form but the value name must differentiate
+                var userProfileHeaderData = {
+                    "userProfileHeader": $('#userProfileHeaderTextArea').val(), //the key name must match the name in the views/form but the value name must differentiate
                 };
-                console.log("The form data was submitted.", userProfileInfoData)
+                console.log("The form data was submitted.", userProfileHeaderData)
                 $.ajax({
                     type: "POST",
-                    url: '/processProfileInfo',
+                    url: '/processProfileHeader',
                     headers:{"X-CSRFToken": $crf_token}, //this relates to the CSRF token in the form
-                    data: userProfileInfoData,
+                    data: userProfileHeaderData,
                     success: function(data) {
                             console.log("This is the data successfully submitted", data)
                             window.location.href = '/home'; //if the data is submitted correctly, this directs the user to their homepage       
@@ -394,9 +398,10 @@
                                 console.log("This is inside the if loop for the commentRequired error", error)
                             }
                         }
-                        console.log("Outside of the for loop of the dictionary")                        },
-                });
-                });
+                        console.log("Outside of the for loop of the dictionary")                       
+                    },
+                })
+            });
 
         //The above code is the function for posting a comment via jquery/ajax
 
@@ -495,48 +500,161 @@
         //The above code is the function for removing a friend request  via jquery/ajax
 
             allCancelFriendRequestButtons = document.querySelectorAll(".pendingFriendRequestButton");
-                for (clickedButton of allCancelFriendRequestButtons) {
-                    clickedButton.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        userId = this.value
-                        user= $(this)
-                        console.log("This is the value of the clicked button:", userId);
-                        $.ajax({
-                            type: "POST",
-                            url: 'removeFriendRequest' + '/' + userId, 
-                            headers:{"X-CSRFToken": $crf_token}, //this relates to the CSRF token needed to send data to the backend
-                            data: userId,
-                            success: function(data) {
-                                console.log("This console log means the friend request was sent successfully. userId:", userId)
-                                user.replaceWith("<button type='button' class='btn btn-sm sendFriendRequestButton' value='{{user.id}}'><a href='' class='sendFriendRequest'><svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-person-plus' viewBox='0 0 16 16'><path d='M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H1s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C9.516 10.68 8.289 10 6 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z'/><path fill-rule='evenodd' d='M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z'/></svg></a></button>"); 
-                                location.reload(); //reloads the page and triggers the dynamic function of the cancel button which was showing but not  working prior unless page was refreshed.
-                            },
-                            error: function(data){
-                                console.log("If this console log is displaying it means there were errors in sending the friend request.")                       
-                            },
-                        })
-                    });
-                }
-
-        //The below code is the function for removing a friend request via jquery/ajax
-
-        $('#notifications').click(function(e) {
+            for (clickedButton of allCancelFriendRequestButtons) {
+                clickedButton.addEventListener('click', function(e) {
                     e.preventDefault();
-                    console.log("This console log means the notification symbol was clicked");
+                    userId = this.value
+                    user= $(this)
+                    console.log("This is the value of the clicked button:", userId);
                     $.ajax({
                         type: "POST",
-                        url: 'notifications', 
+                        url: 'removeFriendRequest' + '/' + userId, 
                         headers:{"X-CSRFToken": $crf_token}, //this relates to the CSRF token needed to send data to the backend
-                        data: "mom",
+                        data: userId,
                         success: function(data) {
-                            console.log("This console log means it was successful.")
-                            // location.reload(); //reloads the page and triggers the dynamic function of the cancel button which was showing but not  working prior unless page was refreshed.
+                            console.log("This console log means the friend request was sent successfully. userId:", userId)
+                            // user.replaceWith("<button type='button' class='btn btn-sm sendFriendRequestButton' value='{{user.id}}'><a href='' class='sendFriendRequest'><svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-person-plus' viewBox='0 0 16 16'><path d='M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H1s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C9.516 10.68 8.289 10 6 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z'/><path fill-rule='evenodd' d='M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z'/></svg></a></button>"); 
+                            user.hide();
+                            location.reload(); //reloads the page and triggers the dynamic function of the cancel button which was showing but not  working prior unless page was refreshed.
                         },
                         error: function(data){
-                            console.log("If this console log is displaying it means there were errors.")                       
+                            console.log("If this console log is displaying it means there were errors in sending the friend request.")                       
                         },
                     })
                 });
+            }
+
+        //The below code is the function for removing a friend request via jquery/ajax
+
+        //The below code is the function for seeing and hiding notifications  via jquery/ajax
+
+            $('#notifications').click(function(e) {
+                $('#notificationCounter').hide()
+            }); 
+        //The above code is the function for seeing notifications  via jquery/ajax
+
+        //The below code is the function for handling specific notifications via jquery/ajax
+
+            allConfirmFriendRequestButtons = document.querySelectorAll(".confirmNotificationButton");
+            for (clickedButton of allConfirmFriendRequestButtons) {
+                clickedButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    userId = this.value
+                    user= $(this)
+                    console.log("The button to confirm a friend request was clicked, and the user id is:", userId)
+                    $.ajax({
+                        type: "POST",
+                        url: 'acceptFriendRequest' + '/' + userId, 
+                        headers:{"X-CSRFToken": $crf_token}, //this relates to the CSRF token needed to send data to the backend
+                        data: userId,
+                        success: function(data) {
+                            console.log("This console log means the friend request was confirmed successfully.")
+                            user.parent().parent().remove()
+                            // user.parent().parent().hide()
+                            location.reload(); //reloads the page and displays the new data.
+                        },
+                        error: function(data){
+                            console.log("If this console log is displaying, it means errors occurred in accepting the friend request.")                       },
+                    })
+                })
+            }
+        //The above code is the function for handling specific notifications via jquery/ajax
+
+        //The below code is the function for handling canceling a specific notification(friend request) via jquery/ajax
+
+            allCancelFriendRequestButtons = document.querySelectorAll(".cancelNotificationButton");
+            for (clickedButton of allCancelFriendRequestButtons) {
+                clickedButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    userId = this.value
+                    user= $(this)
+                    console.log("The button to decline a friend request was clicked, and the user id is:", userId)
+                    $.ajax({
+                        type: "POST",
+                        url: 'unfriend' + '/' + userId, 
+                        headers:{"X-CSRFToken": $crf_token}, //this relates to the CSRF token needed to send data to the backend
+                        data: userId,
+                        success: function(data) {
+                            console.log("This console log means the friend request was declined successfully.")
+                            user.parent().parent().remove()
+                            location.reload(); //reloads the page and displays the new data.
+                        },
+                        error: function(data){
+                            console.log("If this console log is displaying, it means errors occurred in declining the friend request.")                       },
+                    })
+                })
+            }
+        
+        //The above code is the function for handling canceling a specific notification(friend request) 
+
+        //The below code are functions for the profile intro form. It is the click function for the form to appear, another click function for the form to disappear, and lastly an ajax function for the form to be sent to the backend
+
+            $('.editDetailsButton').click(function(){
+                    event.preventDefault(); //prevents the dialog box (create account) from hiding again
+                    console.log("This is when the create account button is clicked.")
+                    $( '#profileIntroForm' ).show()
+                    $( '.overlay' ).show()
+            });
+
+            $('#XForProfileIntroForm').click(function(){
+                console.log("This console log means the profile intro form was closed")
+                if ($(".displayErrors").is(':visible')) {
+                    console.log("This console log means errors occurred and are visible on the html")
+                    $(".displayErrors").empty() // This resets the current errors and prevents them from appending multiple times upon a submit (profile intro attempt)
+                    $(".displayErrors").hide() 
+                }
+                $( '#profileIntroForm' ).hide();
+                $( '.overlay' ).hide()
+            });
+
+            $('#profileIntroForm').submit(function(e){
+                e.preventDefault(); //prevents the default a tag behavior of refreshing
+                var profileIntroData = { 
+                    "userUniversity": $('input[name="userUniversity"]').val(), //the key name must match the name in the views/form but the value name must differentiate
+                    "userHighSchool": $('input[name="userHighSchool"]').val(), 
+                    "userDormBuilding": $('input[name="userDormBuilding"]').val(), 
+                    "userHomeTown": $('input[name="userHomeTown"]').val(), 
+                    "userCheckBox": $('input[name="userCheckBox"]').is(':checked')
+                };
+                console.log("The submitted profile intro data:", profileIntroData)
+                $.ajax({
+                    type: "POST",
+                    url: '/processProfileIntro', 
+                    headers:{"X-CSRFToken": $crf_token}, //this relates to the CSRF token needed to send data to the backend
+                    data: profileIntroData,
+                    success: function(data) {
+                        console.log("This console log means the posted intro data was posted successfully.")
+                        location.reload(); //reloads the page and displays the new data.
+                    },
+                    error: function(data){
+                        console.log("If this console log is displaying, it means errors occurred in submitting the profile info data.")                       
+                        var profileIntroErrors = data.responseJSON.errors //Name of the dictionary.
+                        console.log("This will print the key and value of each pair in the dictionary", profileIntroErrors)
+                        console.log("Before the for loop of the dictionary")
+                        for(error in profileIntroErrors){ 
+                            console.log(error) //This provides the key name of each error
+                            console.log(profileIntroErrors[error]) //This provides the value of each error (the actual error message)
+                            // console.log(profileIntroErrors[error][0]) //This provides the value of each character in the error message (a specific letter)
+                            $(".displayErrors").append('<li class= "text-danger small">' + profileIntroErrors[error] + '</li>')
+                            $(".displayErrors").show(); //displays the appended registration errors on the html
+                        }
+                    },
+                })
+            });
+
+        //The above code are functions for the profile intro form. It is the click function for the form to appear, another click function for the form to disappear, and lastly an ajax function for the form to be sent to the backend
+
+        //The below code is the function to show all the users when the 'Show All Users' link is clicked
+            $('.allUsersLink').click(function(){
+                    event.preventDefault(); //prevents the dialog box (create account) from hiding again
+                    console.log("This is when the 'Show All Users' link is clicked.")
+                    $( '.introDiv' ).hide()
+                    $('#postAMessageForm').hide()
+                    $('.allUsersDiv').hide()
+                    $('.friendsDiv').hide()
+                    $('.showAllUsers').show()
+            });
+        //The above code is the function to show all the users when the 'Show All Users' link is clicked
 
         }); //end of entire code in the script
     </script>
@@ -603,51 +721,33 @@
                     </li>
                     <li class="nav-item dropdown"> <!-- This is the notification bell symbol -->
                         <a class="nav-link" href="" data-toggle="dropdown" id="notifications">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-bell-fill mb-1" viewBox="0 0 16 16">
+                            {% if loggedInUser.notifications %}
+                            <button type="button" class="btn btn-sm btn-danger notificationNumber" id="notificationCounter">{{loggedInUser.notifications}}</button>
+                            {% endif %}
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-bell-fill mb-1 notificationBellSymbol" viewBox="0 0 16 16">
                                 <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zm.995-14.901a1 1 0 1 0-1.99 0A5.002 5.002 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901z"/>
                             </svg>
                         </a>
                         <div class="dropdown-menu notificationMenu">
-                            <div class="dropdown-item">
-                                <img src='{{ loggedInUser.profilePic }}' id="navIconProfPic" class="d-inline"> <p class="d-inline-block nameInNotification mb-0 mt-2"> Bob Marley</p>
-                                <p class="d-inline-block specificNotification mb-0"> sent you a friend request.</p>
-                                <div class="btn-group">
-                                    <button type="button" class="btn btn-sm btn-primary confirmCancelNotificationButton mr-2">Confirm</button>
-                                    <button type="button" class="btn btn-sm btn-secondary confirmCancelNotificationButton">Cancel</button>
+                        {% if loggedInUser.notifications == 0 %}
+                            <p class="ml-4"> No new notifications.</p>
+                        {% endif %}
+                    {% for friendRequest in loggedInUser.friends.all %}
+                        {% if not loggedInUser in friendRequest.friends.all %} <!-- This code would remove the sent friend request signifying the logged in user did not accept the friend request -->
+                            <div class="dropdown-item" value="{{friendRequest.id}}">
+                                <div class="specificNotification">
+                                    <a href="/{{friendRequest.firstName}}/{{friendRequest.lastName}}/{{friendRequest.id}}" class="d-inline-block">
+                                        <img src='{{ friendRequest.profilePic }}' id="navIconProfPic" class="d-inline-block"> <p class="d-inline-block nameInNotification mb-0 mt-2">{{friendRequest.firstName}} {{friendRequest.lastName}}</p>
+                                    </a>
+                                    <p class="d-inline-block  mb-0 pt-0"> sent you a friend request.</p>
+                                    <div class="btn-group mt-0">
+                                        <button type="button" class="btn btn-sm btn-primary confirmCancelNotificationButton confirmNotificationButton mr-2" value="{{friendRequest.id}}">Confirm</button>
+                                        <button type="button" class="btn btn-sm btn-secondary confirmCancelNotificationButton cancelNotificationButton" value="{{friendRequest.id}}">Cancel</button>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="dropdown-item">
-                                <img src='{{ loggedInUser.profilePic }}' id="navIconProfPic" class="d-inline"> <p class="d-inline-block nameInNotification mb-0 mt-2"> Bob Marley</p>
-                                <p class="d-inline-block specificNotification mb-0"> sent you a friend request.</p>
-                                <div class="btn-group">
-                                    <button type="button" class="btn btn-sm btn-primary confirmCancelNotificationButton mr-2">Confirm</button>
-                                    <button type="button" class="btn btn-sm btn-secondary confirmCancelNotificationButton">Cancel</button>
-                                </div>
-                            </div>
-                            <div class="dropdown-item">
-                                <img src='{{ loggedInUser.profilePic }}' id="navIconProfPic" class="d-inline"> <p class="d-inline-block nameInNotification mb-0 mt-2"> Bob Marley</p>
-                                <p class="d-inline-block specificNotification mb-0"> sent you a friend request.</p>
-                                <div class="btn-group">
-                                    <button type="button" class="btn btn-sm btn-primary confirmCancelNotificationButton mr-2">Confirm</button>
-                                    <button type="button" class="btn btn-sm btn-secondary confirmCancelNotificationButton">Cancel</button>
-                                </div>
-                            </div>
-                            <div class="dropdown-item">
-                                <img src='{{ loggedInUser.profilePic }}' id="navIconProfPic" class="d-inline"> <p class="d-inline-block nameInNotification mb-0 mt-2"> Bob Marley</p>
-                                <p class="d-inline-block specificNotification mb-0"> sent you a friend request.</p>
-                                <div class="btn-group">
-                                    <button type="button" class="btn btn-sm btn-primary confirmCancelNotificationButton mr-2">Confirm</button>
-                                    <button type="button" class="btn btn-sm btn-secondary confirmCancelNotificationButton">Cancel</button>
-                                </div>
-                            </div>
-                            <div class="dropdown-item">
-                                <img src='{{ loggedInUser.profilePic }}' id="navIconProfPic" class="d-inline"> <p class="d-inline-block nameInNotification mb-0 mt-2"> Bob Marley</p>
-                                <p class="d-inline-block specificNotification mb-0"> sent you a friend request.</p>
-                                <div class="btn-group">
-                                    <button type="button" class="btn btn-sm btn-primary confirmCancelNotificationButton mr-2">Confirm</button>
-                                    <button type="button" class="btn btn-sm btn-secondary confirmCancelNotificationButton">Cancel</button>
-                                </div>
-                            </div>
+                        {% endif %}
+                    {% endfor %}
                         </div>
                     </li>
                     <li class="nav-item"> <!-- This is the messenger symbol -->
@@ -685,6 +785,35 @@
         <div class="row bg-white mt-4 profilePicBannerThird">
             <div class="col-sm bg-white profilePicBannerThird">
                 <!-- First of the third columns of the profile pic white banner background (needed to center photo)  -->
+                <div class="row mt-5"></div>
+                <div class="row mt-5"></div>
+                <div class="row mt-5"></div>
+                <div class="row mt-5"></div>
+                <div class="row mt-5"></div>
+                <div class="row ml-5 mt-5 mr-2 pb-2">
+                    <!-- <p class="decorativeLine mt-3 mb-0">________________________________________________</p> -->
+                    <button class="btn btn-outline-light profilePicBannerLinks pr-2">
+                        Posts
+                    </button>
+                    <button class="btn btn-outline-light profilePicBannerLinks pr-2">
+                        About
+                    </button>
+                {% if friends.count == 0 %}
+                    <button class="btn btn-outline-light profilePicBannerLinks pr-2">
+                        Friends
+                    </button>
+                {% else %}
+                    <button class="btn btn-outline-light profilePicBannerLinks pr-2">
+                        Friends {{friends.count}}
+                    </button>
+                {% endif %}
+                    <button class="btn btn-outline-light profilePicBannerLinks pr-2">
+                        More
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-caret-down-fill" viewBox="0 0 16 16">
+                            <path d="M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
+                        </svg>
+                    </button>
+                </div>
             </div>
             <div class="col-sm profilePicBanner">
                 <form enctype="multipart/form-data" method="POST" action="" class="mb-0" id="profilePicForm">
@@ -714,39 +843,196 @@
                     <p><span class="ui-icon ui-icon-alert"></span>File size is too big. Please try again.</p>
                 </div>
                 <h3 class="" id="userNameText">{{loggedInUser.firstName}} {{loggedInUser.lastName}}</h3>
-                <p class="mb-0" id="userProfileInfoTextArea">{{loggedInUser.profileInfo}}</p>
-                <a href="" class="" id="userProfileInfoEditLink">Edit</a>
-                <form class="" action="" id="userProfileInfoForm" method="post">
+                <p class="mb-0" id="userProfileHeaderText">{{loggedInUser.profileHeader}}</p>
+                <a href="" class="" id="userProfileHeaderEditLink">Edit</a>
+                <form class="" action="" id="userProfileHeaderForm" method="post">
                     {% csrf_token %}
-                    <!-- Important to use different names for the id(userProfileInfoID) and name(userProfileInfo) field for the textarea(or any form input) otherwise there will be a multidictkey error in the backend when trying to submit -->
-                    <textarea class="form-control" id="userProfileInfoID" name="userProfileInfo" rows="3">{{loggedInUser.profileInfo}}</textarea>
-                    <div id="userProfileInfoButtons">
-                        <button id="userProfileInfoCancelButton" class=" ml-5 btn btn-primary btn-sm">Cancel</button>
+                    <!-- Important to use different names for the id(userProfileHeaderID) and name(userProfileHeader) field for the textarea(or any form input) otherwise there will be a multidictkey error in the backend when trying to submit -->
+                    <textarea class="form-control" id="userProfileHeaderTextArea" name="userProfileHeader" rows="3">{{loggedInUser.profileHeader}}</textarea>
+                    <div id="userProfileHeaderButtons">
+                        <button id="userProfileHeaderCancelButton" class=" ml-5 btn btn-primary btn-sm">Cancel</button>
                         <button type="submit" class="btn btn-primary btn-sm">Save</button>
                     </div>
                 </form>
+                <!-- <div class="row">
+                    <p class="decorativeLine connectLine">________________________________________________________</p>
+                </div> -->
             </div>
             <div class="col-sm bg-white profilePicBannerThird">
+                <!-- <div class="row mt-5"></div>
+                <div class="row mt-5"></div>
+                <div class="row mt-5"></div>
+                <div class="row mt-5"></div>
+                <div class="row mt-5"></div>
+                <div class="row mt-4">
+                    <p class="decorativeLine mt-2 mb-0">_______________________________________________</p>
+
+                </div> -->
                 <!-- Last of the third columns of the profile pic white banner background (needed to center photo)  -->
             </div>
         </div>
 
+        <div class="row ml-5 mt-4"> 
+            <div class="col-sm-4 bg-white introDiv">
+                <p class="lead">Intro</p>
+        {%  if loggedInUser.userCheckBox == 0 %} <!-- True displays 1 in models. False displays 0. 0 representing the user chose to display intro information -->
+                <div class="">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="black" class="bi bi-pencil" viewBox="0 0 16 16">
+                        <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5L13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175l-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                    </svg>
+                    <p class="d-inline-block">Studies at</p>
+                    <p class="d-inline-block specificIntroDetail">{{loggedInUser.userUniversity}}</p>
+                </div>
+                <div class="">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="black" class="bi bi-building" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M14.763.075A.5.5 0 0 1 15 .5v15a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5V14h-1v1.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V10a.5.5 0 0 1 .342-.474L6 7.64V4.5a.5.5 0 0 1 .276-.447l8-4a.5.5 0 0 1 .487.022zM6 8.694L1 10.36V15h5V8.694zM7 15h2v-1.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5V15h2V1.309l-7 3.5V15z"/>
+                        <path d="M2 11h1v1H2v-1zm2 0h1v1H4v-1zm-2 2h1v1H2v-1zm2 0h1v1H4v-1zm4-4h1v1H8V9zm2 0h1v1h-1V9zm-2 2h1v1H8v-1zm2 0h1v1h-1v-1zm2-2h1v1h-1V9zm0 2h1v1h-1v-1zM8 7h1v1H8V7zm2 0h1v1h-1V7zm2 0h1v1h-1V7zM8 5h1v1H8V5zm2 0h1v1h-1V5zm2 0h1v1h-1V5zm0-2h1v1h-1V3z"/>
+                    </svg>
+                    <p class="d-inline-block">Went to</p>
+                    <p class="d-inline-block specificIntroDetail">{{loggedInUser.userHighSchool}}</p>
+                </div>
+            {% if loggedInUser.userDormBuilding ==  "" %}
+                <!-- Removes the "lives in option if the user chooses to leave it blank" -->
+            {% else %}
+                <div class="">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-house-door" viewBox="0 0 16 16">
+                        <path d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146zM2.5 14V7.707l5.5-5.5 5.5 5.5V14H10v-4a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5v4H2.5z"/>
+                    </svg>
+                    <p class="d-inline-block">Lives in</p>
+                    <p class="d-inline-block specificIntroDetail">{{loggedInUser.userDormBuilding}}</p>
+                </div>
+            {% endif %} <!-- End of the if statement that removes the "lives in option if the user chooses to leave it blank" -->
+                <div class="">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-geo-alt" viewBox="0 0 16 16">
+                        <path d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A31.493 31.493 0 0 1 8 14.58a31.481 31.481 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94zM8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10z"/>
+                        <path d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                    </svg>
+                    <p class="d-inline-block">From</p>
+                    <p class="d-inline-block specificIntroDetail">{{loggedInUser.userHomeTown}}</p>
+                </div>
+                <div class="row ml-4">
+                    <button type="button" class="btn btn-sm btn-secondary pl-5 pr-5 ml-5 editDetailsButton">Edit Details</button>
+                </div>
+        {% else %} <!-- Only displays the edit details button if the user has chosen not to display their intro information -->
+                <div class="d-grid col-6 mx-auto">
+                    <div class="row mt-4">
+                    </div>
+                    <div class="row ml-3 mt-5">
+                        <button type="button" class="btn btn-sm btn-secondary editDetailsButton">Edit Details</button>
+                    </div>
+                </div>
+        {% endif %} <!-- End of the if statement that only displays the edit details button if the user has not chosen to hide the intro information  -->
+            </div>
+            <!-- THIS IS THE EDIT DETAILS FORM -->
+            <div class="overlay">
+            <div id= "profileIntroFormDiv" class=" col-sm-4 rounded-lg">
+                <form action="/processProfileIntro" id="profileIntroForm" method="POST">    
+                <!-- Removed the url above to submit form data via jquery/ajax in the script-->
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <h2 class="mb-0"> Edit Intro</h2>
+                        </div>
+                        <div class="col-sm-3 ">
+                            <!-- Column two of three --> 
+                        </div> 
+                        <div class="col-sm-3">
+                            <h4 id= "XForProfileIntroForm"class="font-weight-bolder text-secondary pl-3 ml-5"> X <h4>
+                        </div>
+                    </div>
+                    <small id="" class="ml-1 mt-1 text-muted">Customize Your Intro!</small>
+                    <div id="profileIntroErrors">
+                        <ul class="displayErrors mb-0">
+                            <!-- <li class="  text-danger"> </li> -->
+                        </ul>
+                    </div>
+                    <p class="decorativeLine">__________________________________________________________</p>
+                    <div class="d-block ml-5 ml-5 mb-2">
+                        <div class="form-group pt-0 d-inline">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="black" class="bi bi-pencil" viewBox="0 0 16 16">
+                                <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5L13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175l-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                            </svg>
+                            <p class="d-inline-block mb-2">Studies at</p>
+                            <input type="text" class="form-control d-inline col-sm-6 " name="userUniversity"  id="userUniversityID" placeholder="University" value="{{request.session.rememberUniversity}}">
+                        </div>
+                    </div>
+                    <div class="d-block ml-5 mb-2">
+                        <div class="form-group pt-0 d-inline">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="black" class="bi bi-building" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M14.763.075A.5.5 0 0 1 15 .5v15a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5V14h-1v1.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V10a.5.5 0 0 1 .342-.474L6 7.64V4.5a.5.5 0 0 1 .276-.447l8-4a.5.5 0 0 1 .487.022zM6 8.694L1 10.36V15h5V8.694zM7 15h2v-1.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5V15h2V1.309l-7 3.5V15z"/>
+                                <path d="M2 11h1v1H2v-1zm2 0h1v1H4v-1zm-2 2h1v1H2v-1zm2 0h1v1H4v-1zm4-4h1v1H8V9zm2 0h1v1h-1V9zm-2 2h1v1H8v-1zm2 0h1v1h-1v-1zm2-2h1v1h-1V9zm0 2h1v1h-1v-1zM8 7h1v1H8V7zm2 0h1v1h-1V7zm2 0h1v1h-1V7zM8 5h1v1H8V5zm2 0h1v1h-1V5zm2 0h1v1h-1V5zm0-2h1v1h-1V3z"/>
+                            </svg>
+                            <p class="d-inline-block">Went to </p>
+                            <input type="text" class="form-control d-inline ml-3 col-sm-6 " name="userHighSchool"  id="userHighSchoolID" placeholder="High School" value="{{request.session.rememberHighSchool}}">
+                        </div>
+                    </div>
+                    <div class="d-block ml-5 mb-2">
+                        <div class="form-group pt-0 d-inline">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-house-door" viewBox="0 0 16 16">
+                                <path d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146zM2.5 14V7.707l5.5-5.5 5.5 5.5V14H10v-4a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5v4H2.5z"/>
+                            </svg>
+                            <p class="d-inline-block">Lives in</p>
+                            <input type="text" class="form-control d-inline ml-3 col-sm-6 " name="userDormBuilding"  id="userDormBuildingID" placeholder="Dorm Building" value="{{request.session.rememberDormBuilding}}">
+                        </div>
+                    </div>
+                    <div class="d-block ml-5 mb-2">
+                        <div class="form-group pt-0 d-inline">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-geo-alt" viewBox="0 0 16 16">
+                                <path d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A31.493 31.493 0 0 1 8 14.58a31.481 31.481 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94zM8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10z"/>
+                                <path d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                            </svg>
+                            <p class="d-inline-block">From</p>
+                            <input type="text" class="form-control d-inline ml-4 col-sm-6 " name="userHomeTown"  id="userHomeTownID" placeholder="Home Town" value="{{request.session.rememberHomeTown}}">
+                        </div>
+                    </div>
+                    <div class="form-group pt-0 d-inline">
+                        <input type="checkbox" name="userCheckBox" id="userProfileIntroCheckboxID">
+                        <label class="" name="hideIntro" >I want to hide my details.</label>
+                    </div>
+                    <button type="submit" id="submitProfileIntroButton" class="btn btn-primary col-sm-10 btn-primary rounded-lg mt-2 ml-4">Save</button>
+                </form>
+            </div>
+            </div> <!-- Closing div for the overlay -->
+<!-- THIS IS THE EDIT DETAILS FORM -->
+
+            <div class="col-sm-7 ml-5">
+                <!-- The below code is for the post a message form -->
+                <form class="mb-2 bg-white col-sm-12" action="" method="post" id="postAMessageForm">
+                    {% csrf_token %}
+                    <div id="postAMessageErrors">
+                        <ul class="displayMessageErrors mb-0">
+                        </ul>
+                    </div>
+                    <div class="form-group">
+                        <label for="textArea"></label>
+                        <input type="hidden" id="userWhoReceivesPostID" name="userWhoReceivesPost" value="{{loggedInUser.id}}">
+                        <textarea class="form-control rounded-pill" id="userMessageID" name="userMessage" rows="2" placeholder="What's On Your Mind, {{loggedInUser.firstName}}?"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary mb-2 btn-sm" id="postAMessageButton">Post A Message</button>
+                </form>
+            </div>
+        </div> <!-- Closing row div for the profile Intro Div -->
+
 <!-- the below code is the first row under the profile pic banner containing two columns: all users div and post a message div-->
         <div class="row ml-5 mt-4"> 
-            <div class="col-sm-3 ml-5 bg-white allUsersDiv">
-                <p class="lead mr-2 pl-2">All Users</p>
-            {% for user in allUsers %}
+            <div class="col-sm-3 ml-4 bg-white allUsersDiv">
+                <div>
+                    <p class="lead d-inline-block pr-4">All Users</p> 
+                    <a href="" class="d-inline-block ml-5 allUsersLink">See All Users</a>
+                </div>
+        {% for user in allUsers %}
+            {% if not user in loggedInUser.friends.all %}  <!-- this allows the logged in user to still remove the friend request if necessary -->
                 {% if loggedInUser.id != user.id  %} <!-- to prevent the logged in user's name displaying in the friends section -->
                     {% if user.profilePic == "" %} 
                 <!-- if a user does not have an uploaded profile pic the below code will run -->
                 <figure class="ml-4 d-inline-block">
                     <a href="/{{user.firstName}}/{{user.lastName}}/{{user.id}}" class="">
                         <img src="{% static 'Images/blankAvatar.png' %}" id="" class="friendsIconProfPic " alt="A thumbnail photo of the user">
-                        <figcaption class="ml-2 friendsIconName">{{user.firstName}}</figcaption>
+                        <figcaption class="friendsIconName">{{user.firstName}}</figcaption>
                     </a>
                 </figure>
                 <!-- the below code  is to add or cancel a friend request for a user that does not have an uploaded profile pic -->
-                {% if not loggedInUser in user.friends.all %}  <!-- displays the add friend icon if the logged in user hasn't already-->
+                {% if not loggedInUser in user.friends.all %}  <!-- displays the add friend icon initially and until the logged in user clicks the add friend icon-->
                 <button type="button" class="btn btn-sm sendFriendRequestButton" value="{{user.id}}">
                     <a href="" class="sendFriendRequest">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-plus" viewBox="0 0 16 16">
@@ -783,46 +1069,32 @@
                         </a>
                     </figure>
                 </div>
-                    {% endif%}
-                {% endif %}
-            {% endfor %}
-            </div>
-        
-            <div class="col-sm-7 ml-5 mt-4">
-                <!-- The below code is for the post a message form -->
-                <form class="mb-2 bg-white col-sm-12" action="" method="post" id="postAMessageForm">
-                    {% csrf_token %}
-                    <div id="postAMessageErrors">
-                        <ul class="displayMessageErrors mb-0">
-                        </ul>
-                    </div>
-                    <div class="form-group">
-                        <label for="textArea"></label>
-                        <input type="hidden" id="userWhoReceivesPostID" name="userWhoReceivesPost" value="{{loggedInUser.id}}">
-                        <textarea class="form-control rounded-pill" id="userMessageID" name="userMessage" rows="2" placeholder="What's On Your Mind, {{loggedInUser.firstName}}?"></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary mb-2 btn-sm" id="postAMessageButton">Post A Message</button>
-                </form>
+                    {% endif%} <!-- end of the if statement that runs a certain code if a user does not have an uploaded profile pic -->
+                {% endif %} <!-- end of the if statement that prevents the logged in user's name displaying in the friends section -->
+            {% endif %} <!-- End of the if statement to not show the users the logged in user is friends with -->
+        {% endfor %}
             </div>
         </div>
 <!-- the above code is the first row under the profile pic banner containing two columns: all users div and post a message div-->
 
         <div class="row bg-light ml-5 mt-2">
-            <div class="col-sm-3 ml-5 bg-white friendsDiv">
-                <p class="lead mr-2 pl-2">Friends</p>
-                {% for user in allUsers %}
-                    {% if loggedInUser.id != user.id  %} <!-- to prevent the logged in user's name displaying in the friends section -->
-                        {% if user.profilePic == "" %} 
-                <!-- if a user does not have an uploaded profile pic the below code will run -->
-                
+            <div class="col-sm-3 ml-4 bg-white friendsDiv"> 
+                <div>
+                    <p class="lead d-inline-block pr-4">Friends</p> 
+                    <a href="" class="d-inline-block ml-5 allUsersLink">See All Friends</a>
+                </div>
+{% for user in friends %}
+    {% if loggedInUser.id != user.id  %} <!-- to prevent the logged in user's name displaying in the friends section -->
+        {% if user.profilePic == "" %} 
+            <!-- if a user does not have an uploaded profile pic the below code will run -->
                 <figure class="ml-4 d-inline-block">
                     <a href="/{{user.firstName}}/{{user.lastName}}/{{user.id}}" class="">
                         <img src="{% static 'Images/blankAvatar.png' %}" id="" class="friendsIconProfPic " alt="A thumbnail photo of the user">
-                        <figcaption class="ml-2 friendsIconName">{{user.firstName}}</figcaption>
+                        <figcaption class="friendsIconNameWithBlankAvatar">{{user.firstName}}</figcaption>
                     </a>
                 </figure>
-                <!-- the below code  is to add or cancel a friend request -->
-                {% if not loggedInUser in user.friends.all %}
+        <!-- the below code  is to add or cancel a friend request -->
+            {% if not loggedInUser in user.friends.all %}
                 <button type="button" class="btn btn-sm sendFriendRequestButton" value="{{user.id}}">
                     <a href="" class="sendFriendRequest">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-plus" viewBox="0 0 16 16">
@@ -831,41 +1103,40 @@
                         </svg>                                
                     </a>
                 </button>
-                {% else %}
+            {% else %}
                 <button type="button" class="btn btn-sm btn-danger pendingFriendRequestButton" value="{{user.id}}" >Cancel</button>
-                {% endif %}
-                <!-- the above code  is to add or cancel a friend request -->
+            {% endif %}
+        <!-- the above code  is to add or cancel a friend request -->
 
-                <!-- if a user does not have an uploaded profile pic the above code will run -->
-                    {% else %}
+                
+        {% else %} <!-- if a user does not have an uploaded profile pic the above code will run, if the user does, the below code will run -->
+                <!-- the below code  is to add or cancel a friend request -->
+                {% if user in loggedInUser.friends.all and loggedInUser in user.friends.all %} 
                 <div class="d-inline-block">
                     <figure class="ml-4">
                         <a href="/{{user.firstName}}/{{user.lastName}}/{{user.id}}">
                             <img src="{{user.profilePic}}" id="" class="friendsIconProfPic" alt="A thumbnail photo of the user">
                         </a>
-                        {% if not loggedInUser in user.friends.all %}
-                        <button type="button" class="btn btn-sm sendFriendRequestButton" value="{{user.id}}">
-                            <a href="" class="sendFriendRequest">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-plus" viewBox="0 0 16 16">
+                        <button type="button" class="btn btn-sm removeFriendRequestButton cancelNotificationButton" value="{{user.id}}">
+                            <a href="" class="removeFriendRequestButton">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-dash" viewBox="0 0 16 16">
                                     <path d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H1s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C9.516 10.68 8.289 10 6 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
-                                    <path fill-rule="evenodd" d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z"/>
-                                </svg>                                
+                                    <path fill-rule="evenodd" d="M11 7.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5z"/>
+                                </svg>                         
                             </a>
                         </button>
-                        {% else %}
-                        <button type="button" class="btn btn-sm btn-danger pendingFriendRequestButton" value="{{user.id}}" >Cancel</button>
-                        {% endif %}
                         <a href="/{{user.firstName}}/{{user.lastName}}/{{user.id}}">
                             <figcaption class="friendsIconName ml-1">{{user.firstName}}</figcaption>
                         </a>
                     </figure>
                 </div>
-                        {% endif%}
-                    {% endif %}
-                {% endfor %}
+                {% endif %}
+        {% endif%} <!-- end if statement that displays a photo of a blank avatar if a user doesn't have an uploaded photo -->
+    {% endif %} <!-- end if statement that prevents the logged in user's name from displaying -->
+{% endfor %} <!-- end for statement that loops through all the users -->
             </div>
-    {% if not wallOfLoggedInUser %}
-<!-- display emptyness  -->
+    {% if not wallOfLoggedInUser %} <!-- This hides the text that reads 'post' and white space until there is indeed a post to fill the white space -->
+<!-- display emptiness  -->
         {%  else %}
             <div class="col-sm-7 ml-5">
                 <small class="font-weight-bold">Posts</small>
@@ -1032,9 +1303,87 @@
                 </table>
         </div>
         </div>
-    {% endif %}
+    {% endif %} <!-- the end of the if statement that hides the text 'post' and white space until there is a post made -->
         </div>
     </div>
+
+    <!-- The below code is when the 'All Users Link' is clicked -->
+        <div class="showAllUsers">
+            <div class="row">
+                <div class="col-sm-2">
+                    <!-- One of the three columns -->
+                </div>
+                <div class="col">
+                    <table class="col-sm-12 bg-white mt-3 searchResults">
+                        <tbody>
+                            <tr>
+                                <td class="pl-3 pb-3">All Users</td>
+                            </tr>
+                        {% for user in allUsers %}
+                            <tr>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-sm mb-1">
+                                        {% if not user.profilePic == "" %} 
+                                            <a href="/{{user.firstName}}/{{user.lastName}}/{{user.id}}" class="d-inline-block">
+                                                <img src='{{ user.profilePic }}' class="d-inline thumbnailForEachFriend"> 
+                                            </a>
+                                        {% else %}
+                                            <a href="/{{user.firstName}}/{{user.lastName}}/{{user.id}}" class="d-inline-block">
+                                                <img src="{% static 'Images/blankAvatar.png' %}" class="d-inline thumbnailForEachFriend"> 
+                                            </a>
+                                        {% endif %}
+                                            <a href="/{{user.firstName}}/{{user.lastName}}/{{user.id}}" class="nameStylingForEachFriend">
+                                                <p class="nameStylingForEachFriend pl-3 ml-5">{{user.firstName}} {{user.lastName}}</p>
+                                            </a>
+                                    {% if user in loggedInUser.friends.all%}
+                                            <p class="detailsStylingForEachFriend pl-3 ml-5">Friend 
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="6" height="6" fill="gray" class="bi bi-circle-fill ml-1" viewBox="0 0 16 16">
+                                                    <circle cx="4" cy="4" r="4"/>
+                                                </svg>
+                                                {{user.userUniversity}}
+                                            </p>
+                                    {% else %}
+                                        {% if user.userUniversity == "" %}
+                                            <p class="detailsStylingForEachFriend pl-3 ml-5">Unnamed University</p>    
+                                        {% else %}
+                                            <p class="detailsStylingForEachFriend pl-3 ml-5">{{user.userUniversity}}</p>
+                                        {% endif %}
+        
+                                    {% endif %}
+                                        <div>
+                                    </div>
+                                </td>
+                        {% if not user in loggedInUser.friends.all and not loggedInUser in user.friends.all  %}
+                            <td>
+                                <button type="button" class="btn btn-primary sendFriendRequestButton" value="{{user.id}}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-plus" viewBox="0 0 16 16">
+                                        <path d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H1s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C9.516 10.68 8.289 10 6 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"></path>
+                                        <path fill-rule="evenodd" d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z"></path>
+                                    </svg>
+                                        Add Friend
+                                </button>
+                            </td>
+                        {% else %}
+                            <td>
+                                <button class="btn btn-secondary messageFriendButton">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="black" class="bi bi-chat-dots-fill" viewBox="0 0 16 16">
+                                        <path d="M16 8c0 3.866-3.582 7-8 7a9.06 9.06 0 0 1-2.347-.306c-.584.296-1.925.864-4.181 1.234-.2.032-.352-.176-.273-.362.354-.836.674-1.95.77-2.966C.744 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7zM5 8a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
+                                    </svg>
+                                </button>
+                            </td>
+                        {% endif %}
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-sm-2">
+                    <!-- One of the three columns -->
+                </div>
+            </div>
+        </div>
+    <!-- The above code is when the 'All Users Link' is clicked -->
 </body>
 
 </html>

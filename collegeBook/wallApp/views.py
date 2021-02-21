@@ -6,12 +6,8 @@ from django.http import JsonResponse #imported in order to display django errors
 from django.core.files.storage import FileSystemStorage #imported in order to display uploaded images
 from django.urls import reverse #imported in order to pass variables when redirecting
 from django.db.models import Q #imported in order to filter multiple queries at once
-import operator #imported in order to eliminate spaces in the search bar
-from django.db.models.functions import Lower, Replace
-
-
-
-#The below line of code is for the registration and login.
+# import operator #imported in order to eliminate spaces in the search bar
+# from django.db.models.functions import Lower, Replace
 
 def regAndLoginPage(request):
     return render(request, "regAndLogin.html")
@@ -53,8 +49,7 @@ def processLogin(request):
     if len(loginErrors) > 0:
         for key, value in loginErrors.items():
             messages.error(request,value, extra_tags="loginErrors") #Extra tags separates the two types of validation errors (login and registration)
-    #When an error occurs on one field input, the below code keeps the fields that are filled out correctly instead of removing all inputs.
-            request.session['rememberEmail'] = request.POST['userEmail']
+            request.session['rememberEmail'] = request.POST['userEmail'] #When an error occurs on one field input, the below code keeps the fields that are filled out correctly instead of removing all inputs.
         return redirect('/')
     else:
         loginUser = User.objects.filter(emailAddress= request.POST['userEmail'])[0] #if no errors hit and the user did successfully register, this filters to get that correctly submitted email and password
@@ -83,36 +78,35 @@ def loggedInUsersPage(request, messageId=0):
     # print("This prints the currently logged in user.")
     loggedInUser = User.objects.get(id=request.session['loginInfo'])
     # print(loggedInUser)
-    #("This prints all the messages posted.")
-    allMessages = Message.objects.all()
-    #print(allMessages)
     # print("This prints all the messages posted on the wall (by the user and by others) of the logged in user and orders them from latest post created.")
     wallOfLoggedInUser = Message.objects.filter(userReceivesPost = loggedInUser).order_by('-createdAt')
     # print(wallOfLoggedInUser)
     # how to do a multi query #wallOfLoggedInUser = Message.objects.filter(Q(user = (loggedInUser)) | Q(userReceivesPost = (loggedInUser))).order_by('-createdAt')
     if messageId: #if these lines of code run it means a like occurred
-        print("This prints the id of the message that was just liked and passed via params from the userLikes function.")
+        # print("This prints the id of the message that was just liked and passed via params from the userLikes function.")
         messageId = messageId
-        print(messageId)
-        print("This prints the message object.")
+        # print(messageId)
+        # print("This prints the message object.")
         messageBeingLiked = Message.objects.get(id=messageId)
-        print(messageBeingLiked)
+        # print(messageBeingLiked)
         # print("This prints the amount of likes the message has.")
         # print(messageBeingLiked.likeMessageCount)
         if messageBeingLiked.likeMessageCount > 3:
                 likesCountMinusDisplayNames = (messageBeingLiked.likeMessageCount) - 2
-                print("This is the like count minus the display names:", likesCountMinusDisplayNames)
+                # print("This is the like count minus the display names:", likesCountMinusDisplayNames)
                 displayCount = Message.objects.filter(id=messageId).update(likeMessageCountMinusDisplayNames=likesCountMinusDisplayNames) 
     # print("This prints all the users that have an account except the logged in user.")
-    allUsers = User.objects.exclude(id=request.session['loginInfo'])
+    allUsers = User.objects.exclude(id=request.session['loginInfo']).order_by('?') #filter will be randomized
     # print(allUsers)
+    friends = loggedInUser.friends.all().order_by('?')
+    # print("These are all the friends of the logged in user:", friends)
+    print("This is the friend count:", friends.count())
     # print("*"*50)
-    print("THIS IS THE LAST PRINT STATEMENT IN THE LOGGED IN USER'S PAGE ROUTE.")
     context = {
-        'wallOfLoggedInUser': wallOfLoggedInUser,
         'loggedInUser': User.objects.get(id=request.session['loginInfo']),
-        'allMessages': allMessages,
+        'wallOfLoggedInUser': wallOfLoggedInUser,
         'allUsers': allUsers,
+        'friends': friends,
     }
     return render(request, "loggedInUsersPage.html", context)
 
@@ -139,15 +133,67 @@ def userDeletesProfilePic(request):
     print("THIS IS THE LAST PRINT STATEMENT IN THE USER DELETES PROFILE PIC ROUTE.")
     return redirect("/home")
 
-def processProfileInfo(request):
-    print("THIS FUNCTION PROCESSES THE FORM FOR UPLOADING PROFILE INFORMATION.")
+def processProfileHeader(request):
+    print("THIS FUNCTION PROCESSES THE FORM FOR UPLOADING THE PROFILE HEADER THAT IS UNDERNEATH THE PROFILE PHOTO.")
     # print("*"*50)
     # print(request.POST)
-    submittedProfileInfo = request.POST['userProfileInfo']
-    # print(submittedProfileInfo)
+    submittedProfileHeader = request.POST['userProfileHeader']
+    # print(submittedProfileHeader)
     # print("*"*50)
-    addProfileInfo = User.objects.filter(id=request.session['loginInfo']).update(profileInfo=submittedProfileInfo) 
-    print("THIS IS THE LAST PRINT STATEMENT IN THE PROCESS PROFILE INFO ROUTE.")    
+    addProfileHeader= User.objects.filter(id=request.session['loginInfo']).update(profileHeader=submittedProfileHeader) 
+    print("THIS IS THE LAST PRINT STATEMENT IN THE PROCESS PROFILE HEADER ROUTE.")    
+    return redirect("/home")
+
+def processProfileIntro(request):
+    print("THIS FUNCTION PROCESSES THE FORM FOR UPLOADING A PROFILE INTRODUCTION.")
+    print("*"*50)
+    profileIntroErrors = User.objects.profileIntroValidator(request.POST)
+    if request.POST['userCheckBox'] == 'true':
+        request.session['rememberUniversity'] = request.POST['userUniversity']
+        request.session['rememberHighSchool'] = request.POST['userHighSchool']
+        request.session['rememberDormBuilding'] = request.POST['userDormBuilding']
+        request.session['rememberHomeTown'] = request.POST['userHomeTown']
+        print("This print statement means the checkbox is checked.", request.POST['userCheckBox'])
+        submittedUserUniversity = request.POST['userUniversity']
+        # print("This is the university the user submitted:", submittedUserUniversity)
+        submittedUserHighSchool = request.POST['userHighSchool']
+        # print("This is the highschool the user submitted:", submittedUserHighSchool)
+        submittedUserDormBuilding = request.POST['userDormBuilding']
+        # print("This is the dorm building the user submitted:", submittedUserDormBuilding)
+        submittedUserHomeTown= request.POST['userHomeTown']
+        # print("This is the home town the user submitted:", submittedUserHomeTown)
+        print("This will save the data if the user chooses to input it, but still also means the user chooses to hide it.")
+        addProfileIntro = User.objects.filter(id=request.session['loginInfo']).update(userUniversity=submittedUserUniversity, userHighSchool = submittedUserHighSchool, userDormBuilding = submittedUserDormBuilding, userHomeTown = submittedUserHomeTown, userCheckBox = True ) 
+        print("*"*50)
+        print("THIS IS THE LAST PRINT STATEMENT IN THE PROCESS PROFILE INTRO ROUTE.")   
+    elif request.POST['userCheckBox'] == 'false':
+        if len(profileIntroErrors) > 0:
+            for key, value in profileIntroErrors.items():
+                messages.error(request,value)
+            #When an error occurs on one field input, the below code keeps the fields that are filled out correctly instead of removing all inputs.
+                request.session['rememberUniversity'] = request.POST['userUniversity']
+                request.session['rememberHighSchool'] = request.POST['userHighSchool']
+                request.session['rememberDormBuilding'] = request.POST['userDormBuilding']
+                request.session['rememberHomeTown'] = request.POST['userHomeTown']
+                # print("These are the errors submitted on the profile intro form.")
+            return JsonResponse({"errors": profileIntroErrors}, status=400)
+        else:
+            print("This will save the data if the user chooses to input it, but still also means the user chooses to hide it.")
+            submittedUserUniversity = request.POST['userUniversity']
+            # print("This is the university the user submitted:", submittedUserUniversity)
+            submittedUserHighSchool = request.POST['userHighSchool']
+            # print("This is the highschool the user submitted:", submittedUserHighSchool)
+            submittedUserDormBuilding = request.POST['userDormBuilding']
+            # print("This is the dorm building the user submitted:", submittedUserDormBuilding)
+            submittedUserHomeTown= request.POST['userHomeTown']
+            # print("This is the home town the user submitted:", submittedUserHomeTown)
+            request.session['rememberUniversity'] = request.POST['userUniversity']
+            request.session['rememberHighSchool'] = request.POST['userHighSchool']
+            request.session['rememberDormBuilding'] = request.POST['userDormBuilding']
+            request.session['rememberHomeTown'] = request.POST['userHomeTown']
+            addProfileIntro = User.objects.filter(id=request.session['loginInfo']).update(userUniversity=submittedUserUniversity, userHighSchool = submittedUserHighSchool, userDormBuilding = submittedUserDormBuilding, userHomeTown = submittedUserHomeTown, userCheckBox = False ) 
+            print("*"*50)
+            print("THIS IS THE LAST PRINT STATEMENT IN THE PROCESS PROFILE INTRO ROUTE.")    
     return redirect("/home")
 
 def processMessage(request, userFirstName, userLastName, userId):
@@ -341,9 +387,13 @@ def sendFriendRequest(request, userFirstName='firstName', userLastName='lastName
     if userWhoSentFriendRequest in userReceivesRequest.friends.all():
         print("You're already friends!")
     else:
+        print("This print statement means the friend request is being created")
         userReceivesRequest.friends.add(userWhoSentFriendRequest)
-        print("User's sent friend requests friends:", userWhoSentFriendRequest.friends.all())
-        print("User receive requests friends:", userReceivesRequest.friends.all())
+        print("These are all the users the logged in user sent friend requests to:", userWhoSentFriendRequest.friends.all())
+        print("These are all the users who asked to be the logged in user's friend:", userReceivesRequest.friends.all())
+        userReceivesRequest.notifications += 1
+        userReceivesRequest.save()
+        # messages.info(request,userReceivesRequest.notifications, extra_tags="userNotifs")
         # print("*"*50)
         if userFirstName!= 'firstName':
             print("THIS IS THE LAST PRINT STATEMENT OF THE SEND A FRIEND REQUEST ROUTE.")
@@ -367,13 +417,59 @@ def removeFriendRequest(request, userFirstName='firstName', userLastName='lastNa
     print("*"*50)
     if userWhoSentFriendRequest in userReceivesRequest.friends.all():
         userReceivesRequest.friends.remove(userWhoSentFriendRequest)
-    # else:
-    #     print("You never sent a friend request!")
-        # if userFirstName!= 'firstName':
-        #     print("THIS IS THE LAST PRINT STATEMENT OF THE SEND A FRIEND REQUEST ROUTE.")
-        #     return redirect(reverse('specificUsersPage', args=(userFirstName, userLastName, userId,)))
-        # else: 
-        print("THIS IS THE LAST PRINT STATEMENT OF THE REMOVE A FRIEND REQUEST ROUTE.")
+        userReceivesRequest.notifications -= 1
+        userReceivesRequest.save()
+    print("THIS IS THE LAST PRINT STATEMENT OF THE REMOVE A FRIEND REQUEST ROUTE.")
+    return redirect("/home")
+
+def acceptFriendRequest(request, userFirstName='firstName', userLastName='lastName', userId=0, messageId = 0):
+    print("THIS IS THE ACCEPT A FRIEND REQUEST ROUTE")
+    # print("*"*50)
+    userReceivesRequest = User.objects.get(id=request.session['loginInfo'])
+    userWhoSentFriendRequest = User.objects.get(id=userId) #the recipient of the friend request
+    # print(userReceivesRequest) #prints as a User Object(#)
+    userFirstName = userReceivesRequest.firstName # need for params to reroute
+    userId = userReceivesRequest.id # need for params to reroute
+    userLastName = userReceivesRequest.lastName # need for params to reroute
+    print("This prints the user object of the user receiving the friend request aka the logged in user.")
+    print(userReceivesRequest) # prints as a User Object(#)
+    if userReceivesRequest in userWhoSentFriendRequest.friends.all():
+        print("You've already accepted the friend request!")
+    else:
+        print("This print statement means the friend request is being accepted")
+        userWhoSentFriendRequest.friends.add(userReceivesRequest)
+        print("These are all the users the logged in user accepted friend requests from/is now friends with:", userReceivesRequest.friends.all())
+        userReceivesRequest.notifications -= 1
+        userReceivesRequest.save()
+        # print("*"*50)
+        if userFirstName!= 'firstName':
+            print("THIS IS THE LAST PRINT STATEMENT OF THE SEND A FRIEND REQUEST ROUTE.")
+            return redirect(reverse('specificUsersPage', args=(userFirstName, userLastName, userId,)))
+        else: 
+            print("THIS IS THE LAST PRINT STATEMENT OF THE SEND A FRIEND REQUEST ROUTE.")
+        return redirect("/home")
+
+def unfriend(request, userFirstName='firstName', userLastName='lastName', userId=0, messageId = 0):
+    print("THIS IS THE DELETE A FRIEND REQUEST ROUTE")
+    print("*"*50)
+    userWhoSentFriendRequest = User.objects.get(id=userId) #the recipient of the friend request
+    print("This prints the user object of the user who sent the friend request.")
+    print(userWhoSentFriendRequest) #prints as a User Object(#)
+    userFirstName = userWhoSentFriendRequest.firstName # need for params to reroute
+    userLastName = userWhoSentFriendRequest.lastName # need for params to reroute
+    userId = userWhoSentFriendRequest.id # need for params to reroute
+    userReceivesRequest = User.objects.get(id=request.session['loginInfo'])
+    print("This prints the user object of the user receiving request aka the logged in user.")
+    print(userReceivesRequest) # prints as a User Object(#)
+    # print("These are the people a specific user sent friend requests to:", userWhoSentFriendRequest.friends.all())
+    #The below code removes the friendship
+    userWhoSentFriendRequest.friends.remove(userReceivesRequest)
+    userReceivesRequest.friends.remove(userWhoSentFriendRequest)
+    if userReceivesRequest.notifications > 0:
+        userReceivesRequest.notifications -= 1
+        userReceivesRequest.save()
+    print("*"*50)
+    print("THIS IS THE LAST PRINT STATEMENT OF THE REMOVE A FRIEND REQUEST ROUTE.")
     return redirect("/home")
 
 def searchForUsersProfile(request):
@@ -387,9 +483,9 @@ def searchForUsersProfile(request):
                 for name in searchForUser: # have to iterate to use title on a list
                     # print("The name(s) searched:", name.title())
                     if len(searchForUser) == 1:
-                        searchedName = name.title() #title capitalizes the submitted data
-                        print("This means there was only one name submitted", searchedName)
-                        id = User.objects.filter(Q(firstName = (searchedName))| Q(lastName= (searchedName))).values('id')[0]['id'] 
+                        searchedNameOne = name.title() #title capitalizes the submitted data
+                        print("This means there was only one name submitted", searchedNameOne)
+                        id = User.objects.filter(Q(firstName = (searchedNameOne))| Q(lastName= (searchedNameOne))).values('id')[0]['id']
                     if len(searchForUser) > 1:
                         searchedNameOne = searchForUser[0].title()
                         searchedNameTwo = searchForUser[1].title()
@@ -403,10 +499,22 @@ def searchForUsersProfile(request):
             return redirect(reverse('specificUsersPage', args=(userProfile.firstName, userProfile.lastName, userProfile.id,))) #using the name of the url to redirect and passing the variables/params to the form rendering the template
     except IndexError:
         print("No results found!")
-    return redirect("/home")
+    context = {
+        'loggedInUser': User.objects.get(id=request.session['loginInfo']),
+        'allUsers': User.objects.all().exclude(id=request.session['loginInfo']),
+        'searchForUser': searchForUser,
+    }
+    return render(request, "noUserFound.html", context)
 
 def notifications(request):
     print("THIS IS THE NOTIFICATIONS ROUTE")
+    userReceivesRequest = User.objects.get(id=request.session['loginInfo'])
+    loggedInUsersFriendRequests = userReceivesRequest.friends.all()
+    for friendRequest in loggedInUsersFriendRequests:
+        if friendRequest not in loggedInUsersFriendRequests:
+            print("This means there are no friend requests.")
+        else:
+            print("This is the user who sent the friend request.")
     print("THIS IS THE LAST PRINT STATEMENT OF THE NOTIFICATIONS ROUTE")
     return redirect('/home')
 
