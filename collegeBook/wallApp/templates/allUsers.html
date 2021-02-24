@@ -19,6 +19,7 @@
         $(document).ready(function() {
 
         //The below code is the list of variables involved in the scripted code.
+
             var $crf_token = $('[name="csrfmiddlewaretoken"]').attr('value'); //this defines the token form the form so it can be used in the jquery/ajax code below
             var profilePicForm = document.querySelector('#profilePicForm'); //The id for the profile photo form
             var profilePicInputID = document.querySelector('#profilePicInputID'); //The id for the field/input of the profile photo that is within the form
@@ -29,14 +30,17 @@
             var userProfileHeaderEditLink = document.querySelector('#userProfileHeaderEditLink'); //The id for the link that displays and hides the user profile info form
             var userProfileHeaderCancelButton= document.querySelector('#userProfileHeaderCancelButton'); //The id for the link that displays and hides the user profile info form
             var XForProfilePicForm = document.querySelector('#clearImage'); //The id for the X that clears the preview of the selected image
+
         //The above code is the list of variables involved in the scripted code. 
 
         //The below code are function calls that run as soon as the window is loaded.
+
             showThumbnail(); // a function that determines whether or not a photo has been uploaded by a user and then acts accordingly
 
             enableDisableMessageButton(); // a function that enables and disables the post a message button
 
             $('.postACommentButton').prop('disabled', true); //This disables the comment button to start
+
         //The above code are function calls that run as soon as the window is loaded.
 
         //The below code enables the user to drag an image to be uploaded
@@ -75,9 +79,11 @@
                     console.log("This console log appears if the current user is dragging a file/photo outside of the profile photo container.")
                 })
             });
+
         //The above code enables the user to drag an image to be uploaded.
 
         //The below code is to check the file the user is submitting is an image.
+
             function checkImageProperties(usersSelectedPhoto) {
                 if (usersSelectedPhoto.type !== "image/png" && usersSelectedPhoto.type !== "image/jpeg") {
                 // if (usersSelectedPhoto.type !== "image/png") { //used this to check if error(s) work
@@ -116,9 +122,11 @@
                 }
                 return true;
             }
+
         //The above code is to check the file the user is submitting is an image.
 
         //The below code processes and displays the image that was submitted by the user as a preview (still not in database).
+
         // if (checkImageProperties == true) {
             function processingUploadedPhoto(file) {
                 fileName = file.name;
@@ -134,9 +142,11 @@
                 reader.readAsDataURL(file);
             }
         // }   
+
         //The above code processes and displays the image that was submitted by the user.
 
         //The below code is for the uploading by the user whether by dragging the image or clicking the image upload
+
             profilePicContainer.addEventListener('drop', function (e) {
                 console.log("This console log appears if the current user has dropped a file/photo inside of the profile photo container.")
                 if(e.dataTransfer.files.length > 1) { //This prevents the logged in user from selecting more than one photo at a time
@@ -157,6 +167,7 @@
                     uploadedPhoto.classList.add('uploadedPhotoProperties'); //Adds CSS to make the picture fit in the profile pic container.
                 }
             }
+
         //The above code is for the uploading by the user whether by dragging the image or clicking the image upload
 
         //The below code removes the preview of the image submitted by a user.
@@ -172,9 +183,11 @@
                     // $('#linkForNavIconProfPic').hide()
                 }
             }
+
         //The above code removes the preview of the image submitted by a user.
 
         //The below code submits the submitted photo by the user to the the backend/database via ajax.
+
             $("#profilePicForm").submit(function(e){
                 console.log("The upload button was clicked.")
                 // var userProfilePic = e.dataTransfer.files[0];
@@ -206,9 +219,11 @@
                     }
                 })
             })
+
         //The above code submits the submitted photo by the user to the the backend/database via ajax.
 
         //The below code checks if there is an image or not, and changes the border of the profile pic container accordingly.
+
             function showThumbnail(e) {
                 $('#navIconProfPic').hide()
                 console.log("Show Thumbnail function")
@@ -228,9 +243,11 @@
                     console.log("End of if statement")
                 }
             };
+
         //The above code checks if there is an image or not, and changes the border of the profile pic container accordingly.
 
         //The below code shows and hides the user profile info form depending on the amount of times the user clicks the edit link.
+        
             userProfileHeaderEditLink.onclick = showUserProfileHeaderForm;
                 function showUserProfileHeaderForm(e) {
                     console.log("This console log means the edit button was clicked. ")
@@ -251,9 +268,11 @@
 
                     }
                 }
+
         //The above code shows and hides the user profile info form depending on if the user clicks the edit link or not
 
         //The below code is submitting the user profile info form via jquery/ajax
+
             $("#userProfileHeaderForm").submit(function(e){// the id name given to the form action in the below html
                 console.log("The save user profile info was clicked.")
                 e.preventDefault(); //prevents the default browser behavior of the form submitting normally
@@ -278,6 +297,7 @@
         //The above code is the function for submitting the user profile info form via jquery/ajax
 
         //The below code is the function for posting a message via jquery/ajax
+
             $("#postAMessageForm").submit(function(e){// the id name given to the form action in the below html
                 console.log("The post a message button was clicked.")
                 e.preventDefault(); //prevents the default browser behavior of the form submitting normally
@@ -319,6 +339,7 @@
                     },
                 });
             });
+
         //The above code is the function for posting a message via jquery/ajax
 
         //The below code is the function that enables and disables the post a message button depending on if the textarea contains characters
@@ -326,14 +347,7 @@
                 console.log("This is the enableDisableMessageButton function.")
                 $('#postAMessageButton').prop('disabled', true); //This disables the button
                 var submittedPost = document.getElementById("userMessageID"); //element that will be the focus of the keyup
-                // var userWhoSentPost = document.getElementById("userWhoReceivesPostID")
-                // console.log("This is the id of the user who sent the post(aka logged in user)", $('#userWhoReceivesPostID').val())
-                // var userWhoReceivesPost = document.getElementById("userWhoReceivesPostID")
-                // console.log("This is the id of the user who is receiving the post", $('#userWhoReceivesPostID').val())
-                // var confirmFriendID = document.getElementById("confirmFriendID") //This id should be the same as the user who sent the post
-                // console.log("This user id is to confirm if the user who sent the post is a friend of the user receiving the post ", $('#confirmFriendID').val())
-                var showMessageButton = function() {
-                    // if() 
+                var showMessageButton = function() { 
                     if (submittedPost.value !== '') {
                         console.log("This console log means the text area is not blank, and the post a message button should be enabled.")
                         $("#postAMessageButton").attr('disabled',false)
@@ -345,9 +359,11 @@
                 }
                 submittedPost.onkeyup = showMessageButton; //The keyup event is sent to an element when the user releases a key on the keyboard. This will then trigger the showMessageButton()
             }
+
         //The above code is the function that enables and disables the post a message button depending on if the textarea contains characters
 
         //The below code is the function for posting a comment via jquery/ajax
+
             $("#postACommentForm").submit(function(e){// the id name given to the form action in the below html
                 console.log("The post a comment button was clicked.")
                 e.preventDefault(); //prevents the default browser behavior of the form submitting normally
@@ -386,10 +402,11 @@
                     },
                 })
             });
+
         //The above code is the function for posting a comment via jquery/ajax
 
         //The below code is the function that enables and disables the post a comment button depending on if the textarea contains characters
-            
+
             $('.commentSubDiv').find('textarea').each(function(){  //This function creates a loop finding all the text areas within the div
                 $(".commentTextAreaOnForm").keyup(function() { //This function then tracks the user's typing within all textareas
                     console.log("inside the keyup function")
@@ -406,19 +423,10 @@
                 })
             });
 
-            // $('.commentLink').click(function(e) {
-            //     e.preventDefault(); //prevents the default browser behavior of the form submitting normally
-            //     messageId = $(this).data("index"); //this the value retrieved when the link is clicked
-            //     console.log("This is the messageID of the message that was clicked for a comment:", messageId)
-            //     allCommentTextAreas = document.querySelectorAll(".commentTextAreaOnForm");
-            //     for (commentTextArea of allCommentTextAreas) {
-            //         specificCommentTextArea =  $(this).data("index")
-            //         console.log(specificCommentTextArea)
-            //     } 
-            // }); TRY TO CLICK COMMENT BUTTON AND MOVE TO COMMENT TEXTAREA
         //The above code is the function that enables and disables the post a comment button depending on if the textarea contains characters
 
         //The below code is the function for liking a posted message via jquery/ajax
+
             $('.likeAPostLink').click(function(e) {
                 e.preventDefault(); //prevents the default browser behavior of the form submitting normally
                 messageId = $(this).data("index"); //this the value retrieved when the link is clicked
@@ -436,9 +444,11 @@
                         console.log("If this console log is displaying, it means errors occurred in the user attempting a like.")                       },
                 })
             });
-        // //The above code is the function for liking a posted message via jquery/ajax
 
-        // //The below code is the function for unliking a posted message via jquery/ajax
+        //The above code is the function for liking a posted message via jquery/ajax
+
+        //The below code is the function for unliking a posted message via jquery/ajax
+
             $('.unlikeAPostLink').click(function(e) {
                 e.preventDefault(); //prevents the default a tag behavior of refreshing
                 messageId = $(this).data("index"); //this is the value retrieved when the link is clicked
@@ -460,6 +470,7 @@
         //The above code is the function for unliking a posted message via jquery/ajax
 
         //The above code is the function for sending a friend request  via jquery/ajax
+
             allFriendRequestButtons = document.querySelectorAll(".sendFriendRequestButton");
             for (clickedButton of allFriendRequestButtons) {
                 clickedButton.addEventListener('click', function(e) {
@@ -484,9 +495,11 @@
                     })
                 });
             } 
+
         //The below code is the function for sending a friend request  via jquery/ajax
 
         //The above code is the function for removing a friend request  via jquery/ajax
+
             allCancelFriendRequestButtons = document.querySelectorAll(".pendingFriendRequestButton");
             for (clickedButton of allCancelFriendRequestButtons) {
                 clickedButton.addEventListener('click', function(e) {
@@ -511,15 +524,18 @@
                     })
                 });
             }
+
         //The below code is the function for removing a friend request via jquery/ajax
 
         //The below code is the function for seeing and hiding notifications  via jquery/ajax
+
             $('#notifications').click(function(e) {
                 $('#notificationCounter').hide()
             }); 
         //The above code is the function for seeing notifications  via jquery/ajax
 
         //The below code is the function for handling specific notifications via jquery/ajax
+
             allConfirmFriendRequestButtons = document.querySelectorAll(".confirmNotificationButton");
             for (clickedButton of allConfirmFriendRequestButtons) {
                 clickedButton.addEventListener('click', function(e) {
@@ -546,6 +562,7 @@
         //The above code is the function for handling specific notifications via jquery/ajax
 
         //The below code is the function for handling canceling a specific notification(friend request) via jquery/ajax
+
             allCancelFriendRequestButtons = document.querySelectorAll(".cancelNotificationButton");
             for (clickedButton of allCancelFriendRequestButtons) {
                 clickedButton.addEventListener('click', function(e) {
@@ -568,9 +585,11 @@
                     })
                 })
             }
+        
         //The above code is the function for handling canceling a specific notification(friend request) 
 
         //The below code are functions for the profile intro form. It is the click function for the form to appear, another click function for the form to disappear, and lastly an ajax function for the form to be sent to the backend
+
             $('.editDetailsButton').click(function(){
                     event.preventDefault(); //prevents the dialog box (create account) from hiding again
                     console.log("This is when the create account button is clicked.")
@@ -623,41 +642,18 @@
                     },
                 })
             });
+
         //The above code are functions for the profile intro form. It is the click function for the form to appear, another click function for the form to disappear, and lastly an ajax function for the form to be sent to the backend
 
         //The below code is the function to show all the users when the 'Show All Users' link is clicked
             $('.allUsersLink').click(function(){
                     event.preventDefault(); //prevents the dialog box (create account) from hiding again
-                    console.log("This is when the 'Show All Users' link is clicked")
-                    $( '.triDiv' ).hide()
+                    console.log("This is when the 'Show All Users' link is clicked.")
+                    $( '.introDiv' ).hide()
                     $('#postAMessageForm').hide()
-                    $('.listOfPostedMessages').hide()
+                    $('.allUsersDiv').hide()
+                    $('.friendsDiv').hide()
                     $('.showAllUsers').show()
-                    // window.location.href = '/allUsers';
-                    // return false;
-            });
-        //The above code is the function to show all the users when the 'Show All Users' link is clicked
-
-        //The below code is the function to show the logged in user's friends when the 'Show All Friends' link is clicked
-            $('.friendsLink').click(function(){
-                event.preventDefault(); //prevents the dialog box (create account) from hiding again
-                console.log("This is when the 'Show All Friends' link is clicked.")
-                $( '.triDiv' ).hide()
-                $('#postAMessageForm').hide()
-                $('.listOfPostedMessages').hide()
-                $('.showFriends').show()
-            });
-        //The above code is the function to show the logged in user's friends when the 'Show All Friends' link is clicked
-
-        //The below code is the function to show the main page when the 'Posts' link is clicked
-            $('.linktoLoggedInUsersPage').click(function(){
-                event.preventDefault(); //prevents the dialog box (create account) from hiding again
-                console.log("This is when either the 'Posts', About, or, More link is clicked to display the logged in user's page.")
-                $( '.triDiv' ).show()
-                $('#postAMessageForm').show()
-                $('.listOfPostedMessages').show()
-                $('.showAllUsers').hide()
-                $('.showFriends').hide()
             });
         //The above code is the function to show all the users when the 'Show All Users' link is clicked
 
@@ -726,9 +722,9 @@
                     </li>
                     <li class="nav-item dropdown"> <!-- This is the notification bell symbol -->
                         <a class="nav-link" href="" data-toggle="dropdown" id="notifications">
-                        {% if loggedInUser.notifications %}
+                            {% if loggedInUser.notifications %}
                             <button type="button" class="btn btn-sm btn-danger notificationNumber" id="notificationCounter">{{loggedInUser.notifications}}</button>
-                        {% endif %}
+                            {% endif %}
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-bell-fill mb-1 notificationBellSymbol" viewBox="0 0 16 16">
                                 <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zm.995-14.901a1 1 0 1 0-1.99 0A5.002 5.002 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901z"/>
                             </svg>
@@ -786,507 +782,104 @@
     </nav>
 <!-- The above code is for the navigation bar -->
 
-    <div class="container">
-    <!-- The below code is the code for the profile pic banner section -->
-        <div class="row bg-white mt-4 profilePicBanner">
-            <div class="col-sm">
-                <!-- First of the third columns of the profile pic white banner background (needed to center photo)  -->
-                <div class="row mt-5"></div>
-                <div class="row mt-5"></div>
-                <div class="row mt-5"></div>
-                <div class="row mt-5"></div>
-                <div class="row mt-5"></div>
-                <div class="row ml-5 mt-3 mr-2 pb-2">
-                    <!-- <p class="decorativeLine mt-3 mb-0">________________________________________________</p> -->
-                    <button class="btn btn-outline-light profilePicBannerLinks linktoLoggedInUsersPage pr-2">Posts</button>
-                    <button class="btn btn-outline-light profilePicBannerLinks linktoLoggedInUsersPage pr-2">About</button>
-                {% if friends.count == 0 %}
-                    <button class="btn btn-outline-light profilePicBannerLinks friendsLink pr-2">Friends</button>
-                {% else %}
-                    <button class="btn btn-outline-light profilePicBannerLinks friendsLink pr-2">Friends {{friends.count}}</button>
-                {% endif %}
-                    <button class="btn btn-outline-light profilePicBannerLinks linktoLoggedInUsersPage pr-2">More
-                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-caret-down-fill" viewBox="0 0 16 16">
-                            <path d="M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-            <div class="col-sm">
-                <form enctype="multipart/form-data" method="POST" action="" class="mb-0" id="profilePicForm">
-                    {% csrf_token %}
-                    <label for="profilePicInputID" id="profilePicContainer"> <!-- Important to use "label for" attribute to get the feature of clicking on the circle to bring up the file explorer. ID needs to match the ID of the input below  -->
-                        <img src='{{ loggedInUser.profilePic }}' id="thumbnail" class="uploadedPhotoProperties"> 
-                        <input type="file" id="profilePicInputID" name="userProfilePic" accept="image/png, image/jpeg" style="display: none;"> <!-- The style hides the basic format "Choose file input and allows the circular border to represent the "file selector" instead" -->
-                        <p class="mt-4">Click here to upload or <b>drag-and-drop</b> <br> an image...</br></p>
-                    </label>
-                    <button class="btn btn-sm btn btn-secondary" id="button" type="submit">
-                        <img class="save" src="{% static 'Images/save.png' %}" alt="A black and white illustration of the save symbol." />
-                    </button>
-                </form>
-                <form class="" action="userDeletesProfilePic" method="post">
-                    {% csrf_token %}
-                <!-- This if statement only displays the image src when an image is uploaded -->
-                {% if loggedInUser.profilePic == "" %}
-                    <button class="btn btn-sm" id="clearImage">X</button> <!--The X button removes the preview of the photo via ajax-->
-                {% else %}
-                    <button class="btn btn-sm clearImage" type="submit">X</button> <!--This X button removes the photo from the database-->
-                {% endif %}
-                </form>
-                <div id="errorDialogForFileType">
-                    <p><span class="ui-icon ui-icon-alert"></span>File type must be a png or jpeg/jpg. Please try again.</p>
-                </div>
-                <div id="errorDialogForFileSize">
-                    <p><span class="ui-icon ui-icon-alert"></span>File size is too big. Please try again.</p>
-                </div>
-                <h3 class="" id="userNameText">{{loggedInUser.firstName}} {{loggedInUser.lastName}}</h3>
-                <p class="mb-0" id="userProfileHeaderText">{{loggedInUser.profileHeader}}</p>
-                <a href="" class="" id="userProfileHeaderEditLink">Edit</a>
-                <form class="" action="" id="userProfileHeaderForm" method="post">
-                    {% csrf_token %}
-                    <!-- Important to use different names for the id(userProfileHeaderID) and name(userProfileHeader) field for the textarea(or any form input) otherwise there will be a multidictkey error in the backend when trying to submit -->
-                    <textarea class="form-control" id="userProfileHeaderTextArea" name="userProfileHeader" rows="3">{{loggedInUser.profileHeader}}</textarea>
-                    <div id="userProfileHeaderButtons">
-                        <button id="userProfileHeaderCancelButton" class=" ml-5 btn btn-primary btn-sm">Cancel</button>
-                        <button type="submit" class="btn btn-primary btn-sm">Save</button>
-                    </div>
-                </form>
-            </div>
-            <div class="col-sm">
-                <!-- Creates the right third of the profile pic banner -->
+<div class="container">
+    <div class="row bg-white mt-4 profilePicBannerThird">
+        <div class="col-sm bg-white profilePicBannerThird">
+            <!-- First of the third columns of the profile pic white banner background (needed to center photo)  -->
+            <div class="row mt-5"></div>
+            <div class="row mt-5"></div>
+            <div class="row mt-5"></div>
+            <div class="row mt-5"></div>
+            <div class="row mt-5"></div>
+            <div class="row ml-5 mt-5 mr-2 pb-2">
+                <!-- <p class="decorativeLine mt-3 mb-0">________________________________________________</p> -->
+                <button class="btn btn-outline-light profilePicBannerLinks LinktoLoggedInUsersPage pr-2">
+                    Posts
+                </button>
+                <button class="btn btn-outline-light profilePicBannerLinks LinktoLoggedInUsersPage pr-2">
+                    About
+                </button>
+            {% if friends.count == 0 %}
+                <button class="btn btn-outline-light profilePicBannerLinks pr-2">
+                    Friends
+                </button>
+            {% else %}
+                <button class="btn btn-outline-light profilePicBannerLinks friendsLink pr-2">
+                    Friends {{friends.count}}
+                </button>
+            {% endif %}
+                <button class="btn btn-outline-light profilePicBannerLinks LinktoLoggedInUsersPage pr-2">
+                    More
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-caret-down-fill" viewBox="0 0 16 16">
+                        <path d="M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
+                    </svg>
+                </button>
             </div>
         </div>
-    <!-- The below code is the code for the profile pic banner section -->
-    <!--The below code is the second row that contains two columns. the left handed section of the trilogy of divs(introDiv, allUsersDiv, and friendsDiv), and the right sided column containing the post a message form and the list of messages.  -->
-        <div class="row ml-5 mt-4"> 
-            <div class="col-sm-4 bg-white triDiv">
-                <div class="introDiv">
-                    <p class="lead">Intro</p>
-            {%  if loggedInUser.userCheckBox == 0 %} <!-- True displays 1 in models. False displays 0. 0 representing the user chose to display intro information -->
-                    <div class="">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="black" class="bi bi-pencil" viewBox="0 0 16 16">
-                            <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5L13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175l-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
-                        </svg>
-                        <p class="d-inline-block">Studies at</p>
-                        <p class="d-inline-block specificIntroDetail">{{loggedInUser.userUniversity}}</p>
-                    </div>
-                    <div class="">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="black" class="bi bi-building" viewBox="0 0 16 16">
-                            <path fill-rule="evenodd" d="M14.763.075A.5.5 0 0 1 15 .5v15a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5V14h-1v1.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V10a.5.5 0 0 1 .342-.474L6 7.64V4.5a.5.5 0 0 1 .276-.447l8-4a.5.5 0 0 1 .487.022zM6 8.694L1 10.36V15h5V8.694zM7 15h2v-1.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5V15h2V1.309l-7 3.5V15z"/>
-                            <path d="M2 11h1v1H2v-1zm2 0h1v1H4v-1zm-2 2h1v1H2v-1zm2 0h1v1H4v-1zm4-4h1v1H8V9zm2 0h1v1h-1V9zm-2 2h1v1H8v-1zm2 0h1v1h-1v-1zm2-2h1v1h-1V9zm0 2h1v1h-1v-1zM8 7h1v1H8V7zm2 0h1v1h-1V7zm2 0h1v1h-1V7zM8 5h1v1H8V5zm2 0h1v1h-1V5zm2 0h1v1h-1V5zm0-2h1v1h-1V3z"/>
-                        </svg>
-                        <p class="d-inline-block">Went to</p>
-                        <p class="d-inline-block specificIntroDetail">{{loggedInUser.userHighSchool}}</p>
-                    </div>
-                {% if loggedInUser.userDormBuilding ==  "" %}
-                    <!-- Removes the "lives in option if the user chooses to leave it blank" -->
-                {% else %}
-                    <div class="">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-house-door" viewBox="0 0 16 16">
-                            <path d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146zM2.5 14V7.707l5.5-5.5 5.5 5.5V14H10v-4a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5v4H2.5z"/>
-                        </svg>
-                        <p class="d-inline-block">Lives in</p>
-                        <p class="d-inline-block specificIntroDetail">{{loggedInUser.userDormBuilding}}</p>
-                    </div>
-                {% endif %} <!-- End of the if statement that removes the "lives in option if the user chooses to leave it blank" -->
-                    <div class="">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-geo-alt" viewBox="0 0 16 16">
-                            <path d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A31.493 31.493 0 0 1 8 14.58a31.481 31.481 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94zM8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10z"/>
-                            <path d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
-                        </svg>
-                        <p class="d-inline-block">From</p>
-                        <p class="d-inline-block specificIntroDetail">{{loggedInUser.userHomeTown}}</p>
-                    </div>
-                    <div class="row ml-4">
-                        <button type="button" class="btn btn-sm btn-secondary pl-5 pr-5 ml-5 editDetailsButton">Edit Details</button>
-                    </div>
-            {% else %} <!-- Only displays the edit details button if the user has chosen not to display their intro information -->
-                    <div class="d-grid col-6 mx-auto">
-                        <div class="row mt-4"><!-- Creates space to center Edit Details button --></div>
-                        <div class="row ml-3 mt-5">
-                            <button type="button" class="btn btn-sm btn-secondary editDetailsButton">Edit Details</button>
-                        </div>
-                    </div>
-            {% endif %} <!-- End of the if statement that only displays the edit details button if the user has not chosen to hide the intro information  -->
-                </div> <!-- closing div for the introDiv -->
-                <div class="bg-white mt-5 allUsersDiv">
-                    <div>
-                        <p class="lead d-inline-block pr-5 ml-2 mr-5">All Users</p> 
-                        <a href="" class="d-inline-block ml-5 allUsersLink">See All Users</a>
-                    </div>
-{% for user in allUsers %}
-    {% if not user in loggedInUser.friends.all %}  <!-- this allows the logged in user to still remove the pending friend request if necessary -->
-        {% if loggedInUser.id != user.id  %} <!-- to prevent the logged in user's name displaying in the friends section -->
-            {% if user.profilePic == "" %} 
-                <!-- if a user does not have an uploaded profile pic the below code will run -->
-                    <figure class="ml-4 d-inline-block">
-                        <a href="/{{user.firstName}}/{{user.lastName}}/{{user.id}}" class="">
-                            <img src="{% static 'Images/blankAvatar.png' %}" id="" class="friendsIconProfPic " alt="A thumbnail photo of the user">
-                            <figcaption class="friendsIconName">{{user.firstName}}</figcaption>
-                        </a>
-                    </figure>
-                <!-- the below code  is to add or cancel a friend request for a user that does not have an uploaded profile pic -->
-                {% if not loggedInUser in user.friends.all %}  <!-- displays the add friend icon initially and until the logged in user clicks the add friend icon-->
-                    <button type="button" class="btn btn-sm sendFriendRequestButton" value="{{user.id}}">
-                        <a href="" class="sendFriendRequest">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-plus" viewBox="0 0 16 16">
-                                <path d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H1s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C9.516 10.68 8.289 10 6 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
-                                <path fill-rule="evenodd" d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z"/>
-                            </svg>                                
-                        </a>
-                    </button>
-                {% else %} <!-- displays the cancel friend button if the logged in user has clicked the add friend icon-->
-                    <button type="button" class="btn btn-sm btn-danger pendingFriendRequestButton" id="pendingFriendRequestButton" value="{{user.id}}" >Cancel</button>
-                {% endif %}
-                    <!-- the above code  is to add or cancel a friend request for a user that does not have an uploaded profile pic -->
-                    <!-- if a user does not have an uploaded profile pic the above code will run -->
-            {% else %} <!-- the else for the "if user.profilePic ==''" - below code is the same but just for profiles that have uploaded profile photos-->
-                    <div class="d-inline-block">
-                        <figure class="ml-4">
-                            <a href="/{{user.firstName}}/{{user.lastName}}/{{user.id}}">
-                                <img src="{{user.profilePic}}" id="" class="friendsIconProfPic" alt="A thumbnail photo of the user">
-                            </a>
-                        {% if not loggedInUser in user.friends.all %}
-                            <button type="button" class="btn btn-sm sendFriendRequestButton" value="{{user.id}}">
-                                <a href="" class="sendFriendRequest">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-plus" viewBox="0 0 16 16">
-                                        <path d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H1s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C9.516 10.68 8.289 10 6 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
-                                        <path fill-rule="evenodd" d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z"/>
-                                    </svg>                                
-                                </a>
-                            </button>
-                        {% else %}
-                            <button type="button" class="btn btn-sm btn-danger pendingFriendRequestButton" id="pendingFriendRequestButton"  value="{{user.id}}" >Cancel</button>
-                        {% endif %}
-                            <a href="/{{user.firstName}}/{{user.lastName}}/{{user.id}}">
-                                <figcaption class="friendsIconName ml-1">{{user.firstName}}</figcaption>
-                            </a>
-                        </figure>
-                    </div>
-            {% endif%} <!-- end of the if statement that runs a certain code if a user does not have an uploaded profile pic -->
-        {% endif %} <!-- end of the if statement that prevents the logged in user's name displaying in the friends section -->
-    {% endif %} <!-- End of the if statement to not show the users the logged in user is friends with -->
-{% endfor %}
-                </div> <!-- Closing div for the allUsersDiv -->
-                <div class="mt-3 bg-white friendsDiv"> 
-                    <div>
-                        <p class="lead d-inline-block pr-5 ml-2 mr-5">Friends</p> 
-                        <a href="" class="d-inline-block ml-5 friendsLink">See All Friends</a>
-                    </div>
-{% for user in friends %}
-    {% if loggedInUser.id != user.id  %} <!-- to prevent the logged in user's name displaying in the friends section -->
-        {% if user.profilePic == "" %} 
-                <!-- if a user does not have an uploaded profile pic the below code will run -->
-                    <figure class="ml-4 d-inline-block">
-                        <a href="/{{user.firstName}}/{{user.lastName}}/{{user.id}}" class="">
-                            <img src="{% static 'Images/blankAvatar.png' %}" id="" class="friendsIconProfPic " alt="A thumbnail photo of the user">
-                            <figcaption class="friendsIconNameWithBlankAvatar">{{user.firstName}}</figcaption>
-                        </a>
-                    </figure>
-            <!-- the below code  is to add or cancel a friend request -->
-                {% if not loggedInUser in user.friends.all %}
-                    <button type="button" class="btn btn-sm sendFriendRequestButton" value="{{user.id}}">
-                        <a href="" class="sendFriendRequest">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-plus" viewBox="0 0 16 16">
-                                <path d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H1s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C9.516 10.68 8.289 10 6 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
-                                <path fill-rule="evenodd" d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z"/>
-                            </svg>                                
-                        </a>
-                    </button>
-                {% else %}
-                    <button type="button" class="btn btn-sm btn-danger pendingFriendRequestButton" id="pendingFriendRequestButton" value="{{user.id}}" >Cancel</button>
-                {% endif %}
-            <!-- the above code  is to add or cancel a friend request -->
-        {% else %} <!-- if a user does not have an uploaded profile pic the above code will run, if the user does, the below code will run -->
-                    <!-- the below code  is to add or cancel a friend request -->
-                {% if user in loggedInUser.friends.all and loggedInUser in user.friends.all %} 
-                    <div class="d-inline-block">
-                        <figure class="ml-4">
-                            <a href="/{{user.firstName}}/{{user.lastName}}/{{user.id}}">
-                                <img src="{{user.profilePic}}" id="" class="friendsIconProfPic" alt="A thumbnail photo of the user">
-                            </a>
-                            <button type="button" class="btn btn-sm removeFriendRequestButton cancelNotificationButton" value="{{user.id}}">
-                                <a href="" class="removeFriendRequestButton">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-dash" viewBox="0 0 16 16">
-                                        <path d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H1s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C9.516 10.68 8.289 10 6 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
-                                        <path fill-rule="evenodd" d="M11 7.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5z"/>
-                                    </svg>                         
-                                </a>
-                            </button>
-                            <a href="/{{user.firstName}}/{{user.lastName}}/{{user.id}}">
-                                <figcaption class="friendsIconName ml-1">{{user.firstName}}</figcaption>
-                            </a>
-                        </figure>
-                    </div>
-                {% endif %}
-        {% endif%} <!-- end if statement that displays a photo of a blank avatar if a user doesn't have an uploaded photo -->
-    {% endif %} <!-- end if statement that prevents the logged in user's name from displaying -->
-{% endfor %} <!-- end for statement that loops through all the users -->
+        <div class="col-sm profilePicBanner">
+            <form enctype="multipart/form-data" method="POST" action="" class="mb-0" id="profilePicForm">
+                {% csrf_token %}
+                <label for="profilePicInputID" id="profilePicContainer"> <!-- Important to use "label for" attribute to get the feature of clicking on the circle to bring up the file explorer. ID needs to match the ID of the input below  -->
+                    <img src='{{ loggedInUser.profilePic }}' id="thumbnail" class="uploadedPhotoProperties"> 
+                    <input type="file" id="profilePicInputID" name="userProfilePic" accept="image/png, image/jpeg" style="display: none;"> <!-- The style hides the basic format "Choose file input and allows the circular border to represent the "file selector" instead" -->
+                    <p class="mt-4">Click here to upload or <b>drag-and-drop</b> <br> an image...</br></p>
+                </label>
+                <button class="btn btn-sm btn btn-secondary" id="button" type="submit">
+                    <img class="save" src="{% static 'Images/save.png' %}" alt="A black and white illustration of the save symbol." />
+                </button>
+            </form>
+            <form class="" action="userDeletesProfilePic" method="post">
+                {% csrf_token %}
+            <!-- This if statement only displays the image src when an image is uploaded -->
+            {% if loggedInUser.profilePic == "" %}
+                <button class="btn btn-sm" id="clearImage">X</button> <!--The X button removes the preview of the photo via ajax-->
+            {% else %}
+                <button class="btn btn-sm clearImage" type="submit">X</button> <!--This X button removes the photo from the database-->
+            {% endif %}
+            </form>
+            <div id="errorDialogForFileType">
+                <p><span class="ui-icon ui-icon-alert"></span>File type must be a png or jpeg/jpg. Please try again.</p>
+            </div>
+            <div id="errorDialogForFileSize">
+                <p><span class="ui-icon ui-icon-alert"></span>File size is too big. Please try again.</p>
+            </div>
+            <h3 class="" id="userNameText">{{loggedInUser.firstName}} {{loggedInUser.lastName}}</h3>
+            <p class="mb-0" id="userProfileHeaderText">{{loggedInUser.profileHeader}}</p>
+            <a href="" class="" id="userProfileHeaderEditLink">Edit</a>
+            <form class="" action="" id="userProfileHeaderForm" method="post">
+                {% csrf_token %}
+                <!-- Important to use different names for the id(userProfileHeaderID) and name(userProfileHeader) field for the textarea(or any form input) otherwise there will be a multidictkey error in the backend when trying to submit -->
+                <textarea class="form-control" id="userProfileHeaderTextArea" name="userProfileHeader" rows="3">{{loggedInUser.profileHeader}}</textarea>
+                <div id="userProfileHeaderButtons">
+                    <button id="userProfileHeaderCancelButton" class=" ml-5 btn btn-primary btn-sm">Cancel</button>
+                    <button type="submit" class="btn btn-primary btn-sm">Save</button>
                 </div>
-            </div><!-- The closing div of the 'triDiv' -->
-            <div class="overlay">  <!-- Covers the remaining html when the form dialog box appears -->
-            <!-- The below code is the edit details form-->
-                <div id= "profileIntroFormDiv" class=" col-sm-4 rounded-lg">
-                    <form action="/processProfileIntro" id="profileIntroForm" method="POST">    
-                    <!-- Removed the url above to submit form data via jquery/ajax in the script-->
-                        {% csrf_token %}
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <h2 class="mb-0"> Edit Intro</h2>
-                            </div>
-                            <div class="col-sm-3 ">
-                                <!-- Column to create space--> 
-                            </div> 
-                            <div class="col-sm-3">
-                                <h4 id= "XForProfileIntroForm"class="font-weight-bolder text-secondary pl-3 ml-5"> X <h4>
-                            </div>
-                        </div>
-                        <small id="" class="ml-1 mt-1 text-muted">Customize Your Intro!</small>
-                        <div id="profileIntroErrors">
-                            <ul class="displayErrors mb-0">
-                            </ul>
-                        </div>
-                        <p class="decorativeLine">__________________________________________________________</p>
-                        <div class="d-block ml-5 ml-5 mb-2">
-                            <div class="form-group pt-0 d-inline">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="black" class="bi bi-pencil" viewBox="0 0 16 16">
-                                    <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5L13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175l-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
-                                </svg>
-                                <p class="d-inline-block mb-2">Studies at</p>
-                                <input type="text" class="form-control d-inline col-sm-6 " name="userUniversity"  id="userUniversityID" placeholder="University" value="{{request.session.rememberUniversity}}">
-                            </div>
-                        </div>
-                        <div class="d-block ml-5 mb-2">
-                            <div class="form-group pt-0 d-inline">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="black" class="bi bi-building" viewBox="0 0 16 16">
-                                    <path fill-rule="evenodd" d="M14.763.075A.5.5 0 0 1 15 .5v15a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5V14h-1v1.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V10a.5.5 0 0 1 .342-.474L6 7.64V4.5a.5.5 0 0 1 .276-.447l8-4a.5.5 0 0 1 .487.022zM6 8.694L1 10.36V15h5V8.694zM7 15h2v-1.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5V15h2V1.309l-7 3.5V15z"/>
-                                    <path d="M2 11h1v1H2v-1zm2 0h1v1H4v-1zm-2 2h1v1H2v-1zm2 0h1v1H4v-1zm4-4h1v1H8V9zm2 0h1v1h-1V9zm-2 2h1v1H8v-1zm2 0h1v1h-1v-1zm2-2h1v1h-1V9zm0 2h1v1h-1v-1zM8 7h1v1H8V7zm2 0h1v1h-1V7zm2 0h1v1h-1V7zM8 5h1v1H8V5zm2 0h1v1h-1V5zm2 0h1v1h-1V5zm0-2h1v1h-1V3z"/>
-                                </svg>
-                                <p class="d-inline-block">Went to </p>
-                                <input type="text" class="form-control d-inline ml-3 col-sm-6 " name="userHighSchool"  id="userHighSchoolID" placeholder="High School" value="{{request.session.rememberHighSchool}}">
-                            </div>
-                        </div>
-                        <div class="d-block ml-5 mb-2">
-                            <div class="form-group pt-0 d-inline">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-house-door" viewBox="0 0 16 16">
-                                    <path d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146zM2.5 14V7.707l5.5-5.5 5.5 5.5V14H10v-4a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5v4H2.5z"/>
-                                </svg>
-                                <p class="d-inline-block">Lives in</p>
-                                <input type="text" class="form-control d-inline ml-3 col-sm-6 " name="userDormBuilding"  id="userDormBuildingID" placeholder="Dorm Building" value="{{request.session.rememberDormBuilding}}">
-                            </div>
-                        </div>
-                        <div class="d-block ml-5 mb-2">
-                            <div class="form-group pt-0 d-inline">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-geo-alt" viewBox="0 0 16 16">
-                                    <path d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A31.493 31.493 0 0 1 8 14.58a31.481 31.481 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94zM8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10z"/>
-                                    <path d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
-                                </svg>
-                                <p class="d-inline-block">From</p>
-                                <input type="text" class="form-control d-inline ml-4 col-sm-6 " name="userHomeTown"  id="userHomeTownID" placeholder="Home Town" value="{{request.session.rememberHomeTown}}">
-                            </div>
-                        </div>
-                        <div class="form-group pt-0 d-inline">
-                            <input type="checkbox" name="userCheckBox" id="userProfileIntroCheckboxID">
-                            <label class="" name="hideIntro" >I want to hide my details.</label>
-                        </div>
-                        <button type="submit" id="submitProfileIntroButton" class="btn btn-primary col-sm-10 btn-primary rounded-lg mt-2 ml-4">Save</button>
-                    </form>
-                </div> 
-            <!-- The above code is the edit details form-->
-            </div> <!-- Closing div for the overlay -->  <!-- Covers the remaining html when the form dialog box appears -->
-            <div class="col-sm-7 ml-5 listOfPostedMessages">
-                <!-- The below code is for the post a message form -->
-                <form class="mb-2 bg-white col-sm-12 " action="" method="post" id="postAMessageForm">
-                    {% csrf_token %}
-                    <div id="postAMessageErrors">
-                        <ul class="displayMessageErrors mb-0"></ul>
-                    </div>
-                    <div class="form-group">
-                        <label for="textArea"></label>
-                    {% for friend in loggedInUser.friends.all%}
-                        <input type="hidden" id="confirmFriendID" value="{{friend.id}}">
-                    {% endfor %}
-                        <input type="hidden" id="userWhoReceivesPostID" name="userWhoReceivesPost" value="{{loggedInUser.id}}">
-                        <textarea class="form-control rounded-pill" id="userMessageID" name="userMessage" rows="2" placeholder="What's On Your Mind, {{loggedInUser.firstName}}?"></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary mb-2 btn-sm" id="postAMessageButton">Post A Message</button>
-                </form>
-        {% if not wallOfLoggedInUser %} <!-- This hides the text that reads 'post' and white space until there is indeed a post to fill the white space -->
-    <!-- display emptiness  --> 
-        {%  else %}
-            <!-- <div class="col-sm-7 ml-5"> -->
-                <small class="font-weight-bold ">Posts</small>
-            <!-- The above code is for the post a message form -->
-            {% for message in wallOfLoggedInUser %}
-                <table class="table table-borderless col-sm-12">
-                    <tbody>
-                        <tr>
-                            <td class="bg-white listOfPostedMessages">
-                                <div class="messageContentsDiv">
-                                {% if message.user.id == loggedInUser.id %}
-                                    <a href="/home">
-                                    {% if not message.user.profilePic == "" %}
-                                        <img src="{{message.user.profilePic}}" id="navIconProfPic" alt="">
-                                    {% endif %}
-                                            {{message.user.firstName}} {{message.user.lastName}}
-                                    </a>
-                                {% else %}
-                                    <a href="/{{message.user.firstName}}/{{message.user.lastName}}/{{message.user.id}}">
-                                    {% if not message.user.profilePic == "" %}
-                                        <img src="{{message.user.profilePic}}" id="navIconProfPic" alt="">
-                                    {% endif %}
-                                        {{message.user.firstName}} {{message.user.lastName}}
-                                    </a>
-                                {% endif %}
-                                {% if message.user.profilePic == "" %}
-                                    <small class="d-block ml-4 text-secondary messageCreatedAt">{{message.createdAt}}</small>
-                                {% else %}
-                                    <small class="d-block ml-4 text-secondary messageCreatedAtWithThumbnail">{{message.createdAt}}</small>
-                                {% endif %}
-                                </div>
-                                <p class="col-sm mb-0 mt-0 ml-0  messageText">{{message.message}} </p>
-                                <div class=" col-sm-12 mr-3 pl-5 mt-0 bg-light stylingOfMessageFormDivs">
-                                    <form action="" class="d-inline"> 
-                                        <a class="mr-2 hover likeAPostLink" data-index="{{message.id}}" href="">Like</a><!-- The a tag also needs the message id value so it can be compared to the hidden message id value in ajax otherwise when one message is clicked all will receive likes   -->
-                                        <input type="hidden" value="{{message.id}}">
-                                    </form>
-                                    <form action="" class="d-inline"> 
-                                        <a class="mr-2 hover unlikeAPostLink" data-index="{{message.id}}" href="">Unlike</a><!-- The a tag also needs the message id value so it can be compared to the hidden message id value in ajax otherwise when one message is clicked all will receive likes   -->
-                                        <input type="hidden" value="{{message.id}}">
-                                    </form>
-                                    <a class="" data-index="{{message.id}}" href="">Comment</a>
-                                </div>
-        <!-- the below code contains the logic for displaying specific words dependent on who and how many likes-->
-                                <div class="col-sm ml-5">
-                        <!-- The below line of code displays when a single user likes a message on the logged in user's page -->
-            {% for user in message.userLikes.all%} <!--the message.userLikes.all is the many to many relationship in the message model containing all the likes the users did  -->
-                                {% if loggedInUser.id == user.id and message.likeMessageCount == 1 %}
-                                    <small class=""> You like this </small>
-                                {% endif %}
-                                {% if loggedInUser.id != user.id and message.likeMessageCount == 1 %}
-                                    <small class=""> {{user.firstName}} likes this </small>
-                                {% endif %}
-                        <!-- The above line of code displays when a single user likes a message on the logged in user's page  -->
-                                    
-                        <!-- The below line of code displays when two users(either a user and logged in user OR two other users) like a message on the logged in user's page -->
-                            {% if loggedInUser.id == user.id and message.likeMessageCount == 2 %}
-                                    <small class=""> You and </small>
-                                {% if forloop.last %}
-                                    <small class=""> {{user.firstName}} like this </small>
-                                {% endif %}
-                            {% endif %}
+            </form>
+            <!-- <div class="row">
+                <p class="decorativeLine connectLine">________________________________________________________</p>
+            </div> -->
+        </div>
+        <div class="col-sm bg-white profilePicBannerThird">
+            <!-- <div class="row mt-5"></div>
+            <div class="row mt-5"></div>
+            <div class="row mt-5"></div>
+            <div class="row mt-5"></div>
+            <div class="row mt-5"></div>
+            <div class="row mt-4">
+                <p class="decorativeLine mt-2 mb-0">_______________________________________________</p>
 
-                            {% if loggedInUser.id != user.id and message.likeMessageCount == 2 %}
-                                {% if forloop.first %}
-                                    <small class=""> {{user.firstName}} and </small>
-                                {% endif %}
-                                {% if forloop.last %}
-                                    <small class=""> {{user.firstName}} like this </small>
-                                {% endif %}
-                            {% endif %}
-                        <!-- The above line of code displays when two users likes a message on the logged in user's page  -->
-
-                    <!-- The below line of code displays when three users(1 being the logged in user) like a message on the logged in user's page -->
-                            {% if loggedInUser.id == user.id and message.likeMessageCount == 3 %}
-                                {% if forloop.first %}
-                                    <small class=""> You, </small>
-                                {% endif %}
-                            {% endif %}
-
-                            {% if loggedInUser.id != user.id and message.likeMessageCount == 3 %}
-                                {% if forloop.last %}
-                                    <small class=""> {{user.firstName}}, and 1 other </small>
-                                {% endif %}
-                            {% endif %}
-                    <!-- The above line of code displays when three users(1 being the logged in user) like a message on the logged in user's page -->
-
-            <!-- The below line of code displays when three users(none being the logged in user) like a message on the logged in user's page -->
-                {% if loggedInUser.id != user.id and message.likeMessageCount == 3 %}
-                        {% if forloop.first %}
-                                    <small class=""> {{user.firstName}}, </small>
-                            {% if loggedInUser.id != user.id and message.likeMessageCount == 3 %}
-                                {% if forloop.last %}
-                                    <small class=""> {{user.firstName}}, and 1 other </small>
-                                {% endif %}
-                            {% endif %}
-                        {% endif %}
-                {% endif %}
-            <!-- The above line of code displays when three users(none being the logged in user) like a message on the logged in user's page -->
-
-            <!-- The below line of code displays when more than three users(1 being the logged in user) like a message on the logged in user's page -->
-                            {% if loggedInUser.id == user.id and message.likeMessageCount > 3 %}
-                                {% if forloop.first %}
-                                    <small class=""> You, </small>
-                                {% endif %}
-                            {% endif %}
-
-                            {% if loggedInUser.id != user.id and message.likeMessageCount > 3 %}
-                                {% if forloop.last %}
-                                    <small class=""> {{user.firstName}}, and {{message.likeMessageCountMinusDisplayNames}} others </small>
-                                {% endif %}
-                            {% endif %}
-            <!-- The above line of code displays when three users(1 being the logged in user) like a message on the logged in user's page -->
-                                
-            <!-- The below line of code displays when more than three users(none being the logged in user) like a message on the logged in user's page -->
-                {% if loggedInUser.id != user.id and message.likeMessageCount > 3 %}
-                        {% if forloop.first %}
-                                    <small class=""> {{user.firstName}}, </small>
-                            {% if loggedInUser.id != user.id and message.likeMessageCount > 3 %}
-                                {% if forloop.last %}
-                                    <small class=""> {{user.firstName}}, and {{message.likeMessageCountMinusDisplayNames}} others </small>
-                                {% endif %}
-                            {% endif %}
-                        {% endif %}
-                {% endif %}
-            <!-- The above line of code displays when more than three users(none being the logged in user) like a message on the logged in user's page -->
-
-            {% endfor %} <!-- The end of the message.userLikes.all loop -->
-                                </div> <!-- The closing div containing all of the liking logic -->
-        <!-- the above code contains the logic for displaying specific words dependent on who and how many likes-->
-                            {% for comment in message.comments.all %}
-                                <div class="commentSectionDiv row mt-2 ml-3">
-                                    <img src="{{comment.user.profilePic}}" id="navIconProfPic" alt="" class="d-inline ml-3">
-                                    <div class="badge rounded-pill bg-light commentSection ">
-                                        <a href="/{{comment.user.firstName}}/{{comment.user.lastName}}/{{comment.user.id}}" class="commentHeadText d-block">{{comment.user.firstName}} {{comment.user.lastName}}</a>
-                                        <p class="commentSubText d-block">{{comment.comment}}</p>
-                                    </div>
-                                </div>
-                            {% endfor %}
-                            <!-- The below line of code is the form to post a comment. -->
-                                <form class="col-sm ml-0 sm mb-0 mt-0 pt-0 pb-0" action="{% url 'processComment' userFirstName=loggedInUser.firstName userLastName=loggedInUser.lastName userId=loggedInUser.id %}" method="post" id="postACommentForm">
-                                    {% csrf_token %}
-                                    <div id="postACommentErrors mt-5">
-                                        <ul class="displayCommentErrors mt-3"></ul>
-                                    </div>
-                                    <div class="form-group mt-0 mb-0 commentSubDiv">
-                                        <label for="textArea"></label>
-                                        <input type="hidden" id="postLocationForCommentID" name="postLocationForComment" value="{{message.id}}">
-                                        <input type="hidden" id="userReceivesCommentID" name="userReceivesComment" value="{{message.user.id}}">
-                                    {% if not loggedInUser.profilePic == "" %} 
-                                        <img src="{{loggedInUser.profilePic}}" id="navIconProfPic" alt="" class="d-inline mt-3 ml-3">
-                                    {% endif %}
-                                        <textarea class="form-control form-control-sm col-sm-8 mt-3 rounded-pill bg-light text-black d-inline commentLink commentTextAreaOnForm" rows="1" data-index="{{message.id}}" value="{{message.id}}" id="userCommentID" name="userComment"></textarea>
-                                        <button type="submit" id="" class="btn btn-primary mt-3 btn-success btn-sm d-inline postACommentButton">Comment</button>
-                                    </div>
-                                </form>
-                            <!-- This above line of code is the form to post a comment. -->
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            {% endfor %} <!-- the end of the for statement for the 'message in wallOfLoggedInUser' loop -->
-            </div> <!-- The closing div of the looped messages -->
-    {% endif %} <!-- the end of the if statement that hides the text 'post' and white space until there is a post made -->
-        </div>  <!--The closing div of the second row that contains two columns. the left handed section of the trilogy of divs(introDiv, allUsersDiv, and friendsDiv), and the right sided column containing the post a message form and the list of messages.  -->
-
-    <!-- The below code is when the 'All Users Link' link is clicked -->
-        <div class="showAllUsers">
+            </div> -->
+            <!-- Last of the third columns of the profile pic white banner background (needed to center photo)  -->
+        </div>
+    </div>
+    <!-- The below code is when the 'All Users Link' is clicked -->
+        <div class="">
             <div class="row">
                 <div class="col-sm-2">
                     <!-- One of the three columns -->
                 </div>
-                <div class="col-sm-8">
-                    <table class="col-sm-12 bg-white mt-3 table">
+                <div class="col">
+                    <table class="col-sm-12 bg-white mt-3 searchResults">
                         <tbody>
                             <tr>
                                 <td class="pl-3 pb-3">All Users</td>
@@ -1326,38 +919,8 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <!-- Used to create space in between -->
-                                </td>
-                                <td>
-                                    <!-- Used to create space in between -->
-                                </td>
-                                <td>
-                                    <!-- Used to create space in between -->
-                                </td>
-                                <td>
-                                    <!-- Used to create space in between -->
-                                </td>
-                                <td>
-                                    <!-- Used to create space in between -->
-                                </td>
-                                <td>
-                                    <!-- Used to create space in between -->
-                                </td>
-                                <td>
-                                    <!-- Used to create space in between -->
-                                </td>
-                                <td>
-                                    <!-- Used to create space in between -->
-                                </td>
-                                <td>
-                                    <!-- Used to create space in between -->
-                                </td>
-                                <td>
-                                    <!-- Used to create space in between -->
-                                </td>
-                                <td>
                                     <a href="/{{user.firstName}}/{{user.lastName}}/{{user.id}}" class="nameStylingForEachFriend">
-                                        <button type="button" class="btn btn-secondary mt-3">
+                                        <button type="button" class="btn btn-secondary">
                                             See Profile
                                         </button>
                                     </a>
@@ -1372,102 +935,8 @@
                 </div>
             </div>
         </div>
-    <!-- The above code is when the 'See All Users' link is clicked -->
-
-    <!-- The below code is when the 'See All Friends' link is clicked -->
-        <div class="showFriends">
-            <div class="row">
-                <div class="col-sm-2">
-                    <!-- One of the three columns -->
-                </div>
-                <div class="col-sm-8">
-                    <table class="col-sm-12 bg-white mt-3 table">
-                        <tbody>
-                            <tr>
-                                <td class="pl-3 pb-3">Friends</td>
-                            </tr>
-                    {% for friend in friends %}
-                            <tr>
-                                <td>
-                                    <div class="row">
-                                        <div class="col-sm mb-1">
-                                        {% if not friend.profilePic == "" %} 
-                                            <a href="/{{friend.firstName}}/{{friend.lastName}}/{{friend.id}}" class="d-inline-block">
-                                                <img src='{{ friend.profilePic }}' class="d-inline thumbnailForEachFriend"> 
-                                            </a>
-                                        {% else %}
-                                            <a href="/{{friend.firstName}}/{{friend.lastName}}/{{friend.id}}" class="d-inline-block">
-                                                <img src="{% static 'Images/blankAvatar.png' %}" class="d-inline thumbnailForEachFriend"> 
-                                            </a>
-                                        {% endif %}
-                                            <a href="/{{friend.firstName}}/{{friend.lastName}}/{{friend.id}}" class="nameStylingForEachFriend">
-                                                <p class="nameStylingForEachFriend pl-3 ml-5">{{friend.firstName}} {{friend.lastName}}</p>
-                                            </a>
-                                    {% if friend in loggedInUser.friends.all%}
-                                            <p class="detailsStylingForEachFriend pl-3 ml-5">Friend 
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="6" height="6" fill="gray" class="bi bi-circle-fill ml-1" viewBox="0 0 16 16">
-                                                    <circle cx="4" cy="4" r="4"/>
-                                                </svg>
-                                                {{friend.userUniversity}}
-                                            </p>
-                                    {% else %}
-                                        {% if friend.userUniversity == "" %}
-                                            <p class="detailsStylingForEachFriend pl-3 ml-5">Unnamed University</p>    
-                                        {% else %}
-                                            <p class="detailsStylingForEachFriend pl-3 ml-5">{{friend.userUniversity}}</p>
-                                        {% endif %}
-                                    {% endif %}
-                                        <div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <!-- Used to create space in between -->
-                                </td>
-                                <td>
-                                    <!-- Used to create space in between -->
-                                </td>
-                                <td>
-                                    <!-- Used to create space in between -->
-                                </td>
-                                <td>
-                                    <!-- Used to create space in between -->
-                                </td>
-                                <td>
-                                    <!-- Used to create space in between -->
-                                </td>
-                                <td>
-                                    <!-- Used to create space in between -->
-                                </td>
-                                <td>
-                                    <!-- Used to create space in between -->
-                                </td>
-                                <td>
-                                    <!-- Used to create space in between -->
-                                </td>
-                                <td>
-                                    <!-- Used to create space in between -->
-                                </td>
-                                <td>
-                                    <!-- Used to create space in between -->
-                                </td>
-                                <td>
-                                    <a href="/{{user.firstName}}/{{user.lastName}}/{{user.id}}" class="nameStylingForEachFriend">
-                                        <button type="button" class="btn btn-secondary mt-3">
-                                            See Profile
-                                        </button>
-                                    </a>
-                                </td>
-                            </tr>
-                    {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                <div class="col-sm-2">
-                    <!-- One of the three columns -->
-                </div>
-            </div>
-        </div>
-    <!-- The above code is when the 'See All Friends' link is clicked -->
+    <!-- The above code is when the 'All Users Link' is clicked -->
+</div>
 </body>
 
 </html>

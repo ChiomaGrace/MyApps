@@ -99,8 +99,8 @@ def loggedInUsersPage(request, messageId=0):
     allUsers = User.objects.exclude(id=request.session['loginInfo']).order_by('?') #filter will be randomized
     # print(allUsers)
     friends = loggedInUser.friends.all().order_by('?')
-    # print("These are all the friends of the logged in user:", friends)
     print("This is the friend count:", friends.count())
+    # print("These are all the friends of the logged in user:", friends)
     # print("*"*50)
     context = {
         'loggedInUser': User.objects.get(id=request.session['loginInfo']),
@@ -289,6 +289,8 @@ def specificUsersPage(request, userFirstName, userLastName, userId, messageId = 
     # print("This prints all the users that have an account")
     allUsers = User.objects.all()
     # print(allUsers)
+    specificUsersFriends = specificUsersPage.friends.all()
+    # print("These are the friends of the specific user:", specificUsersFriends)
     # print("*"*50)
     print("THIS IS THE LAST PRINT STATEMENT OF THE SPECIFIC USER'S PAGE ROUTE.")
     context = {
@@ -296,7 +298,7 @@ def specificUsersPage(request, userFirstName, userLastName, userId, messageId = 
         'specificUsersMessages': specificUsersMessages,
         'allUsers': allUsers,
         'loggedInUser': User.objects.get(id=request.session['loginInfo']),
-        }
+    }
     return render(request, "specificUserPage.html", context)
 
 def userLikes(request, userFirstName='firstName', userLastName='lastName', userId=0, messageId = 0): #need to have positional arguments in order to do the reroute to the specific page
@@ -387,18 +389,22 @@ def sendFriendRequest(request, userFirstName='firstName', userLastName='lastName
     if userWhoSentFriendRequest in userReceivesRequest.friends.all():
         print("You're already friends!")
     else:
-        print("This print statement means the friend request is being created")
-        userReceivesRequest.friends.add(userWhoSentFriendRequest)
-        print("These are all the users the logged in user sent friend requests to:", userWhoSentFriendRequest.friends.all())
-        print("These are all the users who asked to be the logged in user's friend:", userReceivesRequest.friends.all())
-        userReceivesRequest.notifications += 1
-        userReceivesRequest.save()
-        # messages.info(request,userReceivesRequest.notifications, extra_tags="userNotifs")
-        # print("*"*50)
-        if userFirstName!= 'firstName':
+        if userWhoSentFriendRequest.id != userReceivesRequest.id: #if this line of code runs it means the friend request occurred on the specific user's page
+            print("This print statement means the friend request is being created")
+            userReceivesRequest.friends.add(userWhoSentFriendRequest)
+            print("These are all the users the logged in user sent friend requests to:", userWhoSentFriendRequest.friends.all())
+            print("These are all the users who asked to be the logged in user's friend:", userReceivesRequest.friends.all())
+            userReceivesRequest.notifications += 1
+            userReceivesRequest.save()
+            # print("*"*50)
             print("THIS IS THE LAST PRINT STATEMENT OF THE SEND A FRIEND REQUEST ROUTE.")
             return redirect(reverse('specificUsersPage', args=(userFirstName, userLastName, userId,)))
-        else: 
+        else: #if these lines of code run it means the friend request occurred on the logged in user's page
+            userReceivesRequest.friends.add(userWhoSentFriendRequest)
+            print("These are all the users the logged in user sent friend requests to:", userWhoSentFriendRequest.friends.all())
+            print("These are all the users who asked to be the logged in user's friend:", userReceivesRequest.friends.all())
+            userReceivesRequest.notifications += 1
+            userReceivesRequest.save()
             print("THIS IS THE LAST PRINT STATEMENT OF THE SEND A FRIEND REQUEST ROUTE.")
         return redirect("/home")
 
@@ -501,7 +507,7 @@ def searchForUsersProfile(request):
         print("No results found!")
     context = {
         'loggedInUser': User.objects.get(id=request.session['loginInfo']),
-        'allUsers': User.objects.all().exclude(id=request.session['loginInfo']),
+        'allUsers': User.objects.all().exclude(id=request.session['loginInfo']).order_by('firstName'), #orders alphabetically
         'searchForUser': searchForUser,
     }
     return render(request, "noUserFound.html", context)
@@ -517,6 +523,24 @@ def notifications(request):
             print("This is the user who sent the friend request.")
     print("THIS IS THE LAST PRINT STATEMENT OF THE NOTIFICATIONS ROUTE")
     return redirect('/home')
+
+def allUsers(request):
+    print("THIS IS THE SHOW ALL USERS' ROUTE")
+    loggedInUser = User.objects.get(id=request.session['loginInfo'])
+    allUsers = User.objects.exclude(id=request.session['loginInfo']).order_by('?') #filter will be randomized
+    # print(allUsers)
+    friends = loggedInUser.friends.all().order_by('?')
+    # print("This is the friend count:", friends.count())
+    # print("These are all the friends of the logged in user:", friends)
+    # print("*"*50)
+    context = {
+        'loggedInUser': User.objects.get(id=request.session['loginInfo']),
+        # 'wallOfLoggedInUser': wallOfLoggedInUser,
+        'allUsers': allUsers,
+        'friends': friends,
+    }
+    print("THIS IS THE LAST STATEMENT OF THE ALL USERS' ROUTE")
+    return render(request, "allUsers.html", context)
 
 def logout(request):
     request.session.clear()

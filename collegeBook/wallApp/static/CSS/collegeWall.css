@@ -2,6 +2,10 @@
     vertical-align: top;
 }
 
+.addFriendText{ /* the text on the add friend button on the show all users html */
+    text-indent: 16px;
+}
+
 .allUsersDiv{
     /* display: table;     */
     /* width: 254px; */
@@ -11,8 +15,7 @@
 }
 
 .allUsersLink{
-    font-size: small;
-    
+    font-size: small; 
 }
 
 /* .bi-circle-fill{
@@ -179,14 +182,22 @@
     /* 194.250 x 389 */
 }
 
+.friendsLink{
+    font-size: small; 
+}
+
 .hide {
     display: none;
 }
 
-.introDiv{
+.triDiv{ /* The div that contains the three divs(intro div, all users div, and friends div) on the left side of the html*/
     /* display: table;     */
     /* width: 254px; */
     height: 260px;
+    border-radius: 10px;
+}
+
+.listOfPostedMessages{
     border-radius: 10px;
 }
 
@@ -227,7 +238,7 @@
     font-size: 14px;
 }
 
-.pendingFriendRequestButton{
+#pendingFriendRequestButton{ /*The styling of the button on the home page*/
 font-size: 8px;
 text-align: center;
 }
@@ -256,7 +267,7 @@ small.messageCreatedAt{
 .nameInNotification{
     font-weight: bold;
     max-width: 100%;
-
+    color: black;
 }
 
 .nameStylingForEachFriend{
@@ -307,9 +318,6 @@ small.messageCreatedAt{
 .profilePicBanner{
     background-color: white;
     height: 300px;
-}
-
-.profilePicBannerThird{
     border-radius: 10px;
 }
 
@@ -410,8 +418,16 @@ small.messageCreatedAt{
     width: 180px;
 } 
 
-.searchResults{
+.table{ /*Style of the table when it displays all the users or the friends*/
     border-radius: 10px;
+}
+
+/* .test{
+    background-color: red;
+} */
+
+.testing{
+    background-color: blue;
 }
 
 .searchResultsDiv{
@@ -420,6 +436,10 @@ small.messageCreatedAt{
     overflow-x: hidden; 
     position: fixed;
     left: 440px;
+}
+
+.showFriends{
+    display: none;
 }
 
 .showAllUsers{

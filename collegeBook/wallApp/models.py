@@ -214,7 +214,7 @@ class User(models.Model):
     profileHeader = models.CharField(max_length = 255, default = "") #The caption underneath the profile picture
     friends = models.ManyToManyField('self', related_name="friendship", symmetrical= False) # Self states this ManyToManyField is symmetrical – that is, if I am your friend, then you are my friend. So setting symmetrical to false makes the 'friendship' one way
     notifications = models.IntegerField(default = "0")
-    userCheckBox = models.BooleanField(default = False) # An option for the user to not fill out the user intro fields below
+    userCheckBox = models.BooleanField(default = "0") # An option for the user to not fill out the user intro fields. (the below instances) 0 signifies false
     userUniversity = models.CharField(max_length = 255, default = "")
     userHighSchool = models.CharField(max_length = 255, default = "")
     userDormBuilding = models.CharField(max_length = 255, default = "")
