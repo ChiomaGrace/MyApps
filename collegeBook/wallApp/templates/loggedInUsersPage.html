@@ -278,6 +278,7 @@
         //The above code is the function for submitting the user profile info form via jquery/ajax
 
         //The below code is the function for posting a message via jquery/ajax
+
             $("#postAMessageForm").submit(function(e){// the id name given to the form action in the below html
                 console.log("The post a message button was clicked.")
                 e.preventDefault(); //prevents the default browser behavior of the form submitting normally
@@ -318,6 +319,14 @@
                         console.log("Outside of the for loop of the dictionary")
                     },
                 });
+            });
+
+            $('#userMessageID').keypress(function (e) {
+                if (e.which == 13) {
+                    console.log("This means enter was pressed to submit the written post.")
+                    $("#postAMessageForm").submit();
+                    return false;
+                }
             });
         //The above code is the function for posting a message via jquery/ajax
 
@@ -386,7 +395,51 @@
                     },
                 })
             });
-        //The above code is the function for posting a comment via jquery/ajax
+
+            $('#userCommentID').keypress(function (e) {
+                if (e.which == 13) {
+                    console.log("This means enter was pressed to submit the written comment.")
+                    $("#postACommentForm").submit();
+                    return false;
+                }
+            });
+
+            $( ".commentButton" ).click(function(e) {
+                e.preventDefault(); //prevents the default browser behavior of the form submitting normally
+                console.log("This means the comment button was clicked.")
+                // $( ".commentTextAreaOnForm" ).focus();
+                //Above code works (sort of)
+                // commentButtonID = $(this).data("index") //This is the message id
+                console.log("This is the message id so the comment is linked to the right post", commentButtonID)
+                var test = document.getElementsByClassName("commentTextAreaOnForm"); //element that will be the focus of the keyup
+                    console.log("test,", test)
+
+                $('.commentTextAreaOnForm').each(function(){
+                    // var test = document.getElementsByClassName("commentTextAreaOnForm"); //element that will be the focus of the keyup
+                    // console.log("test,", test)
+                    // matchingMessageId = $(this)
+                    // console.log("value on the comment textarea", matchingMessageId.data("index"))
+                    // if (commentButtonID == matchingMessageId.data("index")){
+                    //     console.log("Inside the if statement.")
+                    //     matchingMessageId.focus();
+
+                    // }
+                });
+                // commentButtonID = $(this).data("index") //This is the message id
+                allCommentTextAreaOnForms = document.getElementsByClassName('commentTextAreaOnForm')
+                for (i=0;i<allCommentTextAreaOnForms.length;i++) {
+                    // console.log($(this).data("index"))
+                    // test = $(this).data("index")
+                    test = $(this)
+                    console.log(test.data("index"))
+                    // console.log(allCommentTextAreaOnForms[i].value)
+                    if(test.data("index") == commentButtonID) {
+                        test.focus();
+                        // $(this).next(".comment").val();
+                    //     break;
+                    }
+                }
+            })
 
         //The below code is the function that enables and disables the post a comment button depending on if the textarea contains characters
             
@@ -405,18 +458,6 @@
                     } 
                 })
             });
-
-            // $('.commentLink').click(function(e) {
-            //     e.preventDefault(); //prevents the default browser behavior of the form submitting normally
-            //     messageId = $(this).data("index"); //this the value retrieved when the link is clicked
-            //     console.log("This is the messageID of the message that was clicked for a comment:", messageId)
-            //     allCommentTextAreas = document.querySelectorAll(".commentTextAreaOnForm");
-            //     for (commentTextArea of allCommentTextAreas) {
-            //         specificCommentTextArea =  $(this).data("index")
-            //         console.log(specificCommentTextArea)
-            //     } 
-            // }); TRY TO CLICK COMMENT BUTTON AND MOVE TO COMMENT TEXTAREA
-        //The above code is the function that enables and disables the post a comment button depending on if the textarea contains characters
 
         //The below code is the function for liking a posted message via jquery/ajax
             $('.likeAPostLink').click(function(e) {
@@ -503,7 +544,7 @@
                             console.log("This console log means the friend request was sent successfully. userId:", userId)
                             user.replaceWith("<button type='button' class='btn btn-sm sendFriendRequestButton' value='{{user.id}}'><a href='' class='sendFriendRequest'><svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-person-plus' viewBox='0 0 16 16'><path d='M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H1s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C9.516 10.68 8.289 10 6 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z'/><path fill-rule='evenodd' d='M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z'/></svg></a></button>"); 
                             // user.hide();
-                            // location.reload(); //reloads the page and triggers the dynamic function of the cancel button which was showing but not  working prior unless page was refreshed.
+                            location.reload(); //reloads the page and triggers the dynamic function of the cancel button which was showing but not  working prior unless page was refreshed.
                         },
                         error: function(data){
                             console.log("If this console log is displaying it means there were errors in sending the friend request.")                       
@@ -516,10 +557,50 @@
         //The below code is the function for seeing and hiding notifications  via jquery/ajax
             $('#notifications').click(function(e) {
                 $('#notificationCounter').hide()
+                $( ".newPostNotification" ).hover(
+                    function() {
+                        console.log("The mouse is hovering over the new post notification.")
+                        messageId = $(this).data("index")
+                        console.log("This is the id of the message:", messageId)
+                        var data = { //This is to know what page the logged in user is currently browsing
+                            "userWhoReceivesPost": $('#userWhoReceivesPostID').val()
+                        };
+                        $(this).unbind('mouseenter mouseleave') //This makes sure the decrement of notifications only occurs once when hovered
+                        $.ajax({
+                            type: "POST",
+                            url: 'removeNotification' + '/' + messageId,
+                            headers:{"X-CSRFToken": $crf_token}, //this relates to the CSRF token needed to send data to the backend
+                            data: data,
+                            success: function(data) {
+                                console.log("This console log means the notification was successfully hovered over and the count can decrease to one")
+                            },
+                            error: function(data){
+                                console.log("If this console log is displaying it means there were errors in decreasing the notification count.")                       
+                            },
+                        })
+                    }
+                );
             }); 
+
+            $('#clearNotifications').click(function(e){
+                e.preventDefault();
+                console.log("This console log means the user attempted to clear all of their current notifications")
+                $.ajax({
+                    type: "GET",
+                    url: 'clearAllNotifications',
+                    success: function(data) {
+                        console.log("This console log means all the notifications were successfully removed")
+                        location.reload();
+                    },
+                    error: function(data){
+                        console.log("If this console log is displaying it means there were errors in removing all the notifications.")                       
+                    },
+                })
+                
+            })
         //The above code is the function for seeing notifications  via jquery/ajax
 
-        //The below code is the function for handling specific notifications via jquery/ajax
+        //The below code is the function for accepting a specific notification(friend request) via jquery/ajax
             allConfirmFriendRequestButtons = document.querySelectorAll(".confirmNotificationButton");
             for (clickedButton of allConfirmFriendRequestButtons) {
                 clickedButton.addEventListener('click', function(e) {
@@ -527,11 +608,14 @@
                     userId = this.value
                     user= $(this)
                     console.log("The button to confirm a friend request was clicked, and the user id is:", userId)
+                    var data = { //This is to know what page the logged in user is currently browsing
+                    "userWhoReceivesPost": $('#userWhoReceivesPostID').val()
+                    };
                     $.ajax({
                         type: "POST",
                         url: 'acceptFriendRequest' + '/' + userId, 
                         headers:{"X-CSRFToken": $crf_token}, //this relates to the CSRF token needed to send data to the backend
-                        data: userId,
+                        data: data,
                         success: function(data) {
                             console.log("This console log means the friend request was confirmed successfully.")
                             user.parent().parent().remove()
@@ -543,7 +627,7 @@
                     })
                 })
             }
-        //The above code is the function for handling specific notifications via jquery/ajax
+        //The above code is the function for accepting a specific notification(friend request) via jquery/ajax
 
         //The below code is the function for handling canceling a specific notification(friend request) via jquery/ajax
             allCancelFriendRequestButtons = document.querySelectorAll(".cancelNotificationButton");
@@ -564,7 +648,8 @@
                             location.reload(); //reloads the page and displays the new data.
                         },
                         error: function(data){
-                            console.log("If this console log is displaying, it means errors occurred in declining the friend request.")                       },
+                            console.log("If this console log is displaying, it means errors occurred in declining the friend request.")                       
+                        },
                     })
                 })
             }
@@ -645,7 +730,9 @@
                 $( '.triDiv' ).hide()
                 $('#postAMessageForm').hide()
                 $('.listOfPostedMessages').hide()
+                $('.showAllUsers').hide()
                 $('.showFriends').show()
+
             });
         //The above code is the function to show the logged in user's friends when the 'Show All Friends' link is clicked
 
@@ -710,6 +797,7 @@
                 </svg>
             </button>
         </div>
+
     <!-- The above code is the second third of the navigation bar containing the picture buttons to other pages -->
     <!-- The below code is the last third of the navigation bar containing the links -->
         <div class="col-sm-3 mb-2 ml-5 mt-2">
@@ -726,7 +814,7 @@
                     </li>
                     <li class="nav-item dropdown"> <!-- This is the notification bell symbol -->
                         <a class="nav-link" href="" data-toggle="dropdown" id="notifications">
-                        {% if loggedInUser.notifications %}
+                        {% if loggedInUser.notifications != 0 %}
                             <button type="button" class="btn btn-sm btn-danger notificationNumber" id="notificationCounter">{{loggedInUser.notifications}}</button>
                         {% endif %}
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-bell-fill mb-1 notificationBellSymbol" viewBox="0 0 16 16">
@@ -734,12 +822,17 @@
                             </svg>
                         </a>
                         <div class="dropdown-menu notificationMenu">
-                        {% if loggedInUser.notifications == 0 %}
+                            <div class="ml-5 pl-5">
+                                <div class="ml-5 pl-2">
+                                    <a href="" class="ml-5 pl-5" id="clearNotifications">Clear All</a>
+                                </div>
+                            </div>
+                        <!-- if not loggedInUsersNotifs.exists 
                             <p class="ml-4"> No new notifications.</p>
-                        {% endif %}
+                        endif  -->
                     {% for friendRequest in loggedInUser.friends.all %}
                         {% if not loggedInUser in friendRequest.friends.all %} <!-- This code would remove the sent friend request signifying the logged in user did not accept the friend request -->
-                            <div class="dropdown-item" value="{{friendRequest.id}}">
+                            <div class="dropdown-item">
                                 <div class="specificNotification">
                                     <a href="/{{friendRequest.firstName}}/{{friendRequest.lastName}}/{{friendRequest.id}}" class="d-inline-block">
                                         <img src='{{ friendRequest.profilePic }}' id="navIconProfPic" class="d-inline-block"> <p class="d-inline-block nameInNotification mb-0 mt-2">{{friendRequest.firstName}} {{friendRequest.lastName}}</p>
@@ -753,6 +846,28 @@
                             </div>
                         {% endif %}
                     {% endfor %}
+                    <!-- for message in wallOfLoggedInUser   This loops through all the notifications -->
+                            <!-- <div class="dropdown-item">
+                                <div class="specificNotification newPostNotification" data-index="{{message.id}}">
+                                    <a href="/{{message.user.firstName}}/{{message.user.lastName}}/{{message.user.id}}" class="d-inline-block">
+                                        <img src='{{message.user.profilePic }}' id="navIconProfPic" class="d-inline-block"> <p class="d-inline-block nameInNotification mb-0 mt-2">{{message.user.firstName}} {{message.user.lastName}}</p>
+                                    </a>
+                                    <p class="d-inline-block  mb-0 pt-0"> wrote on your <a href="">wall.</a></p>
+                                </div>
+                            </div> -->
+                    <!-- endfor  -->
+                    {% for notif in notifications %} <!-- This loops through all the notifications -->
+{% if notif.user == loggedInUser %} <!-- This provides the notifications only for the logged in user -->
+    <div class="dropdown-item">
+        <div class="specificNotification newPostNotification" data-index="{{notif.message.id}}">
+            <a href="/{{notif.message.user.firstName}}/{{notif.message.user.lastName}}/{{notif.message.user.id}}" class="d-inline-block">
+                <img src='{{ notif.message.user.profilePic }}' id="navIconProfPic" class="d-inline-block"> <p class="d-inline-block nameInNotification mb-0 mt-2">{{notif.message.user.firstName}} {{notif.message.user.lastName}}</p>
+            </a>
+            <p class="d-inline-block  mb-0 pt-0"> wrote on your <a href="">wall.</a></p>
+        </div>
+    </div>
+{%endif%}
+{% endfor %}
                         </div>
                     </li>
                     <li class="nav-item"> <!-- This is the messenger symbol -->
@@ -858,9 +973,9 @@
         </div>
     <!-- The below code is the code for the profile pic banner section -->
     <!--The below code is the second row that contains two columns. the left handed section of the trilogy of divs(introDiv, allUsersDiv, and friendsDiv), and the right sided column containing the post a message form and the list of messages.  -->
-        <div class="row ml-5 mt-4"> 
+        <div class="row ml-5 pl-5 mt-4"> 
             <div class="col-sm-4 bg-white triDiv">
-                <div class="introDiv">
+                <div class="introDiv pb-3">
                     <p class="lead">Intro</p>
             {%  if loggedInUser.userCheckBox == 0 %} <!-- True displays 1 in models. False displays 0. 0 representing the user chose to display intro information -->
                     <div class="">
@@ -878,8 +993,18 @@
                         <p class="d-inline-block">Went to</p>
                         <p class="d-inline-block specificIntroDetail">{{loggedInUser.userHighSchool}}</p>
                     </div>
+                    <div class="">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-geo-alt" viewBox="0 0 16 16">
+                            <path d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A31.493 31.493 0 0 1 8 14.58a31.481 31.481 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94zM8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10z"/>
+                            <path d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                        </svg>
+                        <p class="d-inline-block">From</p>
+                        <p class="d-inline-block specificIntroDetail">{{loggedInUser.userHomeTown}}</p>
+                    </div>
                 {% if loggedInUser.userDormBuilding ==  "" %}
                     <!-- Removes the "lives in option if the user chooses to leave it blank" -->
+                    <br>
+                    <br>
                 {% else %}
                     <div class="">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-house-door" viewBox="0 0 16 16">
@@ -889,30 +1014,22 @@
                         <p class="d-inline-block specificIntroDetail">{{loggedInUser.userDormBuilding}}</p>
                     </div>
                 {% endif %} <!-- End of the if statement that removes the "lives in option if the user chooses to leave it blank" -->
-                    <div class="">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-geo-alt" viewBox="0 0 16 16">
-                            <path d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A31.493 31.493 0 0 1 8 14.58a31.481 31.481 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94zM8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10z"/>
-                            <path d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
-                        </svg>
-                        <p class="d-inline-block">From</p>
-                        <p class="d-inline-block specificIntroDetail">{{loggedInUser.userHomeTown}}</p>
-                    </div>
                     <div class="row ml-4">
                         <button type="button" class="btn btn-sm btn-secondary pl-5 pr-5 ml-5 editDetailsButton">Edit Details</button>
                     </div>
             {% else %} <!-- Only displays the edit details button if the user has chosen not to display their intro information -->
-                    <div class="d-grid col-6 mx-auto">
-                        <div class="row mt-4"><!-- Creates space to center Edit Details button --></div>
-                        <div class="row ml-3 mt-5">
+                    <div class="d-grid col-6 mx-auto pb-5 mb-5">
+                        <div class="row mt-2 pb-5"><!-- Creates space to center Edit Details button --></div>
+                        <div class="row ml-3 mt-3">
                             <button type="button" class="btn btn-sm btn-secondary editDetailsButton">Edit Details</button>
                         </div>
                     </div>
             {% endif %} <!-- End of the if statement that only displays the edit details button if the user has not chosen to hide the intro information  -->
                 </div> <!-- closing div for the introDiv -->
-                <div class="bg-white mt-5 allUsersDiv">
+                <div class="bg-white mt-4 allUsersDiv">
                     <div>
                         <p class="lead d-inline-block pr-5 ml-2 mr-5">All Users</p> 
-                        <a href="" class="d-inline-block ml-5 allUsersLink">See All Users</a>
+                        <a href="" class="d-inline-block ml-4 pl-2 allUsersLink">See All Users</a>
                     </div>
 {% for user in allUsers %}
     {% if not user in loggedInUser.friends.all %}  <!-- this allows the logged in user to still remove the pending friend request if necessary -->
@@ -968,10 +1085,10 @@
     {% endif %} <!-- End of the if statement to not show the users the logged in user is friends with -->
 {% endfor %}
                 </div> <!-- Closing div for the allUsersDiv -->
-                <div class="mt-3 bg-white friendsDiv"> 
+                <div class="mt-4 bg-white friendsDiv"> 
                     <div>
                         <p class="lead d-inline-block pr-5 ml-2 mr-5">Friends</p> 
-                        <a href="" class="d-inline-block ml-5 friendsLink">See All Friends</a>
+                        <a href="" class="d-inline-block ml-4 pl-1 friendsLink">See All Friends</a>
                     </div>
 {% for user in friends %}
     {% if loggedInUser.id != user.id  %} <!-- to prevent the logged in user's name displaying in the friends section -->
@@ -1094,22 +1211,24 @@
                 </div> 
             <!-- The above code is the edit details form-->
             </div> <!-- Closing div for the overlay -->  <!-- Covers the remaining html when the form dialog box appears -->
-            <div class="col-sm-7 ml-5 listOfPostedMessages">
+            <div class="pl-5 listOfPostedMessages">
                 <!-- The below code is for the post a message form -->
-                <form class="mb-2 bg-white col-sm-12 " action="" method="post" id="postAMessageForm">
+                <form class="mb-2 bg-white pr-2" action="" method="post" id="postAMessageForm">
                     {% csrf_token %}
                     <div id="postAMessageErrors">
                         <ul class="displayMessageErrors mb-0"></ul>
                     </div>
-                    <div class="form-group">
-                        <label for="textArea"></label>
-                    {% for friend in loggedInUser.friends.all%}
-                        <input type="hidden" id="confirmFriendID" value="{{friend.id}}">
-                    {% endfor %}
+                    <div class="form-group pt-2">
                         <input type="hidden" id="userWhoReceivesPostID" name="userWhoReceivesPost" value="{{loggedInUser.id}}">
-                        <textarea class="form-control rounded-pill" id="userMessageID" name="userMessage" rows="2" placeholder="What's On Your Mind, {{loggedInUser.firstName}}?"></textarea>
+                        <img src="{{loggedInUser.profilePic}}" id="navIconProfPic" alt="" class="d-inline-block mb-2 ml-2">
+                        <div class="d-inline-block mt-2 pl-2">
+                            <textarea class="form-control rounded-pill" id="userMessageID" name="userMessage" rows="1" placeholder="What's On Your Mind, {{loggedInUser.firstName}}?"></textarea>
+                        </div>
+                        <div class="d-inline-block mt-2">
+                            <button type="submit" class="btn btn-primary mb-2 btn-sm pl-3 pr-3" id="postAMessageButton">Post</button>
+                        </div>
                     </div>
-                    <button type="submit" class="btn btn-primary mb-2 btn-sm" id="postAMessageButton">Post A Message</button>
+                    <div class="pt-2"></div>
                 </form>
         {% if not wallOfLoggedInUser %} <!-- This hides the text that reads 'post' and white space until there is indeed a post to fill the white space -->
     <!-- display emptiness  --> 
@@ -1118,13 +1237,13 @@
                 <small class="font-weight-bold ">Posts</small>
             <!-- The above code is for the post a message form -->
             {% for message in wallOfLoggedInUser %}
-                <table class="table table-borderless col-sm-12">
+                <table class="table table-borderless ">
                     <tbody>
                         <tr>
                             <td class="bg-white listOfPostedMessages">
                                 <div class="messageContentsDiv">
                                 {% if message.user.id == loggedInUser.id %}
-                                    <a href="/home">
+                                    <a href="/home" class="">
                                     {% if not message.user.profilePic == "" %}
                                         <img src="{{message.user.profilePic}}" id="navIconProfPic" alt="">
                                     {% endif %}
@@ -1144,18 +1263,40 @@
                                     <small class="d-block ml-4 text-secondary messageCreatedAtWithThumbnail">{{message.createdAt}}</small>
                                 {% endif %}
                                 </div>
-                                <p class="col-sm mb-0 mt-0 ml-0  messageText">{{message.message}} </p>
-                                <div class=" col-sm-12 mr-3 pl-5 mt-0 bg-light stylingOfMessageFormDivs">
-                                    <form action="" class="d-inline"> 
-                                        <a class="mr-2 hover likeAPostLink" data-index="{{message.id}}" href="">Like</a><!-- The a tag also needs the message id value so it can be compared to the hidden message id value in ajax otherwise when one message is clicked all will receive likes   -->
+                                <p class="col-sm mb-1 mt-0 ml-0 messageText">{{message.message}} </p>
+                                <div class=" col-sm-10 mr-3 pl-5 mt-0  stylingOfMessageFormDivs">
+                                    <form action="" class="d-inline pl-5"> 
                                         <input type="hidden" value="{{message.id}}">
+                                        <button class="btn btn-outline-secondary hover likeAPostLink likeUnlikeCommentButtonStyling" data-index="{{message.id}}">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-hand-thumbs-up" viewBox="0 0 16 16">
+                                                <path d="M8.864.046C7.908-.193 7.02.53 6.956 1.466c-.072 1.051-.23 2.016-.428 2.59-.125.36-.479 1.013-1.04 1.639-.557.623-1.282 1.178-2.131 1.41C2.685 7.288 2 7.87 2 8.72v4.001c0 .845.682 1.464 1.448 1.545 1.07.114 1.564.415 2.068.723l.048.03c.272.165.578.348.97.484.397.136.861.217 1.466.217h3.5c.937 0 1.599-.477 1.934-1.064a1.86 1.86 0 0 0 .254-.912c0-.152-.023-.312-.077-.464.201-.263.38-.578.488-.901.11-.33.172-.762.004-1.149.069-.13.12-.269.159-.403.077-.27.113-.568.113-.857 0-.288-.036-.585-.113-.856a2.144 2.144 0 0 0-.138-.362 1.9 1.9 0 0 0 .234-1.734c-.206-.592-.682-1.1-1.2-1.272-.847-.282-1.803-.276-2.516-.211a9.84 9.84 0 0 0-.443.05 9.365 9.365 0 0 0-.062-4.509A1.38 1.38 0 0 0 9.125.111L8.864.046zM11.5 14.721H8c-.51 0-.863-.069-1.14-.164-.281-.097-.506-.228-.776-.393l-.04-.024c-.555-.339-1.198-.731-2.49-.868-.333-.036-.554-.29-.554-.55V8.72c0-.254.226-.543.62-.65 1.095-.3 1.977-.996 2.614-1.708.635-.71 1.064-1.475 1.238-1.978.243-.7.407-1.768.482-2.85.025-.362.36-.594.667-.518l.262.066c.16.04.258.143.288.255a8.34 8.34 0 0 1-.145 4.725.5.5 0 0 0 .595.644l.003-.001.014-.003.058-.014a8.908 8.908 0 0 1 1.036-.157c.663-.06 1.457-.054 2.11.164.175.058.45.3.57.65.107.308.087.67-.266 1.022l-.353.353.353.354c.043.043.105.141.154.315.048.167.075.37.075.581 0 .212-.027.414-.075.582-.05.174-.111.272-.154.315l-.353.353.353.354c.047.047.109.177.005.488a2.224 2.224 0 0 1-.505.805l-.353.353.353.354c.006.005.041.05.041.17a.866.866 0 0 1-.121.416c-.165.288-.503.56-1.066.56z"/>
+                                            </svg>
+                                            Like
+                                        </button><!-- The button tag also needs the message id value so it can be compared to the hidden message id value in ajax otherwise when one message is clicked all will receive likes   -->
                                     </form>
                                     <form action="" class="d-inline"> 
-                                        <a class="mr-2 hover unlikeAPostLink" data-index="{{message.id}}" href="">Unlike</a><!-- The a tag also needs the message id value so it can be compared to the hidden message id value in ajax otherwise when one message is clicked all will receive likes   -->
                                         <input type="hidden" value="{{message.id}}">
+                                {% for user in message.userLikes.all%} <!--the message.userLikes.all is the many to many relationship in the message model containing all the likes the users did  -->
+                                    {% if user in message.userLikes.all %}
+                                        <button class="btn btn-outline-secondary hover unlikeAPostLink likeUnlikeCommentButtonStyling" data-index="{{message.id}}">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-hand-thumbs-down" viewBox="0 0 16 16">
+                                                <path d="M8.864 15.674c-.956.24-1.843-.484-1.908-1.42-.072-1.05-.23-2.015-.428-2.59-.125-.36-.479-1.012-1.04-1.638-.557-.624-1.282-1.179-2.131-1.41C2.685 8.432 2 7.85 2 7V3c0-.845.682-1.464 1.448-1.546 1.07-.113 1.564-.415 2.068-.723l.048-.029c.272-.166.578-.349.97-.484C6.931.08 7.395 0 8 0h3.5c.937 0 1.599.478 1.934 1.064.164.287.254.607.254.913 0 .152-.023.312-.077.464.201.262.38.577.488.9.11.33.172.762.004 1.15.069.13.12.268.159.403.077.27.113.567.113.856 0 .289-.036.586-.113.856-.035.12-.08.244-.138.363.394.571.418 1.2.234 1.733-.206.592-.682 1.1-1.2 1.272-.847.283-1.803.276-2.516.211a9.877 9.877 0 0 1-.443-.05 9.364 9.364 0 0 1-.062 4.51c-.138.508-.55.848-1.012.964l-.261.065zM11.5 1H8c-.51 0-.863.068-1.14.163-.281.097-.506.229-.776.393l-.04.025c-.555.338-1.198.73-2.49.868-.333.035-.554.29-.554.55V7c0 .255.226.543.62.65 1.095.3 1.977.997 2.614 1.709.635.71 1.064 1.475 1.238 1.977.243.7.407 1.768.482 2.85.025.362.36.595.667.518l.262-.065c.16-.04.258-.144.288-.255a8.34 8.34 0 0 0-.145-4.726.5.5 0 0 1 .595-.643h.003l.014.004.058.013a8.912 8.912 0 0 0 1.036.157c.663.06 1.457.054 2.11-.163.175-.059.45-.301.57-.651.107-.308.087-.67-.266-1.021L12.793 7l.353-.354c.043-.042.105-.14.154-.315.048-.167.075-.37.075-.581 0-.211-.027-.414-.075-.581-.05-.174-.111-.273-.154-.315l-.353-.354.353-.354c.047-.047.109-.176.005-.488a2.224 2.224 0 0 0-.505-.804l-.353-.354.353-.354c.006-.005.041-.05.041-.17a.866.866 0 0 0-.121-.415C12.4 1.272 12.063 1 11.5 1z"/>
+                                            </svg>
+                                            Unlike
+                                        </button><!-- The button tag also needs the message id value so it can be compared to the hidden message id value in ajax otherwise when one message is clicked all will receive likes   -->
+                                    {% endif %}
+                                {% endfor %}
                                     </form>
-                                    <a class="" data-index="{{message.id}}" href="">Comment</a>
+                                    <form action="" class="d-inline"> 
+                                        <button class="btn btn-outline-secondary commentButton likeUnlikeCommentButtonStyling" data-index="{{message.id}}">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-left" viewBox="0 0 16 16">
+                                                <path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4.414A2 2 0 0 0 3 11.586l-2 2V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12.793a.5.5 0 0 0 .854.353l2.853-2.853A1 1 0 0 1 4.414 12H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
+                                            </svg>
+                                            Comment
+                                        </button>
+                                    </form>
                                 </div>
+
         <!-- the below code contains the logic for displaying specific words dependent on who and how many likes-->
                                 <div class="col-sm ml-5">
                         <!-- The below line of code displays when a single user likes a message on the logged in user's page -->
@@ -1245,28 +1386,33 @@
         <!-- the above code contains the logic for displaying specific words dependent on who and how many likes-->
                             {% for comment in message.comments.all %}
                                 <div class="commentSectionDiv row mt-2 ml-3">
-                                    <img src="{{comment.user.profilePic}}" id="navIconProfPic" alt="" class="d-inline ml-3">
-                                    <div class="badge rounded-pill bg-light commentSection ">
-                                        <a href="/{{comment.user.firstName}}/{{comment.user.lastName}}/{{comment.user.id}}" class="commentHeadText d-block">{{comment.user.firstName}} {{comment.user.lastName}}</a>
-                                        <p class="commentSubText d-block">{{comment.comment}}</p>
+                                    <img src="{{comment.user.profilePic}}" id="" alt="" class="d-inline commentIconProfPic ml-1 mr-1">
+                                    <div class="badge badge-pill badge-light commentSection pl-2 pr-5">
+                                        <a href="/{{comment.user.firstName}}/{{comment.user.lastName}}/{{comment.user.id}}" class="commentHeadText d-block pt-2">{{comment.user.firstName}} {{comment.user.lastName}}</a>
+                                        <p class="commentSubText pt-1">{{comment.comment}}</p>
                                     </div>
                                 </div>
                             {% endfor %}
                             <!-- The below line of code is the form to post a comment. -->
-                                <form class="col-sm ml-0 sm mb-0 mt-0 pt-0 pb-0" action="{% url 'processComment' userFirstName=loggedInUser.firstName userLastName=loggedInUser.lastName userId=loggedInUser.id %}" method="post" id="postACommentForm">
+                                <form class=" ml-0 sm mb-0 mt-0 pt-0 pb-0" action="{% url 'processComment' userFirstName=loggedInUser.firstName userLastName=loggedInUser.lastName userId=loggedInUser.id %}" method="post" id="postACommentForm">
                                     {% csrf_token %}
                                     <div id="postACommentErrors mt-5">
                                         <ul class="displayCommentErrors mt-3"></ul>
                                     </div>
-                                    <div class="form-group mt-0 mb-0 commentSubDiv">
+                                    <div class="form-group pr-2 mt-0 mb-0 commentSubDiv">
                                         <label for="textArea"></label>
                                         <input type="hidden" id="postLocationForCommentID" name="postLocationForComment" value="{{message.id}}">
                                         <input type="hidden" id="userReceivesCommentID" name="userReceivesComment" value="{{message.user.id}}">
                                     {% if not loggedInUser.profilePic == "" %} 
-                                        <img src="{{loggedInUser.profilePic}}" id="navIconProfPic" alt="" class="d-inline mt-3 ml-3">
+                                        <img src="{{loggedInUser.profilePic}}" id="" alt="" class="d-inline mt-3 ml-3 commentIconProfPic">
                                     {% endif %}
-                                        <textarea class="form-control form-control-sm col-sm-8 mt-3 rounded-pill bg-light text-black d-inline commentLink commentTextAreaOnForm" rows="1" data-index="{{message.id}}" value="{{message.id}}" id="userCommentID" name="userComment"></textarea>
-                                        <button type="submit" id="" class="btn btn-primary mt-3 btn-success btn-sm d-inline postACommentButton">Comment</button>
+                                        <textarea class="form-control form-control-sm col-sm-8 mt-3 rounded-pill bg-light text-black d-inline commentLink commentTextAreaOnForm" value="{{message.id}}" rows="1" data-index="{{message.id}}" id="userCommentID" name="userComment"></textarea>
+                                        <!-- <button type="submit" id="" class="btn btn-primary mt-3 btn-success btn-sm d-inline postACommentButton">Comment</button> -->
+                                        <button type="submit" id="" class="mt-2 ml-2 btn btn-outline-primary btn-sm d-inline postACommentButton">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cursor-fill" viewBox="0 0 16 16">
+                                                <path d="M14.082 2.182a.5.5 0 0 1 .103.557L8.528 15.467a.5.5 0 0 1-.917-.007L5.57 10.694.803 8.652a.5.5 0 0 1-.006-.916l12.728-5.657a.5.5 0 0 1 .556.103z"/>
+                                            </svg>
+                                        </button>
                                     </div>
                                 </form>
                             <!-- This above line of code is the form to post a comment. -->
@@ -1277,196 +1423,181 @@
             {% endfor %} <!-- the end of the for statement for the 'message in wallOfLoggedInUser' loop -->
             </div> <!-- The closing div of the looped messages -->
     {% endif %} <!-- the end of the if statement that hides the text 'post' and white space until there is a post made -->
-        </div>  <!--The closing div of the second row that contains two columns. the left handed section of the trilogy of divs(introDiv, allUsersDiv, and friendsDiv), and the right sided column containing the post a message form and the list of messages.  -->
 
+        </div>  <!--The closing div of the second row that contains two columns. the left handed section of the trilogy of divs(introDiv, allUsersDiv, and friendsDiv), and the right sided column containing the post a message form and the list of messages.  -->
     <!-- The below code is when the 'All Users Link' link is clicked -->
-        <div class="showAllUsers">
-            <div class="row">
-                <div class="col-sm-2">
-                    <!-- One of the three columns -->
-                </div>
-                <div class="col-sm-8">
-                    <table class="col-sm-12 bg-white mt-3 table">
-                        <tbody>
-                            <tr>
-                                <td class="pl-3 pb-3">All Users</td>
-                            </tr>
+        <table class="bg-white mt-3 table ml-5 col-sm-9 showAllUsers showTableStyling">
+            <tbody>
+                <tr>
+                    <td class="pl-3 pb-3">All Users</td>
+                </tr>
                     {% for user in allUsers %}
-                            <tr>
-                                <td>
-                                    <div class="row">
-                                        <div class="col-sm mb-1">
-                                        {% if not user.profilePic == "" %} 
-                                            <a href="/{{user.firstName}}/{{user.lastName}}/{{user.id}}" class="d-inline-block">
-                                                <img src='{{ user.profilePic }}' class="d-inline thumbnailForEachFriend"> 
-                                            </a>
-                                        {% else %}
-                                            <a href="/{{user.firstName}}/{{user.lastName}}/{{user.id}}" class="d-inline-block">
-                                                <img src="{% static 'Images/blankAvatar.png' %}" class="d-inline thumbnailForEachFriend"> 
-                                            </a>
-                                        {% endif %}
-                                            <a href="/{{user.firstName}}/{{user.lastName}}/{{user.id}}" class="nameStylingForEachFriend">
-                                                <p class="nameStylingForEachFriend pl-3 ml-5">{{user.firstName}} {{user.lastName}}</p>
-                                            </a>
-                                    {% if user in loggedInUser.friends.all%}
-                                            <p class="detailsStylingForEachFriend pl-3 ml-5">Friend 
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="6" height="6" fill="gray" class="bi bi-circle-fill ml-1" viewBox="0 0 16 16">
-                                                    <circle cx="4" cy="4" r="4"/>
-                                                </svg>
-                                                {{user.userUniversity}}
-                                            </p>
-                                    {% else %}
-                                        {% if user.userUniversity == "" %}
-                                            <p class="detailsStylingForEachFriend pl-3 ml-5">Unnamed University</p>    
-                                        {% else %}
-                                            <p class="detailsStylingForEachFriend pl-3 ml-5">{{user.userUniversity}}</p>
-                                        {% endif %}
-                                    {% endif %}
-                                        <div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <!-- Used to create space in between -->
-                                </td>
-                                <td>
-                                    <!-- Used to create space in between -->
-                                </td>
-                                <td>
-                                    <!-- Used to create space in between -->
-                                </td>
-                                <td>
-                                    <!-- Used to create space in between -->
-                                </td>
-                                <td>
-                                    <!-- Used to create space in between -->
-                                </td>
-                                <td>
-                                    <!-- Used to create space in between -->
-                                </td>
-                                <td>
-                                    <!-- Used to create space in between -->
-                                </td>
-                                <td>
-                                    <!-- Used to create space in between -->
-                                </td>
-                                <td>
-                                    <!-- Used to create space in between -->
-                                </td>
-                                <td>
-                                    <!-- Used to create space in between -->
-                                </td>
-                                <td>
-                                    <a href="/{{user.firstName}}/{{user.lastName}}/{{user.id}}" class="nameStylingForEachFriend">
-                                        <button type="button" class="btn btn-secondary mt-3">
-                                            See Profile
-                                        </button>
-                                    </a>
-                                </td>
-                            </tr>
-                    {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                <div class="col-sm-2">
-                    <!-- One of the three columns -->
-                </div>
-            </div>
-        </div>
+                <tr>
+                    <td>
+                        <div class="row">
+                            <div class="col-sm mb-1">
+                            {% if not user.profilePic == "" %} 
+                                <a href="/{{user.firstName}}/{{user.lastName}}/{{user.id}}" class="d-inline-block">
+                                    <img src='{{ user.profilePic }}' class="d-inline thumbnailForEachFriend"> 
+                                </a>
+                            {% else %}
+                                <a href="/{{user.firstName}}/{{user.lastName}}/{{user.id}}" class="d-inline-block">
+                                    <img src="{% static 'Images/blankAvatar.png' %}" class="d-inline thumbnailForEachFriend"> 
+                                </a>
+                            {% endif %}
+                                <a href="/{{user.firstName}}/{{user.lastName}}/{{user.id}}" class="nameStylingForEachFriend">
+                                    <p class="nameStylingForEachFriend pl-3 ml-5">{{user.firstName}} {{user.lastName}}</p>
+                                </a>
+                        {% if user in loggedInUser.friends.all%}
+                                <p class="detailsStylingForEachFriend pl-3 ml-5">Friend 
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="6" height="6" fill="gray" class="bi bi-circle-fill ml-1" viewBox="0 0 16 16">
+                                        <circle cx="4" cy="4" r="4"/>
+                                    </svg>
+                                    {{user.userUniversity}}
+                                </p>
+                        {% else %}
+                            {% if user.userUniversity == "" %}
+                                <p class="detailsStylingForEachFriend pl-3 ml-5">Unnamed University</p>    
+                            {% else %}
+                                <p class="detailsStylingForEachFriend pl-3 ml-5">{{user.userUniversity}}</p>
+                            {% endif %}
+                        {% endif %}
+                            <div>
+                        </div>
+                    </td>
+                    <td>
+                        <!-- Used to create space in between -->
+                    </td>
+                    <td>
+                        <!-- Used to create space in between -->
+                    </td>
+                    <td>
+                        <!-- Used to create space in between -->
+                    </td>
+                    <td>
+                        <!-- Used to create space in between -->
+                    </td>
+                    <td>
+                        <!-- Used to create space in between -->
+                    </td>
+                    <td>
+                        <!-- Used to create space in between -->
+                    </td>
+                    <td>
+                        <!-- Used to create space in between -->
+                    </td>
+                    <td>
+                        <!-- Used to create space in between -->
+                    </td>
+                    <td>
+                        <!-- Used to create space in between -->
+                    </td>
+                    <td>
+                        <!-- Used to create space in between -->
+                    </td>
+                    <td>
+                        <a href="/{{user.firstName}}/{{user.lastName}}/{{user.id}}" class="nameStylingForEachFriend">
+                            <button type="button" class="btn btn-secondary mt-3">
+                                See Profile
+                            </button>
+                        </a>
+                    </td>
+                </tr>
+                    {% endfor %} <!-- End for loop for all the users -->
+            </tbody>
+        </table>
     <!-- The above code is when the 'See All Users' link is clicked -->
 
     <!-- The below code is when the 'See All Friends' link is clicked -->
-        <div class="showFriends">
-            <div class="row">
-                <div class="col-sm-2">
-                    <!-- One of the three columns -->
-                </div>
-                <div class="col-sm-8">
-                    <table class="col-sm-12 bg-white mt-3 table">
-                        <tbody>
-                            <tr>
-                                <td class="pl-3 pb-3">Friends</td>
-                            </tr>
-                    {% for friend in friends %}
-                            <tr>
-                                <td>
-                                    <div class="row">
-                                        <div class="col-sm mb-1">
-                                        {% if not friend.profilePic == "" %} 
-                                            <a href="/{{friend.firstName}}/{{friend.lastName}}/{{friend.id}}" class="d-inline-block">
-                                                <img src='{{ friend.profilePic }}' class="d-inline thumbnailForEachFriend"> 
-                                            </a>
-                                        {% else %}
-                                            <a href="/{{friend.firstName}}/{{friend.lastName}}/{{friend.id}}" class="d-inline-block">
-                                                <img src="{% static 'Images/blankAvatar.png' %}" class="d-inline thumbnailForEachFriend"> 
-                                            </a>
-                                        {% endif %}
-                                            <a href="/{{friend.firstName}}/{{friend.lastName}}/{{friend.id}}" class="nameStylingForEachFriend">
-                                                <p class="nameStylingForEachFriend pl-3 ml-5">{{friend.firstName}} {{friend.lastName}}</p>
-                                            </a>
-                                    {% if friend in loggedInUser.friends.all%}
-                                            <p class="detailsStylingForEachFriend pl-3 ml-5">Friend 
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="6" height="6" fill="gray" class="bi bi-circle-fill ml-1" viewBox="0 0 16 16">
-                                                    <circle cx="4" cy="4" r="4"/>
-                                                </svg>
-                                                {{friend.userUniversity}}
-                                            </p>
-                                    {% else %}
-                                        {% if friend.userUniversity == "" %}
-                                            <p class="detailsStylingForEachFriend pl-3 ml-5">Unnamed University</p>    
-                                        {% else %}
-                                            <p class="detailsStylingForEachFriend pl-3 ml-5">{{friend.userUniversity}}</p>
-                                        {% endif %}
-                                    {% endif %}
-                                        <div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <!-- Used to create space in between -->
-                                </td>
-                                <td>
-                                    <!-- Used to create space in between -->
-                                </td>
-                                <td>
-                                    <!-- Used to create space in between -->
-                                </td>
-                                <td>
-                                    <!-- Used to create space in between -->
-                                </td>
-                                <td>
-                                    <!-- Used to create space in between -->
-                                </td>
-                                <td>
-                                    <!-- Used to create space in between -->
-                                </td>
-                                <td>
-                                    <!-- Used to create space in between -->
-                                </td>
-                                <td>
-                                    <!-- Used to create space in between -->
-                                </td>
-                                <td>
-                                    <!-- Used to create space in between -->
-                                </td>
-                                <td>
-                                    <!-- Used to create space in between -->
-                                </td>
-                                <td>
-                                    <a href="/{{user.firstName}}/{{user.lastName}}/{{user.id}}" class="nameStylingForEachFriend">
-                                        <button type="button" class="btn btn-secondary mt-3">
-                                            See Profile
-                                        </button>
-                                    </a>
-                                </td>
-                            </tr>
-                    {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                <div class="col-sm-2">
-                    <!-- One of the three columns -->
-                </div>
-            </div>
-        </div>
+    <!-- If there are no friends, this will prevent a blank table from showing -->
+
+        <table class="bg-white mt-3 table ml-5 col-sm-9 showFriends showTableStyling">
+            <tbody>
+                <tr>
+                    <td class="pl-3 pb-3">Friends</td>
+                </tr>
+        {% for friend in friends %}
+            {% if not friend in loggedInUser.friends.all %}
+                <tr>
+                    <td class="">No Friends...Yet!</td>
+                </tr>
+                <!-- if there are no friends, the blank table will be removed -->
+            {% else %}
+                <tr>
+                    <td>
+                        <div class="row">
+                            <div class="col-sm mb-1">
+                            {% if not friend.profilePic == "" %} 
+                                <a href="/{{friend.firstName}}/{{friend.lastName}}/{{friend.id}}" class="d-inline-block">
+                                    <img src='{{ friend.profilePic }}' class="d-inline thumbnailForEachFriend"> 
+                                </a>
+                            {% else %}
+                                <a href="/{{friend.firstName}}/{{friend.lastName}}/{{friend.id}}" class="d-inline-block">
+                                    <img src="{% static 'Images/blankAvatar.png' %}" class="d-inline thumbnailForEachFriend"> 
+                                </a>
+                            {% endif %}
+                                <a href="/{{friend.firstName}}/{{friend.lastName}}/{{friend.id}}" class="nameStylingForEachFriend">
+                                    <p class="nameStylingForEachFriend pl-3 ml-5">{{friend.firstName}} {{friend.lastName}}</p>
+                                </a>
+                        {% if friend in loggedInUser.friends.all%}
+                                <p class="detailsStylingForEachFriend pl-3 ml-5">Friend 
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="6" height="6" fill="gray" class="bi bi-circle-fill ml-1" viewBox="0 0 16 16">
+                                        <circle cx="4" cy="4" r="4"/>
+                                    </svg>
+                                    {{friend.userUniversity}}
+                                </p>
+                        {% else %}
+                            {% if friend.userUniversity == "" %}
+                                <p class="detailsStylingForEachFriend pl-3 ml-5">Unnamed University</p>    
+                            {% else %}
+                                <p class="detailsStylingForEachFriend pl-3 ml-5">{{friend.userUniversity}}</p>
+                            {% endif %}
+                        {% endif %}
+                            <div>
+                        </div>
+                    </td>
+                    <td>
+                        <!-- Used to create space in between -->
+                    </td>
+                    <td>
+                        <!-- Used to create space in between -->
+                    </td>
+                    <td>
+                        <!-- Used to create space in between -->
+                    </td>
+                    <td>
+                        <!-- Used to create space in between -->
+                    </td>
+                    <td>
+                        <!-- Used to create space in between -->
+                    </td>
+                    <td>
+                        <!-- Used to create space in between -->
+                    </td>
+                    <td>
+                        <!-- Used to create space in between -->
+                    </td>
+                    <td>
+                        <!-- Used to create space in between -->
+                    </td>
+                    <td>
+                        <!-- Used to create space in between -->
+                    </td>
+                    <td>
+                        <!-- Used to create space in between -->
+                    </td>
+                    <td>
+                        <a href="/{{user.firstName}}/{{user.lastName}}/{{user.id}}" class="nameStylingForEachFriend">
+                            <button type="button" class="btn btn-secondary mt-3">
+                                See Profile
+                            </button>
+                        </a>
+                    </td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+            </tbody>
+        </table>
     <!-- The above code is when the 'See All Friends' link is clicked -->
 </body>
 

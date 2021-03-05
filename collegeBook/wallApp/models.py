@@ -214,7 +214,7 @@ class User(models.Model):
     profileHeader = models.CharField(max_length = 255, default = "") #The caption underneath the profile picture
     friends = models.ManyToManyField('self', related_name="friendship", symmetrical= False) # Self states this ManyToManyField is symmetrical – that is, if I am your friend, then you are my friend. So setting symmetrical to false makes the 'friendship' one way
     notifications = models.IntegerField(default = "0")
-    userCheckBox = models.BooleanField(default = "0") # An option for the user to not fill out the user intro fields. (the below instances) 0 signifies false
+    userCheckBox = models.BooleanField(default = "1") # An option for the user to not fill out the user intro fields. (the below instances) 1 signifies true meaning the user wants to hide or not fill out the information. this will be the default
     userUniversity = models.CharField(max_length = 255, default = "")
     userHighSchool = models.CharField(max_length = 255, default = "")
     userDormBuilding = models.CharField(max_length = 255, default = "")
@@ -233,6 +233,7 @@ class Message(models.Model):
     userLikes = models.ManyToManyField(User, related_name = 'theLiker') # the user who likes the post
     likeMessageCount = models.IntegerField(default = 0)
     likeMessageCountMinusDisplayNames = models.IntegerField(default = 0)
+    notification = models.IntegerField(default = "0") # 0 signifying the user has not been notified
     objects = MessageManager()
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
@@ -251,6 +252,11 @@ class Comment(models.Model):
 
     def __repr__(self):
         return f"<Comment object: {self.comment} {self.message} {self.user} ({self.id})>"
+
+class Notification(models.Model):
+    user = models.ForeignKey(User, related_name = "userNotif", on_delete=models.CASCADE) #the id of the user receiving the notification
+    message = models.ForeignKey(Message, related_name = "messageNotif", on_delete=models.CASCADE, null=True, blank=True) # the id of the posted message
+    comment = models.ForeignKey(Comment, related_name = "commentNotif", on_delete=models.CASCADE, null=True, blank=True) #the id of the posted comment
 
 
 

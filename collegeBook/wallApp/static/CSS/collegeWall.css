@@ -2,6 +2,10 @@
     vertical-align: top;
 }
 
+/* a {
+    text-decoration:none;
+} */
+
 .addFriendText{ /* the text on the add friend button on the show all users html */
     text-indent: 16px;
 }
@@ -75,6 +79,12 @@
     /* background-color: grey; */
 }
 
+.clearNotification{
+    /* top: 20px; */
+    /* right: 50px; */
+    background-color: yellow;
+}
+
 #closeBirthdayInfoBoxButton{
     margin-left: 20%;
     /* background-color: pink; */
@@ -85,24 +95,32 @@
     height: 30px;
 }
 
+.commentIconProfPic{
+    width: 30px;
+    height: 30px;
+    border-radius: 60%;
+    margin-top: 6px;
+
+}
 .commentHeadText{
     /* margin-top: 4px; */
     margin-left: 10px;
     margin-top: 2px;
     padding-bottom: 2px;
-    text-align: left;   
-    font-weight: bold;
+    text-align: left;  
+    font-weight: lighter;
 }
 
-.commentSectionDiv{
+/* .commentSectionDiv{
     width: 500px;
     height: 40px;
-}
+} */
 
-.commentSection{
+/* .commentSection{
     width: 230px;
     height: 40px;
-}
+} */
+
 .commentSubText{
     text-align: left;   
     font-weight: normal;
@@ -111,6 +129,7 @@
 
 .commentTextAreaOnForm{
     resize: none;
+    /* width: 800px; */
 }
 
 .connectLine{
@@ -197,6 +216,12 @@
     border-radius: 10px;
 }
 
+.likeUnlikeCommentButtonStyling{
+    /* width: 120px; */
+    /* height: 20px; */
+    border: none;
+}
+
 .listOfPostedMessages{
     border-radius: 10px;
 }
@@ -210,7 +235,6 @@
 .messageContentsDiv{
     height: 48px;
     margin-bottom: -2px;
-    font-weight: bold;
 }
 
 .messageFriendButton{
@@ -250,8 +274,8 @@ text-align: center;
 
 small.messageCreatedAtWithThumbnail{
     position: relative;
-    top: -14px; 
-    left: 8px;
+    top: -18px; 
+    left: 22px;
 }
 
 small.messageCreatedAt{
@@ -261,7 +285,8 @@ small.messageCreatedAt{
 }
 
 .messageText{
-    top: -4px;
+    top: 8px;
+    font-size: 16px;
 }
 
 .nameInNotification{
@@ -281,8 +306,8 @@ small.messageCreatedAt{
 }
 
 #navIconProfPic{
-    width: 30px;
-    height: 30px;
+    width: 40px;
+    height: 40px;
     border-radius: 60%;
     margin-top: 6px;
 }
@@ -294,6 +319,10 @@ small.messageCreatedAt{
     margin-top: 6px;
 } */
 
+.noDormBuilding{
+    display: none;
+}
+
 .pageNotFoundDiv{
     height: 514px;
 }
@@ -303,16 +332,22 @@ small.messageCreatedAt{
     margin-left: 30px;
 }
 
+/* .postACommentButton{ */
+    /* border: none; */
+/* } */
+
 #postACommentForm{
     top: -10px;
 }
 
 #postAMessageButton{
-    margin-left:430px;
+    margin-top: 2px;
 }
 
 #postAMessageForm{
     border-radius: 10px;
+    /* width: 620px; */
+    /* height: 80px; */
 }
 
 .profilePicBanner{
@@ -416,7 +451,11 @@ small.messageCreatedAt{
 #searchBarForm{
     height: 38px;
     width: 180px;
-} 
+}
+
+.showTableStyling{
+    left: 40px;
+}
 
 .table{ /*Style of the table when it displays all the users or the friends*/
     border-radius: 10px;
@@ -524,6 +563,9 @@ small.messageCreatedAt{
 
 #userMessageID{
     resize: none;
+    width: 360px;
+    background-color: #F0F2F5;
+    border-color: #F0F2F5;
 }
 
 #userNameText{

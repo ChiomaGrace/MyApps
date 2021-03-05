@@ -20,14 +20,11 @@
             var $crf_token = $('[name="csrfmiddlewaretoken"]').attr('value'); //this defines the token form the form so it can be used in the jquery/ajax code below
 
         //The below code are function calls that run as soon as the window is loaded.
-
             showThumbnail(); // a function that determines whether or not a photo has been uploaded by a user and then acts accordingly
 
             enableDisableMessageButton(); // a function that enables and disables the post a message button
 
             $('.postACommentButton').prop('disabled', true); //This disables the comment button to start
-
-
         //The above code are function calls that run as soon as the window is loaded.
 
             function showThumbnail(e) {
@@ -50,8 +47,7 @@
                 }
             };
 
-            //The below code is the function for posting a message via jquery/ajax
-
+        //The below code is the function for posting a message via jquery/ajax
             $("#postAMessageForm").submit(function(e){// the id name given to the form action in the below html
                     console.log("The post a message button was clicked.")
                     e.preventDefault(); //prevents the default browser behavior of the form submitting normally
@@ -74,31 +70,28 @@
                         },
                     });
                 });
+        //The above code is the function for posting a message via jquery/ajax
 
-            //The above code is the function for posting a message via jquery/ajax
-
-    //The below code is the function that enables and disables the post a message button depending on if the textarea contains characters
-        function enableDisableMessageButton(e){
-            console.log("This is the enableDisableMessageButton function.")
-            $('#postAMessageButton').prop('disabled', true); //This disables the button
-            var submittedPost = document.getElementById("userMessageID"); //element that will be the focus of the keyup
-            var showMessageButton = function() { 
-                if (submittedPost.value !== '') {
-                    console.log("This console log means the text area is not blank, and the post a message button should be enabled.")
-                    $("#postAMessageButton").attr('disabled',false)
-                } 
-                else if (submittedPost.value == '')  {
-                    console.log("This console log means the text area is blank, and the post a message button should be disabled.")
-                    $("#postAMessageButton").attr('disabled',true)
+        //The below code is the function that enables and disables the post a message button depending on if the textarea contains characters
+            function enableDisableMessageButton(e){
+                console.log("This is the enableDisableMessageButton function.")
+                $('#postAMessageButton').prop('disabled', true); //This disables the button
+                var submittedPost = document.getElementById("userMessageID"); //element that will be the focus of the keyup
+                var showMessageButton = function() { 
+                    if (submittedPost.value !== '') {
+                        console.log("This console log means the text area is not blank, and the post a message button should be enabled.")
+                        $("#postAMessageButton").attr('disabled',false)
+                    } 
+                    else if (submittedPost.value == '')  {
+                        console.log("This console log means the text area is blank, and the post a message button should be disabled.")
+                        $("#postAMessageButton").attr('disabled',true)
+                    }
                 }
+                submittedPost.onkeyup = showMessageButton; //The keyup event is sent to an element when the user releases a key on the keyboard. This will then trigger the showMessageButton()
             }
-            submittedPost.onkeyup = showMessageButton; //The keyup event is sent to an element when the user releases a key on the keyboard. This will then trigger the showMessageButton()
-        }
+        //The above code is the function that enables and disables the post a message button depending on if the textarea contains characters
 
-    //The above code is the function that enables and disables the post a message button depending on if the textarea contains characters
-
-            //The below code is the function for posting a comment via jquery/ajax
-
+        //The below code is the function for posting a comment via jquery/ajax
             $("#postACommentForm").submit(function(e){// the id name given to the form action in the below html
                     console.log("The post a comment button was clicked.")
                     e.preventDefault(); //prevents the default browser behavior of the form submitting normally
@@ -122,11 +115,9 @@
                         },
                     });
                 });
-
-            //The above code is the function for posting a comment via jquery/ajax
+        //The above code is the function for posting a comment via jquery/ajax
         
-//The below code is the function that enables and disables the post a comment button depending on if the textarea contains characters
-
+        //The below code is the function that enables and disables the post a comment button depending on if the textarea contains characters
             $('.commentSubDiv').find('textarea').each(function(){  //This function creates a loop finding all the text areas within the div
                 $(".commentTextAreaOnForm").keyup(function() { //This function then tracks the user's typing within said text area
                         console.log("inside the keyup function")
@@ -142,8 +133,7 @@
                     } 
                 })
             });
-
-//The above code is the function that enables and disables the post a comment button depending on if the textarea contains characters
+        //The above code is the function that enables and disables the post a comment button depending on if the textarea contains characters
 
         //The below code is the function for liking a posted message via jquery/ajax
             $('.likeAPostLink').click(function(e) {
@@ -169,7 +159,6 @@
                     }
                 })
             });
-
         //The above code is the function for liking a posted message via jquery/ajax
 
         //The below code is the function for unliking a posted message via jquery/ajax
@@ -196,41 +185,36 @@
                     }
                 })
             });
-
         //The above code is the function for unliking a posted message via jquery/ajax
 
-
         //The above code is the function for sending a friend request  via jquery/ajax
-
-        allFriendRequestButtons = document.querySelectorAll(".sendFriendRequestButton");
-            for (clickedButton of allFriendRequestButtons) {
-                clickedButton.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    userId = this.value
-                    user= $(this)
-                    console.log("This is the value of the clicked button:", userId);
-                    $.ajax({
-                        type: "POST",
-                        url: "{% url 'processFriendRequestOnSpecificUsersPage' userFirstName=specificUsersPage.firstName userLastName=specificUsersPage.lastName userId=1 %}".replace('1', this.value), //replacing the numerical one with the message id so it can be directed to the correct route
-                        headers:{"X-CSRFToken": $crf_token}, //this relates to the CSRF token needed to send data to the backend
-                        data: userId,
-                        success: function(data) {
-                            console.log("This console log means the friend request was sent successfully. userId:", userId)
-                            // user.hide()
-                            user.replaceWith("<button type='button' class='btn btn-sm btn-danger pendingFriendRequestButton' id='pendingFriendRequestButton'>Cancel</button>");
-                            // location.reload(); //reloads the page and triggers the dynamic function of the cancel button which was showing but not  working prior unless page was refreshed.
-                        },
-                        error: function(data){
-                            console.log("If this console log is displaying it means there were errors in sending the friend request.")                       
-                        },
-                    })
-                });
-            } 
-
+            allFriendRequestButtons = document.querySelectorAll(".sendFriendRequestButton");
+                for (clickedButton of allFriendRequestButtons) {
+                    clickedButton.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        userId = this.value
+                        user= $(this)
+                        console.log("This is the value of the clicked button:", userId);
+                        $.ajax({
+                            type: "POST",
+                            url: "{% url 'processFriendRequestOnSpecificUsersPage' userFirstName=specificUsersPage.firstName userLastName=specificUsersPage.lastName userId=1 %}".replace('1', this.value), //replacing the numerical one with the message id so it can be directed to the correct route
+                            headers:{"X-CSRFToken": $crf_token}, //this relates to the CSRF token needed to send data to the backend
+                            data: userId,
+                            success: function(data) {
+                                console.log("This console log means the friend request was sent successfully. userId:", userId)
+                                // user.hide()
+                                user.replaceWith("<button type='button' class='btn btn-sm btn-danger pendingFriendRequestButton' id='pendingFriendRequestButton'>Cancel</button>");
+                                location.reload(); //reloads the page and triggers the dynamic function of the cancel button which was showing but not  working prior unless page was refreshed.
+                            },
+                            error: function(data){
+                                console.log("If this console log is displaying it means there were errors in sending the friend request.")                       
+                            },
+                        })
+                    });
+                } 
         //The below code is the function for sending a friend request  via jquery/ajax
 
         //The above code is the function for removing a friend request  via jquery/ajax
-
             allCancelFriendRequestButtons = document.querySelectorAll(".pendingFriendRequestButton");
             for (clickedButton of allCancelFriendRequestButtons) {
                 clickedButton.addEventListener('click', function(e) {
@@ -240,33 +224,30 @@
                     console.log("This is the value of the clicked button:", userId);
                     $.ajax({
                         type: "POST",
-                        url: 'removeFriendRequest' + '/' + userId, 
+                        url: "{% url 'removeFriendRequestOnSpecificUsersPage' userFirstName=specificUsersPage.firstName userLastName=specificUsersPage.lastName userId=1 %}".replace('1', this.value), //replacing the numerical one with the message id so it can be directed to the correct route
                         headers:{"X-CSRFToken": $crf_token}, //this relates to the CSRF token needed to send data to the backend
                         data: userId,
                         success: function(data) {
-                            console.log("This console log means the friend request was sent successfully. userId:", userId)
+                            console.log("This console log means the friend request was removed successfully. userId:", userId)
                             user.replaceWith("<button type='button' class='btn btn-sm sendFriendRequestButton' value='{{user.id}}'><a href='' class='sendFriendRequest'><svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-person-plus' viewBox='0 0 16 16'><path d='M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H1s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C9.516 10.68 8.289 10 6 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z'/><path fill-rule='evenodd' d='M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z'/></svg></a></button>"); 
                             // user.hide();
                             // location.reload(); //reloads the page and triggers the dynamic function of the cancel button which was showing but not  working prior unless page was refreshed.
                         },
                         error: function(data){
-                            console.log("If this console log is displaying it means there were errors in sending the friend request.")                       
+                            console.log("If this console log is displaying it means there were errors in removing the friend request.")                       
                         },
                     })
                 });
             }
-
         //The below code is the function for removing a friend request via jquery/ajax
 
         //The below code is the function for seeing and hiding notifications  via jquery/ajax
-
             $('#notifications').click(function(e) {
                 $('#notificationCounter').hide()
             }); 
         //The above code is the function for seeing notifications  via jquery/ajax
 
         //The below code is the function for handling specific notifications via jquery/ajax
-
             allConfirmFriendRequestButtons = document.querySelectorAll(".confirmNotificationButton");
             for (clickedButton of allConfirmFriendRequestButtons) {
                 clickedButton.addEventListener('click', function(e) {
@@ -274,26 +255,29 @@
                     userId = this.value
                     user= $(this)
                     console.log("The button to confirm a friend request was clicked, and the user id is:", userId)
+                    var data = { //This is to know what page the logged in user is currently browsing
+                    "userWhoReceivesPost": $('#userWhoReceivesPostID').val()
+                    };
                     $.ajax({
                         type: "POST",
                         url: 'acceptFriendRequest' + '/' + userId, 
                         headers:{"X-CSRFToken": $crf_token}, //this relates to the CSRF token needed to send data to the backend
-                        data: userId,
-                        success: function(data) {
-                            console.log("This console log means the friend request was confirmed successfully.")
+                        data: data,
+                        success: function() {
+                            console.log("This console log means the friend request was confirmed successfully.", data)
                             user.parent().parent().remove()
                             // user.parent().parent().hide()
                             location.reload(); //reloads the page and displays the new data.
                         },
-                        error: function(data){
-                            console.log("If this console log is displaying, it means errors occurred in accepting the friend request.")                       },
+                        error: function(){
+                            console.log("If this console log is displaying, it means errors occurred in accepting the friend request.", data)                      
+                        },
                     })
                 })
             }
         //The above code is the function for handling specific notifications via jquery/ajax
 
         //The below code is the function for handling canceling a specific notification(friend request) via jquery/ajax
-
             allCancelFriendRequestButtons = document.querySelectorAll(".cancelNotificationButton");
             for (clickedButton of allCancelFriendRequestButtons) {
                 clickedButton.addEventListener('click', function(e) {
@@ -309,51 +293,51 @@
                         success: function(data) {
                             console.log("This console log means the friend request was declined successfully.")
                             user.parent().parent().remove()
-                            location.reload(); //reloads the page and displays the new data.
+                            // location.reload(); //reloads the page and displays the new data.
                         },
                         error: function(data){
                             console.log("If this console log is displaying, it means errors occurred in declining the friend request.")                       },
                     })
                 })
             }
-        
         //The above code is the function for handling canceling a specific notification(friend request) 
 
-            //The below code is the function to show all the users when the 'Show All Users' link is clicked
-                $('.allUsersLink').click(function(){
-                            event.preventDefault(); //prevents the dialog box (create account) from hiding again
-                            console.log("This is when the 'Show All Users' link is clicked")
-                            $( '.triDiv' ).hide()
-                            $('#postAMessageForm').hide()
-                            $('.listOfPostedMessages').hide()
-                            $('.showAllUsers').show()
-                            // window.location.href = '/allUsers';
-                            // return false;
-                    });
-            //The above code is the function to show all the users when the 'Show All Users' link is clicked
+        //The below code is the function to show all the users when the 'Show All Users' link is clicked
+            $('.allUsersLink').click(function(){
+                event.preventDefault(); //prevents the dialog box (create account) from hiding again
+                console.log("This is when the 'Show All Users' link is clicked")
+                $( '.triDiv' ).hide()
+                $('#postAMessageForm').hide()
+                $('.listOfPostedMessages').hide()
+                $('.showAllUsers').show()
+                // window.location.href = '/allUsers';
+                // return false;
+            });
+        //The above code is the function to show all the users when the 'Show All Users' link is clicked
 
-            //The below code is the function to show the logged in user's friends when the 'Show All Friends' link is clicked
-                    $('.friendsLink').click(function(){
-                        event.preventDefault(); //prevents the dialog box (create account) from hiding again
-                        console.log("This is when the 'Show All Friends' link is clicked.")
-                        $( '.triDiv' ).hide()
-                        $('#postAMessageForm').hide()
-                        $('.listOfPostedMessages').hide()
-                        $('.showFriends').show()
-                    });
-            //The above code is the function to show the logged in user's friends when the 'Show All Friends' link is clicked
+        //The below code is the function to show the logged in user's friends when the 'Show All Friends' link is clicked
+            $('.friendsLink').click(function(){
+                event.preventDefault(); //prevents the dialog box (create account) from hiding again
+                console.log("This is when the 'Show All Friends' link is clicked.")
+                $( '.triDiv' ).hide()
+                $('#postAMessageForm').hide()
+                $('.listOfPostedMessages').hide()
+                $('.showAllUsers').hide()
+                $('.showFriends').show()
+            });
+        //The above code is the function to show the logged in user's friends when the 'Show All Friends' link is clicked
 
-            //The below code is the function to show the main page when the 'Posts' link is clicked
-                    $('.linktoLoggedInUsersPage').click(function(){
-                        event.preventDefault(); //prevents the dialog box (create account) from hiding again
-                        console.log("This is when either the 'Posts', About, or, More link is clicked to display the logged in user's page.")
-                        $( '.triDiv' ).show()
-                        $('#postAMessageForm').show()
-                        $('.listOfPostedMessages').show()
-                        $('.showAllUsers').hide()
-                        $('.showFriends').hide()
-                    });
-            //The above code is the function to show all the users when the 'Show All Users' link is clicked
+        //The below code is the function to show the main page when the 'Posts' link is clicked
+            $('.linktoLoggedInUsersPage').click(function(){
+                event.preventDefault(); //prevents the dialog box (create account) from hiding again
+                console.log("This is when either the 'Posts', About, or, More link is clicked to display the logged in user's page.")
+                $( '.triDiv' ).show()
+                $('#postAMessageForm').show()
+                $('.listOfPostedMessages').show()
+                $('.showAllUsers').hide()
+                $('.showFriends').hide()
+            });
+        //The above code is the function to show all the users when the 'Show All Users' link is clicked
 
         });//end of entire code in the script
     </script>
@@ -438,7 +422,7 @@
                                         <a href="/{{friendRequest.firstName}}/{{friendRequest.lastName}}/{{friendRequest.id}}" class="d-inline-block">
                                             <img src='{{ friendRequest.profilePic }}' id="navIconProfPic" class="d-inline-block"> <p class="d-inline-block nameInNotification mb-0 mt-2">{{friendRequest.firstName}} {{friendRequest.lastName}}</p>
                                         </a>
-                                        <p class="d-inline-block  mb-0 pt-0"> sent you a friend request.</p>
+                                        <p class="d-inline-block mb-0 pt-0"> sent you a friend request.</p>
                                         <div class="btn-group mt-0">
                                             <button type="button" class="btn btn-sm btn-primary confirmCancelNotificationButton confirmNotificationButton mr-2" value="{{friendRequest.id}}">Confirm</button>
                                             <button type="button" class="btn btn-sm btn-secondary confirmCancelNotificationButton cancelNotificationButton" value="{{friendRequest.id}}">Cancel</button>
@@ -446,6 +430,16 @@
                                     </div>
                                 </div>
                             {% endif %}
+                            {% for message in newPosts %}
+                                <div class="dropdown-item" value="{{message.id}}">
+                                    <div class="specificNotification">
+                                        <a href="/{{message.user.firstName}}/{{message.user.lastName}}/{{message.user.id}}" class="d-inline-block">
+                                            <img src='{{ message.user.profilePic }}' id="navIconProfPic" class="d-inline-block"> <p class="d-inline-block nameInNotification mb-0 mt-2">{{friendRequest.firstName}} {{friendRequest.lastName}}</p>
+                                        </a>
+                                        <p class="d-inline-block  mb-0 pt-0"> wrote on your <a href="">wall.</a></p>
+                                    </div>
+                                </div>
+                            {% endfor %}
                         {% endfor %}
                             </div>
                         </li>
@@ -494,10 +488,10 @@
                         <!-- <p class="decorativeLine mt-3 mb-0">________________________________________________</p> -->
                         <button class="btn btn-outline-light profilePicBannerLinks linktoLoggedInUsersPage pr-2">Posts</button>
                         <button class="btn btn-outline-light profilePicBannerLinks linktoLoggedInUsersPage pr-2">About</button>
-                    {% if friends.count == 0 %}
+                    {% if specificUsersFriends.count == 0 %}
                         <button class="btn btn-outline-light profilePicBannerLinks friendsLink pr-2">Friends</button>
                     {% else %}
-                        <button class="btn btn-outline-light profilePicBannerLinks friendsLink pr-2">Friends {{friends.count}}</button>
+                        <button class="btn btn-outline-light profilePicBannerLinks friendsLink pr-2">Friends {{specificUsersFriends.count}}</button>
                     {% endif %}
                         <button class="btn btn-outline-light profilePicBannerLinks linktoLoggedInUsersPage pr-2">More
                             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-caret-down-fill" viewBox="0 0 16 16">
@@ -539,8 +533,18 @@
                             <p class="d-inline-block">Went to</p>
                             <p class="d-inline-block specificIntroDetail">{{specificUsersPage.userHighSchool}}</p>
                         </div>
+                        <div class="">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-geo-alt" viewBox="0 0 16 16">
+                                <path d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A31.493 31.493 0 0 1 8 14.58a31.481 31.481 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94zM8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10z"/>
+                                <path d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                            </svg>
+                            <p class="d-inline-block">From</p>
+                            <p class="d-inline-block specificIntroDetail">{{specificUsersPage.userHomeTown}}</p>
+                        </div>
                     {% if specificUsersPage.userDormBuilding ==  "" %}
                         <!-- Removes the "lives in option if the user chooses to leave it blank" -->
+                        <br>
+                        <br>
                     {% else %}
                         <div class="">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-house-door" viewBox="0 0 16 16">
@@ -550,23 +554,23 @@
                             <p class="d-inline-block specificIntroDetail">{{specificUsersPage.userDormBuilding}}</p>
                         </div>
                     {% endif %} <!-- End of the if statement that removes the "lives in option if the user chooses to leave it blank" -->
-                        <div class="">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-geo-alt" viewBox="0 0 16 16">
-                                <path d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A31.493 31.493 0 0 1 8 14.58a31.481 31.481 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94zM8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10z"/>
-                                <path d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
-                            </svg>
-                            <p class="d-inline-block">From</p>
-                            <p class="d-inline-block specificIntroDetail">{{specificUsersPage.userHomeTown}}</p>
+                {% else %}
+                        <div class="d-grid col-6 mx-auto pb-4">
+                                <div class="row mt-2 pb-3"><!-- Creates space to center Edit Details button --></div>
+                                <div class=" ml-3 mb-5">
+                                    <p>{{specificUsersPage.firstName}}'s information is not available.</p>
+                                </div>
                         </div>
                 {% endif %} <!-- End of the if statement for the true or false checkbox to show the details  -->
                     </div> <!-- closing div for the introDiv -->
-                    <div class="bg-white mt-5 allUsersDiv">
+                    <div class="bg-white mt-1 allUsersDiv">
                         <div>
                             <p class="lead d-inline-block pr-5 ml-2 mr-5">All Users</p> 
                             <a href="" class="d-inline-block ml-5 allUsersLink">See All Users</a>
                         </div>
-    {% for user in allUsers %}
-        {% if not user in loggedInUser.friends.all %}  <!-- this allows the logged in user to still remove the pending friend request if necessary -->
+{% for user in allUsers %}
+    {% if not user == specificUsersPage %} <!-- prevents the user whose page you're on from showing up on the users div -->
+        {% if not user in specificUsersPage.friends.all %}  <!-- this allows the logged in user to still remove the pending friend request if necessary -->
             {% if loggedInUser.id != user.id  %} <!-- to prevent the logged in user's name displaying in the friends section -->
                 {% if user.profilePic == "" %} 
                     <!-- if a user does not have an uploaded profile pic the below code will run -->
@@ -577,7 +581,16 @@
                             </a>
                         </figure>
                     <!-- the below code  is to add or cancel a friend request for a user that does not have an uploaded profile pic -->
-                    {% if not loggedInUser in user.friends.all %}  <!-- displays the add friend icon initially and until the logged in user clicks the add friend icon-->
+                    {% if loggedInUser in user.friends.all and user in loggedInUser.friends.all%}
+                        <button type="button" class="btn btn-sm removeFriendRequestButton cancelNotificationButton" value="{{user.id}}">
+                            <a href="" class="removeFriendRequestButton">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-dash" viewBox="0 0 16 16">
+                                    <path d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H1s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C9.516 10.68 8.289 10 6 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
+                                    <path fill-rule="evenodd" d="M11 7.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5z"/>
+                                </svg>                         
+                            </a>
+                        </button> 
+                    {% elif not loggedInUser in user.friends.all %}  <!-- displays the add friend icon initially and until the logged in user clicks the add friend icon-->
                         <button type="button" class="btn btn-sm sendFriendRequestButton" value="{{user.id}}">
                             <a href="" class="sendFriendRequest">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-plus" viewBox="0 0 16 16">
@@ -597,7 +610,16 @@
                                 <a href="/{{user.firstName}}/{{user.lastName}}/{{user.id}}">
                                     <img src="{{user.profilePic}}" id="" class="friendsIconProfPic" alt="A thumbnail photo of the user">
                                 </a>
-                            {% if not loggedInUser in user.friends.all %}
+                            {% if loggedInUser in user.friends.all and user in loggedInUser.friends.all%}
+                                <button type="button" class="btn btn-sm removeFriendRequestButton cancelNotificationButton" value="{{user.id}}">
+                                    <a href="" class="removeFriendRequestButton">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-dash" viewBox="0 0 16 16">
+                                            <path d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H1s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C9.516 10.68 8.289 10 6 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
+                                            <path fill-rule="evenodd" d="M11 7.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5z"/>
+                                        </svg>                         
+                                    </a>
+                                </button> 
+                            {% elif not loggedInUser in user.friends.all %}
                                 <button type="button" class="btn btn-sm sendFriendRequestButton" value="{{user.id}}">
                                     <a href="" class="sendFriendRequest">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-plus" viewBox="0 0 16 16">
@@ -607,7 +629,16 @@
                                     </a>
                                 </button>
                             {% else %}
-                                <button type="button" class="btn btn-sm btn-danger pendingFriendRequestButton" id="pendingFriendRequestButton"  value="{{user.id}}" >Cancel</button>
+                                <!-- <button type="button" class="btn btn-sm removeFriendRequestButton cancelNotificationButton" value="{{user.id}}">
+                                    <a href="" class="removeFriendRequestButton">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-dash" viewBox="0 0 16 16">
+                                            <path d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H1s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C9.516 10.68 8.289 10 6 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
+                                            <path fill-rule="evenodd" d="M11 7.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5z"/>
+                                        </svg>                         
+                                    </a>
+                                </button>                             -->
+                                <button type="button" class="btn btn-sm btn-danger pendingFriendRequestButton" id="pendingFriendRequestButton" value="{{user.id}}" >Cancel</button>
+
                             {% endif %}
                                 <a href="/{{user.firstName}}/{{user.lastName}}/{{user.id}}">
                                     <figcaption class="friendsIconName ml-1">{{user.firstName}}</figcaption>
@@ -615,17 +646,18 @@
                             </figure>
                         </div>
                 {% endif%} <!-- end of the if statement that runs a certain code if a user does not have an uploaded profile pic -->
-            {% endif %} <!-- end of the if statement that prevents the logged in user's name displaying in the friends section -->
+            {% endif %} <!-- end of the if statement that prevents the logged in user's name displaying in the allUsers' section -->
         {% endif %} <!-- End of the if statement to not show the users the logged in user is friends with -->
-    {% endfor %}
+    {% endif %} <!-- End of the if statement to not show the user whose page you're on -->
+{% endfor %}
                     </div> <!-- Closing div for the allUsersDiv -->
                     <div class="mt-3 bg-white mt-4 friendsDiv"> 
                         <div>
                             <p class="lead d-inline-block pr-5 ml-2 mr-5">Mutual Friends</p> 
-                            <a href="" class="d-inline-block ml-3 friendsLink">See All </a>
+                            <a href="" class="d-inline-block ml-4 friendsLink">See All </a>
                         </div>
     {% for user in specificUsersPage.friends.all %}
-        {%if not loggedInUser == user %}
+        {% if not loggedInUser == user %}
             {% if user.profilePic == "" %} 
                     <!-- if a user does not have an uploaded profile pic the below code will run -->
                         <figure class="ml-4 d-inline-block">
@@ -671,7 +703,7 @@
                         </div>
                     {% endif %}
             {% endif %} <!-- end if statement that displays a photo of a blank avatar if a user doesn't have an uploaded photo -->
-            {% endif %} <!-- to prevent the logged in user from displayin in mutal friends -->
+            {% endif %} <!-- to prevent the logged in user from displaying in mutal friends -->
     {% endfor %} <!-- end for statement that loops through all the users -->
                     </div>
                 </div><!-- The closing div of the 'triDiv' -->
@@ -861,198 +893,177 @@
             </div>  <!--The closing div of the second row that contains two columns. the left handed section of the trilogy of divs(introDiv, allUsersDiv, and friendsDiv), and the right sided column containing the post a message form and the list of messages.  -->
     
         <!-- The below code is when the 'All Users Link' link is clicked -->
-            <div class="showAllUsers">
-                <div class="row">
-                    <div class="col-sm-2">
-                        <!-- One of the three columns -->
-                    </div>
-                    <div class="col-sm-8">
-                        <table class="col-sm-12 bg-white mt-3 table">
-                            <tbody>
-                                <tr>
-                                    <td class="pl-3 pb-3">All Users</td>
-                                </tr>
-                        {% for user in allUsers %}
-                                <tr>
-                                    <td>
-                                        <div class="row">
-                                            <div class="col-sm mb-1">
-                                            {% if not user.profilePic == "" %} 
-                                                <a href="/{{user.firstName}}/{{user.lastName}}/{{user.id}}" class="d-inline-block">
-                                                    <img src='{{ user.profilePic }}' class="d-inline thumbnailForEachFriend"> 
-                                                </a>
-                                            {% else %}
-                                                <a href="/{{user.firstName}}/{{user.lastName}}/{{user.id}}" class="d-inline-block">
-                                                    <img src="{% static 'Images/blankAvatar.png' %}" class="d-inline thumbnailForEachFriend"> 
-                                                </a>
-                                            {% endif %}
-                                                <a href="/{{user.firstName}}/{{user.lastName}}/{{user.id}}" class="nameStylingForEachFriend">
-                                                    <p class="nameStylingForEachFriend pl-3 ml-5">{{user.firstName}} {{user.lastName}}</p>
-                                                </a>
-                                        {% if user in loggedInUser.friends.all%}
-                                                <p class="detailsStylingForEachFriend pl-3 ml-5">Friend 
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="6" height="6" fill="gray" class="bi bi-circle-fill ml-1" viewBox="0 0 16 16">
-                                                        <circle cx="4" cy="4" r="4"/>
-                                                    </svg>
-                                                    {{user.userUniversity}}
-                                                </p>
-                                        {% else %}
-                                            {% if user.userUniversity == "" %}
-                                                <p class="detailsStylingForEachFriend pl-3 ml-5">Unnamed University</p>    
-                                            {% else %}
-                                                <p class="detailsStylingForEachFriend pl-3 ml-5">{{user.userUniversity}}</p>
-                                            {% endif %}
-                                        {% endif %}
-                                            <div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <!-- Used to create space in between -->
-                                    </td>
-                                    <td>
-                                        <!-- Used to create space in between -->
-                                    </td>
-                                    <td>
-                                        <!-- Used to create space in between -->
-                                    </td>
-                                    <td>
-                                        <!-- Used to create space in between -->
-                                    </td>
-                                    <td>
-                                        <!-- Used to create space in between -->
-                                    </td>
-                                    <td>
-                                        <!-- Used to create space in between -->
-                                    </td>
-                                    <td>
-                                        <!-- Used to create space in between -->
-                                    </td>
-                                    <td>
-                                        <!-- Used to create space in between -->
-                                    </td>
-                                    <td>
-                                        <!-- Used to create space in between -->
-                                    </td>
-                                    <td>
-                                        <!-- Used to create space in between -->
-                                    </td>
-                                    <td>
-                                        <a href="/{{user.firstName}}/{{user.lastName}}/{{user.id}}" class="nameStylingForEachFriend">
-                                            <button type="button" class="btn btn-secondary mt-3">
-                                                See Profile
-                                            </button>
-                                        </a>
-                                    </td>
-                                </tr>
-                        {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="col-sm-2">
-                        <!-- One of the three columns -->
-                    </div>
-                </div>
-            </div>
+            <table class="bg-white mt-3 table ml-5 col-sm-9 showAllUsers showTableStyling">
+                <tbody>
+                    <tr>
+                        <td class="pl-3 pb-3">All Users</td>
+                    </tr>
+            {% for user in allUsers %}
+                {% if not loggedInUser == user %} <!-- prevents the logged in user from showing in the all users' table -->
+                    <tr>
+                        <td>
+                            <div class="row">
+                                <div class="col-sm mb-1">
+                                {% if not user.profilePic == "" %} 
+                                    <a href="/{{user.firstName}}/{{user.lastName}}/{{user.id}}" class="d-inline-block">
+                                        <img src='{{ user.profilePic }}' class="d-inline thumbnailForEachFriend"> 
+                                    </a>
+                                {% else %}
+                                    <a href="/{{user.firstName}}/{{user.lastName}}/{{user.id}}" class="d-inline-block">
+                                        <img src="{% static 'Images/blankAvatar.png' %}" class="d-inline thumbnailForEachFriend"> 
+                                    </a>
+                                {% endif %}
+                                    <a href="/{{user.firstName}}/{{user.lastName}}/{{user.id}}" class="nameStylingForEachFriend">
+                                        <p class="nameStylingForEachFriend pl-3 ml-5">{{user.firstName}} {{user.lastName}}</p>
+                                    </a>
+                            {% if user in loggedInUser.friends.all%}
+                                    <p class="detailsStylingForEachFriend pl-3 ml-5">Friend 
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="6" height="6" fill="gray" class="bi bi-circle-fill ml-1" viewBox="0 0 16 16">
+                                            <circle cx="4" cy="4" r="4"/>
+                                        </svg>
+                                        {{user.userUniversity}}
+                                    </p>
+                            {% else %}
+                                {% if user.userUniversity == "" %}
+                                    <p class="detailsStylingForEachFriend pl-3 ml-5">Unnamed University</p>    
+                                {% else %}
+                                    <p class="detailsStylingForEachFriend pl-3 ml-5">{{user.userUniversity}}</p>
+                                {% endif %}
+                            {% endif %}
+                                <div>
+                            </div>
+                        </td>
+                        <td>
+                            <!-- Used to create space in between -->
+                        </td>
+                        <td>
+                            <!-- Used to create space in between -->
+                        </td>
+                        <td>
+                            <!-- Used to create space in between -->
+                        </td>
+                        <td>
+                            <!-- Used to create space in between -->
+                        </td>
+                        <td>
+                            <!-- Used to create space in between -->
+                        </td>
+                        <td>
+                            <!-- Used to create space in between -->
+                        </td>
+                        <td>
+                            <!-- Used to create space in between -->
+                        </td>
+                        <td>
+                            <!-- Used to create space in between -->
+                        </td>
+                        <td>
+                            <!-- Used to create space in between -->
+                        </td>
+                        <td>
+                            <!-- Used to create space in between -->
+                        </td>
+                        <td>
+                            <a href="/{{user.firstName}}/{{user.lastName}}/{{user.id}}" class="nameStylingForEachFriend">
+                                <button type="button" class="btn btn-secondary mt-3">
+                                    See Profile
+                                </button>
+                            </a>
+                        </td>
+                    </tr>
+                {% endif %} <!-- the endif statement that prevents the logged in user from showing in the all users' table -->
+            {% endfor %}
+                </tbody>
+            </table>
         <!-- The above code is when the 'See All Users' link is clicked -->
-    {% if specificUsersPage.friends.all == 0 %}
-    <!-- If there are no friends, this will prevent a blank table from showing -->
-    {% else%}
+
         <!-- The below code is when the 'See All Friends' link is clicked -->
-            <div class="showFriends">
-                <div class="row">
-                    <div class="col-sm-2">
-                        <!-- One of the three columns -->
-                    </div>
-                    <div class="col-sm-8">
-                        <table class="col-sm-12 bg-white mt-3 table">
-                            <tbody>
-                                <tr>
-                                    <td class="pl-3 pb-3">Friends</td>
-                                </tr>
-                        {% for friend in specificUsersPage.friends.all %}
-                            {% if not loggedInUser == friend %}
-                                <tr>
-                                    <td>
-                                        <div class="row">
-                                            <div class="col-sm mb-1">
-                                            {% if not friend.profilePic == "" %} 
-                                                <a href="/{{friend.firstName}}/{{friend.lastName}}/{{friend.id}}" class="d-inline-block">
-                                                    <img src='{{ friend.profilePic }}' class="d-inline thumbnailForEachFriend"> 
-                                                </a>
-                                            {% else %}
-                                                <a href="/{{friend.firstName}}/{{friend.lastName}}/{{friend.id}}" class="d-inline-block">
-                                                    <img src="{% static 'Images/blankAvatar.png' %}" class="d-inline thumbnailForEachFriend"> 
-                                                </a>
-                                            {% endif %}
-                                                <a href="/{{friend.firstName}}/{{friend.lastName}}/{{friend.id}}" class="nameStylingForEachFriend">
-                                                    <p class="nameStylingForEachFriend pl-3 ml-5">{{friend.firstName}} {{friend.lastName}}</p>
-                                                </a>
-                                        {% if friend in specificUsersPage.friends.all%}
-                                                <p class="detailsStylingForEachFriend pl-3 ml-5">Friend 
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="6" height="6" fill="gray" class="bi bi-circle-fill ml-1" viewBox="0 0 16 16">
-                                                        <circle cx="4" cy="4" r="4"/>
-                                                    </svg>
-                                                    {{friend.userUniversity}}
-                                                </p>
-                                        {% else %}
-                                            {% if friend.userUniversity == "" %}
-                                                <p class="detailsStylingForEachFriend pl-3 ml-5">Unnamed University</p>    
-                                            {% else %}
-                                                <p class="detailsStylingForEachFriend pl-3 ml-5">{{friend.userUniversity}}</p>
-                                            {% endif %}
-                                        {% endif %}
-                                            <div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <!-- Used to create space in between -->
-                                    </td>
-                                    <td>
-                                        <!-- Used to create space in between -->
-                                    </td>
-                                    <td>
-                                        <!-- Used to create space in between -->
-                                    </td>
-                                    <td>
-                                        <!-- Used to create space in between -->
-                                    </td>
-                                    <td>
-                                        <!-- Used to create space in between -->
-                                    </td>
-                                    <td>
-                                        <!-- Used to create space in between -->
-                                    </td>
-                                    <td>
-                                        <!-- Used to create space in between -->
-                                    </td>
-                                    <td>
-                                        <!-- Used to create space in between -->
-                                    </td>
-                                    <td>
-                                        <!-- Used to create space in between -->
-                                    </td>
-                                    <td>
-                                        <!-- Used to create space in between -->
-                                    </td>
-                                    <td>
-                                        <a href="/{{user.firstName}}/{{user.lastName}}/{{user.id}}" class="nameStylingForEachFriend">
-                                            <button type="button" class="btn btn-secondary mt-3">
-                                                See Profile
-                                            </button>
-                                        </a>
-                                    </td>
-                                </tr>
-                            {%  endif %}
-                        {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="col-sm-2">
-                        <!-- One of the three columns -->
-                    </div>
-                </div>
-            </div>
+            <table class="bg-white mt-3 table ml-5 col-sm-9 showFriends showTableStyling">
+                <tbody>
+        {% for friend in specificUsersFriends %}
+            {% if not friend in loggedInUser.friends.all %}
+                <!-- if there are no friends, the blank table will be removed -->
+            {% else %}
+                    <tr>
+                        <td class="pl-3 pb-3">Friends</td>
+                    </tr>
+                {% if not loggedInUser == friend %} <!-- prevents the logged in user from displaying in the friend list -->
+                    <tr>
+                        <td>
+                            <div class="row">
+                                <div class="col-sm mb-1">
+                                {% if not friend.profilePic == "" %} 
+                                    <a href="/{{friend.firstName}}/{{friend.lastName}}/{{friend.id}}" class="d-inline-block">
+                                        <img src='{{ friend.profilePic }}' class="d-inline thumbnailForEachFriend"> 
+                                    </a>
+                                {% else %}
+                                    <a href="/{{friend.firstName}}/{{friend.lastName}}/{{friend.id}}" class="d-inline-block">
+                                        <img src="{% static 'Images/blankAvatar.png' %}" class="d-inline thumbnailForEachFriend"> 
+                                    </a>
+                                {% endif %}
+                                    <a href="/{{friend.firstName}}/{{friend.lastName}}/{{friend.id}}" class="nameStylingForEachFriend">
+                                        <p class="nameStylingForEachFriend pl-3 ml-5">{{friend.firstName}} {{friend.lastName}}</p>
+                                    </a>
+                            {% if friend in specificUsersPage.friends.all%}
+                                    <p class="detailsStylingForEachFriend pl-3 ml-5">Friend 
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="6" height="6" fill="gray" class="bi bi-circle-fill ml-1" viewBox="0 0 16 16">
+                                            <circle cx="4" cy="4" r="4"/>
+                                        </svg>
+                                        {{friend.userUniversity}}
+                                    </p>
+                            {% else %}
+                                {% if friend.userUniversity == "" %}
+                                    <p class="detailsStylingForEachFriend pl-3 ml-5">Unnamed University</p>    
+                                {% else %}
+                                    <p class="detailsStylingForEachFriend pl-3 ml-5">{{friend.userUniversity}}</p>
+                                {% endif %}
+                            {% endif %}
+                                <div>
+                            </div>
+                        </td>
+                        <td>
+                            <!-- Used to create space in between -->
+                        </td>
+                        <td>
+                            <!-- Used to create space in between -->
+                        </td>
+                        <td>
+                            <!-- Used to create space in between -->
+                        </td>
+                        <td>
+                            <!-- Used to create space in between -->
+                        </td>
+                        <td>
+                            <!-- Used to create space in between -->
+                        </td>
+                        <td>
+                            <!-- Used to create space in between -->
+                        </td>
+                        <td>
+                            <!-- Used to create space in between -->
+                        </td>
+                        <td>
+                            <!-- Used to create space in between -->
+                        </td>
+                        <td>
+                            <!-- Used to create space in between -->
+                        </td>
+                        <td>
+                            <!-- Used to create space in between -->
+                        </td>
+                        <td>
+                            <a href="/{{user.firstName}}/{{user.lastName}}/{{user.id}}" class="nameStylingForEachFriend">
+                                <button type="button" class="btn btn-secondary mt-3">
+                                    See Profile
+                                </button>
+                            </a>
+                        </td>
+                    </tr>
+                {% endif %} <!-- endif statement that prevents the logged in user from displaying in the friend list --> 
+            {%  endif %} <!-- endif statement that doesn't show the friend table if there are no friends -->
+        {% endfor %} <!-- endfor statement that loops through all the friends -->
+                </tbody>
+            </table>
         <!-- The above code is when the 'See All Friends' link is clicked -->
-    {%  endif %}
     </body>
 </html>

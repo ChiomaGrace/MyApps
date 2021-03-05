@@ -99,14 +99,17 @@ def loggedInUsersPage(request, messageId=0):
     allUsers = User.objects.exclude(id=request.session['loginInfo']).order_by('?') #filter will be randomized
     # print(allUsers)
     friends = loggedInUser.friends.all().order_by('?')
-    print("This is the friend count:", friends.count())
     # print("These are all the friends of the logged in user:", friends)
+    # print("This is the friend count:", friends.count())
+    # print("This is the notification count", Notification.objects.filter(user=loggedInUser).count())
     # print("*"*50)
     context = {
         'loggedInUser': User.objects.get(id=request.session['loginInfo']),
         'wallOfLoggedInUser': wallOfLoggedInUser,
         'allUsers': allUsers,
         'friends': friends,
+        'notifications': Notification.objects.all,
+        'loggedInUsersNotifs': Notification.objects.filter(user=loggedInUser)
     }
     return render(request, "loggedInUsersPage.html", context)
 
@@ -212,20 +215,51 @@ def processMessage(request, userFirstName, userLastName, userId):
         #print("This prints the logged in user.")
         loggedInUser = User.objects.get(id=request.session['loginInfo'])
         # print(loggedInUser)
-        recipientOfPost = request.POST['userWhoReceivesPost'] # is a string so need to convert before comparison   
+        recipientOfPost = request.POST['userWhoReceivesPost'] # is a number but as a string so need to convert before comparison   
         # print(recipientOfPost)
         # print(loggedInUser.id)
-        if loggedInUser.id == int(recipientOfPost):
+        if loggedInUser.id == int(recipientOfPost): #this means the logged in user is writing on their own wall
             #this creates the message and saves it to the database
             submittedMessageByUser = Message.objects.create(message = userMessage, user = loggedInUser, userReceivesPost_id = recipientOfPost)
             print("THIS IS THE LAST PRINT STATEMENT IN THE PROCESS POSTING A MESSAGE ROUTE.")    
             return redirect("/home")
-        else:
+        else: #this means the logged in user is writing a post to a different user
             #this creates the message and saves it to the database
             submittedMessageByUser = Message.objects.create(message = userMessage, user = loggedInUser, userReceivesPost_id = recipientOfPost)
-            # # print("*"*50)
-            print("THIS IS THE LAST PRINT STATEMENT IN THE PROCESS PROFILE INFO ROUTE.")    
+            userReceivesNewPost = User.objects.get(id = recipientOfPost)
+            notifyUser = Notification.objects.create(user = userReceivesNewPost, message = submittedMessageByUser) #This creates a notification for the user receiving the posted message
+            userReceivesNewPost.notifications += 1 #a counter for all the notifications (posted messages, comments, and friend requests)
+            userReceivesNewPost.save()
+            # print("*"*50)
+            print("THIS IS THE LAST PRINT STATEMENT IN THE PROCESS MESSAGE ROUTE.")    
         return redirect(reverse('specificUsersPage', args=(userFirstName, userLastName, userId,))) #using the name of the url to redirect and passing the variables/params to the form rendering the template
+
+def removeNotification(request, messageId):
+    print("THIS FUNCTION REMOVES A NOTIFICATION FROM THE NOTIFICATION COUNTER")
+    loggedInUser = User.objects.get(id=request.session['loginInfo'])
+    if messageId:
+        print("This console log means there is a message id")
+        newMessage = Message.objects.get(id= messageId)
+        print("This is the message object that the user is being notified about:", newMessage)
+        changeMessageNotificationStatus = Message.objects.get(id=messageId)
+        # changeMessageNotificationStatus = Message.objects.get(id=messageId).update(notification = 0)
+        if changeMessageNotificationStatus.notification == 0: #0 signifies the user had not seen/hovered over the notification message
+            changeMessageNotificationStatus.notification = 1 #1 signifies the user has now hovered over the notification message, so decrease the notification counter by one
+            changeMessageNotificationStatus.save()
+            updateLoggedInUserNotifications = loggedInUser
+            if updateLoggedInUserNotifications.notifications >= 0:
+                updateLoggedInUserNotifications.notifications -= 1
+                updateLoggedInUserNotifications.save()
+                print("THIS IS THE LAST PRINT STATEMENT IN THE REMOVE NOTIFICATION ROUTE")
+    return redirect("/home")
+
+def clearAllNotifications(request):
+    print("THIS FUNCTION CLEARS ALL THE NOTIFICATIONS THE LOGGED IN USER HAS")
+    loggedInUser = User.objects.get(id=request.session["loginInfo"])
+    removeNotifications = Notification.objects.filter(user= loggedInUser)
+    removeNotifications.delete()
+    print("THIS IS THE LAST PRINT STATEMENT IN THE CLEAR ALL NOTIFICATIONS")
+    return redirect("/home")
 
 def processComment(request, userFirstName, userLastName, userId):
     postACommentErrors = Comment.objects.commentValidator(request.POST)
@@ -270,9 +304,10 @@ def specificUsersPage(request, userFirstName, userLastName, userId, messageId = 
     specificUsersLastName = User.objects.get(lastName=userLastName) #retreiving from the url
     # print("This prints all the messages posted on a page of a specific user and orders them from latest post created.")
     specificUsersMessages = Message.objects.filter(userReceivesPost = userId).order_by('-createdAt')
+    newPosts = Message.objects.filter(userReceivesPost=request.session['loginInfo'])
     if messageId:
         print("THIS IS THE SPECIFIC USER'S PAGE ROUTE THAT WAS REACHED BY THE LOGGED IN USER LIKING A MESAGE ON THE SPECIFIC USER'S PAGE.")
-        print("*"*50)
+        # print("*"*50)
         # print("This prints the id of the message that was just liked and passed via params from the userLikes function.")
         messageId = messageId
         # print(messageId)
@@ -286,8 +321,8 @@ def specificUsersPage(request, userFirstName, userLastName, userId, messageId = 
                 # print("This is the like count minus the display names:", likesCountMinusDisplayNames)
                 displayCount = Message.objects.filter(id=messageId).update(likeMessageCountMinusDisplayNames=likesCountMinusDisplayNames) 
     # print(specificUsersMessages)
-    # print("This prints all the users that have an account")
-    allUsers = User.objects.all()
+    # print("This prints all the users that have an account, excluding the specific user's page")
+    allUsers = User.objects.all().exclude(id=specificUsersPage.id).order_by('?')
     # print(allUsers)
     specificUsersFriends = specificUsersPage.friends.all()
     # print("These are the friends of the specific user:", specificUsersFriends)
@@ -297,7 +332,9 @@ def specificUsersPage(request, userFirstName, userLastName, userId, messageId = 
         'specificUsersPage': specificUsersPage,
         'specificUsersMessages': specificUsersMessages,
         'allUsers': allUsers,
+        'specificUsersFriends': specificUsersFriends,
         'loggedInUser': User.objects.get(id=request.session['loginInfo']),
+        'newPosts': newPosts,
     }
     return render(request, "specificUserPage.html", context)
 
@@ -429,26 +466,30 @@ def removeFriendRequest(request, userFirstName='firstName', userLastName='lastNa
     return redirect("/home")
 
 def acceptFriendRequest(request, userFirstName='firstName', userLastName='lastName', userId=0, messageId = 0):
-    print("THIS IS THE ACCEPT A FRIEND REQUEST ROUTE")
+    print("THIS IS THE ACCEPT A FRIEND REQUEST ROUTE POOP")
     # print("*"*50)
     userReceivesRequest = User.objects.get(id=request.session['loginInfo'])
-    userWhoSentFriendRequest = User.objects.get(id=userId) #the recipient of the friend request
     # print(userReceivesRequest) #prints as a User Object(#)
-    userFirstName = userReceivesRequest.firstName # need for params to reroute
-    userId = userReceivesRequest.id # need for params to reroute
+    userWhoSentFriendRequest = User.objects.get(id=userId) #the recipient of the friend request
+    # print(userWhoSentFriendRequest) #prints as a User Object(#)
+    idOfPageLocation = request.POST['userWhoReceivesPost'] #This identifies the location of where the user is currently browsing
+    print("This identifies the id of the location of where the user is currently browsing", idOfPageLocation)
+    currentPageLocation = User.objects.get(id= idOfPageLocation) #a hidden input containing the id of the specific user
+    # print("This identifies the location of where the user is currently browsing", currentPageLocation)
+    print("This is the user page the logged in user is currently on", currentPageLocation)
+    userFirstName = currentPageLocation.firstName # need for params to reroute
+    userId = currentPageLocation.id # need for params to reroute
     userLastName = userReceivesRequest.lastName # need for params to reroute
-    print("This prints the user object of the user receiving the friend request aka the logged in user.")
-    print(userReceivesRequest) # prints as a User Object(#)
     if userReceivesRequest in userWhoSentFriendRequest.friends.all():
         print("You've already accepted the friend request!")
     else:
         print("This print statement means the friend request is being accepted")
         userWhoSentFriendRequest.friends.add(userReceivesRequest)
-        print("These are all the users the logged in user accepted friend requests from/is now friends with:", userReceivesRequest.friends.all())
+        # print("These are all the users the logged in user accepted friend requests from/is now friends with:", userReceivesRequest.friends.all())
         userReceivesRequest.notifications -= 1
         userReceivesRequest.save()
         # print("*"*50)
-        if userFirstName!= 'firstName':
+        if currentPageLocation!= userReceivesRequest:
             print("THIS IS THE LAST PRINT STATEMENT OF THE SEND A FRIEND REQUEST ROUTE.")
             return redirect(reverse('specificUsersPage', args=(userFirstName, userLastName, userId,)))
         else: 
@@ -512,35 +553,35 @@ def searchForUsersProfile(request):
     }
     return render(request, "noUserFound.html", context)
 
-def notifications(request):
-    print("THIS IS THE NOTIFICATIONS ROUTE")
-    userReceivesRequest = User.objects.get(id=request.session['loginInfo'])
-    loggedInUsersFriendRequests = userReceivesRequest.friends.all()
-    for friendRequest in loggedInUsersFriendRequests:
-        if friendRequest not in loggedInUsersFriendRequests:
-            print("This means there are no friend requests.")
-        else:
-            print("This is the user who sent the friend request.")
-    print("THIS IS THE LAST PRINT STATEMENT OF THE NOTIFICATIONS ROUTE")
-    return redirect('/home')
+# def notifications(request):
+#     print("THIS IS THE NOTIFICATIONS ROUTE")
+#     userReceivesRequest = User.objects.get(id=request.session['loginInfo'])
+#     loggedInUsersFriendRequests = userReceivesRequest.friends.all()
+#     for friendRequest in loggedInUsersFriendRequests:
+#         if friendRequest not in loggedInUsersFriendRequests:
+#             print("This means there are no friend requests.")
+#         else:
+#             print("This is the user who sent the friend request.")
+#     print("THIS IS THE LAST PRINT STATEMENT OF THE NOTIFICATIONS ROUTE")
+#     return redirect('/home')
 
-def allUsers(request):
-    print("THIS IS THE SHOW ALL USERS' ROUTE")
-    loggedInUser = User.objects.get(id=request.session['loginInfo'])
-    allUsers = User.objects.exclude(id=request.session['loginInfo']).order_by('?') #filter will be randomized
-    # print(allUsers)
-    friends = loggedInUser.friends.all().order_by('?')
-    # print("This is the friend count:", friends.count())
-    # print("These are all the friends of the logged in user:", friends)
-    # print("*"*50)
-    context = {
-        'loggedInUser': User.objects.get(id=request.session['loginInfo']),
-        # 'wallOfLoggedInUser': wallOfLoggedInUser,
-        'allUsers': allUsers,
-        'friends': friends,
-    }
-    print("THIS IS THE LAST STATEMENT OF THE ALL USERS' ROUTE")
-    return render(request, "allUsers.html", context)
+# def allUsers(request):
+#     print("THIS IS THE SHOW ALL USERS' ROUTE")
+#     loggedInUser = User.objects.get(id=request.session['loginInfo'])
+#     allUsers = User.objects.exclude(id=request.session['loginInfo']).order_by('?') #filter will be randomized
+#     # print(allUsers)
+#     friends = loggedInUser.friends.all().order_by('?')
+#     # print("This is the friend count:", friends.count())
+#     # print("These are all the friends of the logged in user:", friends)
+#     # print("*"*50)
+#     context = {
+#         'loggedInUser': User.objects.get(id=request.session['loginInfo']),
+#         # 'wallOfLoggedInUser': wallOfLoggedInUser,
+#         'allUsers': allUsers,
+#         'friends': friends,
+#     }
+#     print("THIS IS THE LAST STATEMENT OF THE ALL USERS' ROUTE")
+#     return render(request, "allUsers.html", context)
 
 def logout(request):
     request.session.clear()

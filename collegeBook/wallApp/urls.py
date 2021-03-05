@@ -23,11 +23,15 @@ urlpatterns = [
     path('<str:userFirstName>/<str:userLastName>/unlike/<int:messageId>', views.userUnlikes, name='processUnlikeOnSpecificUsersPage'), #route that processes the removal of a like made on the specific user's page
     path('sendFriendRequest/<int:userId>', views.sendFriendRequest),
     path('sendFriendRequest/<str:userFirstName>/<str:userLastName>/<int:userId>', views.sendFriendRequest, name='processFriendRequestOnSpecificUsersPage'), #route that processes the removal of a like made on the specific user's page
-    path('acceptFriendRequest/<int:userId>', views.acceptFriendRequest),
     path('removeFriendRequest/<int:userId>', views.removeFriendRequest),
+    path('removeFriendRequest/<str:userFirstName>/<str:userLastName>/<int:userId>', views.removeFriendRequest, name='removeFriendRequestOnSpecificUsersPage'), #route that processes the removal of a friend request made on the specific user's page
+    path('acceptFriendRequest/<int:userId>', views.acceptFriendRequest),
+    path('<str:userFirstName>/<str:userLastName>/acceptFriendRequest/<int:userId>', views.acceptFriendRequest, name='acceptFriendRequestOnSpecificUsersPage'), #route that processes the approval of a friend request made on the specific user's page
     path('unfriend/<int:userId>', views.unfriend),
     path('search', views.searchForUsersProfile),
-    path('notifications', views.notifications),
-    path('allUsers', views.allUsers),
+    # path('notifications', views.notifications),
+    path('removeNotification/<int:messageId>', views.removeNotification),
+    path('clearAllNotifications', views.clearAllNotifications),
+    # path('allUsers', views.allUsers),
     path('logout', views.logout)
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)# I added this to be able to provide an upload photo feature for the user profile pic. This specifically links to the media file that I defined in the settings.py
