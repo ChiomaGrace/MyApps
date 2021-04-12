@@ -874,7 +874,7 @@
                                         <div class="form-group mt-0 mb-0 commentSubDiv">
                                             <label for="textArea"></label>
                                             <input type="hidden" id="postLocationForCommentID" name="postLocationForComment" value="{{message.id}}">
-                                            <input type="hidden" id="userReceivesCommentID" name="userReceivesComment" value="{{message.user.id}}">
+                                            <input type="hidden" id="userReceivesCommentID" name="userReceivesComment" value="{{specificUsersPage.id}}">
                                         {% if not loggedInUser.profilePic == "" %} 
                                             <img src="{{loggedInUser.profilePic}}" id="navIconProfPic" alt="" class="d-inline mt-3 ml-3">
                                         {% endif %}

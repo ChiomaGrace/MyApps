@@ -254,9 +254,15 @@ class Comment(models.Model):
         return f"<Comment object: {self.comment} {self.message} {self.user} ({self.id})>"
 
 class Notification(models.Model):
-    user = models.ForeignKey(User, related_name = "userNotif", on_delete=models.CASCADE) #the id of the user receiving the notification
+    user = models.ForeignKey(User, related_name = "userNotif", on_delete=models.CASCADE, null=True, blank=True) #the id of the user receiving the notification
     message = models.ForeignKey(Message, related_name = "messageNotif", on_delete=models.CASCADE, null=True, blank=True) # the id of the posted message
     comment = models.ForeignKey(Comment, related_name = "commentNotif", on_delete=models.CASCADE, null=True, blank=True) #the id of the posted comment
+    commenter = models.ForeignKey(User, related_name = "userComments", on_delete=models.CASCADE, null=True, blank=True) #the id of the user commenting 
+    friendRequest = models.ForeignKey(User, related_name = "userID", on_delete=models.CASCADE, null=True, blank=True) #the id of the user who sent the friend request
+    hover = models.IntegerField(default = "0") # 0 signifying false/the user has not hovered over the notification
+
+
+
 
 
 

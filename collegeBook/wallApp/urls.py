@@ -14,7 +14,9 @@ urlpatterns = [
     path('processProfileHeader', views.processProfileHeader), # the caption underneath the profile photo
     path('processProfileIntro', views.processProfileIntro),
     path('processMessage/<str:userFirstName>/<str:userLastName>/<int:userId>', views.processMessage, name='processMessage'),
+    path('deleteMessage/<str:userFirstName>/<str:userLastName>/<int:userId>', views.deleteMessage, name='deleteMessage'),
     path('processComment/<str:userFirstName>/<str:userLastName>/<int:userId>', views.processComment, name='processComment'),
+    path('deleteComment/<str:userFirstName>/<str:userLastName>/<int:userId>', views.deleteComment, name='deleteComment'),
     path('<str:userFirstName>/<str:userLastName>/<int:userId>', views.specificUsersPage, name='specificUsersPage'),
     path('<str:userFirstName>/<str:userLastName>/<int:userId>/<int:messageId>', views.specificUsersPage, name='specificUsersPage'), #route used when a message is liked
     path('like/<int:messageId>', views.userLikes, name='processLike'), #route that processes the like made on the home page
@@ -29,9 +31,9 @@ urlpatterns = [
     path('<str:userFirstName>/<str:userLastName>/acceptFriendRequest/<int:userId>', views.acceptFriendRequest, name='acceptFriendRequestOnSpecificUsersPage'), #route that processes the approval of a friend request made on the specific user's page
     path('unfriend/<int:userId>', views.unfriend),
     path('search', views.searchForUsersProfile),
-    # path('notifications', views.notifications),
-    path('removeNotification/<int:messageId>', views.removeNotification),
+    path('removeMessageNotification/<int:messageId>', views.removeMessageNotification),
+    path('removeCommentNotification/<int:commentId>', views.removeCommentNotification),
+    path('removeFriendRequestNotification/<int:userId>', views.removeFriendRequestNotification),
     path('clearAllNotifications', views.clearAllNotifications),
-    # path('allUsers', views.allUsers),
     path('logout', views.logout)
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)# I added this to be able to provide an upload photo feature for the user profile pic. This specifically links to the media file that I defined in the settings.py

@@ -2,10 +2,6 @@
     vertical-align: top;
 }
 
-/* a {
-    text-decoration:none;
-} */
-
 .addFriendText{ /* the text on the add friend button on the show all users html */
     text-indent: 16px;
 }
@@ -21,10 +17,6 @@
 .allUsersLink{
     font-size: small; 
 }
-
-/* .bi-circle-fill{
-    margin-left: 4px;
-} */
 
 .bi-chat-dots-fill{ /* The message symbol inside the button for each individual friend */
     margin-left: -2px;
@@ -61,33 +53,24 @@
     font-weight: bolder; 
     color: black;
     top: 4px;
-    right: 140px;
+    right: 60px;
     font-size: small;
     position: absolute;
-    transform: translateX(40%);   
-    /* background-color: grey; */
+    transform: translateX(44%);   
 }
 
 #clearImage{ /*For when the image is only a preview */
     font-weight: bolder; 
     color: black;
     top: 4px;
-    right: 140px;
+    right: 60px;
     font-size: small;
     position: absolute;
-    transform: translateX(40%);   
-    /* background-color: grey; */
-}
-
-.clearNotification{
-    /* top: 20px; */
-    /* right: 50px; */
-    background-color: yellow;
+    transform: translateX(44%);   
 }
 
 #closeBirthdayInfoBoxButton{
     margin-left: 20%;
-    /* background-color: pink; */
 }
 
 .confirmCancelNotificationButton{
@@ -95,31 +78,24 @@
     height: 30px;
 }
 
+#commentBin{
+    margin-top: -22px;
+}
+
 .commentIconProfPic{
     width: 30px;
     height: 30px;
     border-radius: 60%;
     margin-top: 6px;
-
 }
+
 .commentHeadText{
-    /* margin-top: 4px; */
     margin-left: 10px;
     margin-top: 2px;
     padding-bottom: 2px;
     text-align: left;  
     font-weight: lighter;
 }
-
-/* .commentSectionDiv{
-    width: 500px;
-    height: 40px;
-} */
-
-/* .commentSection{
-    width: 230px;
-    height: 40px;
-} */
 
 .commentSubText{
     text-align: left;   
@@ -129,11 +105,15 @@
 
 .commentTextAreaOnForm{
     resize: none;
-    /* width: 800px; */
 }
 
 .connectLine{
     margin-top: -1px;
+}
+
+#createAccount{
+    position: relative;
+    left: -28px;    
 }
 
 .decoratedErrorField{
@@ -142,6 +122,20 @@
 
 .decorativeLine{
     color: #DADDE1;
+}
+
+.decorativeLineOnLoginForm{
+    color: #DADDE1;
+}
+
+.decorativeLineOnRegistrationForm{
+    position: relative;
+    left: -2px;
+    color: #DADDE1;
+}
+
+.deletePostBin{
+    margin-top: -30px;
 }
 
 .detailsStylingForEachFriend{ /* This is when a user search cannot be found and the friend list shows. Styling for the first and last name */
@@ -154,16 +148,20 @@
     margin-bottom: 0px;
 }
 
+.displayCommentErrors li{
+    list-style-type: none;
+}
+
+.displayMessageErrors li{
+    list-style-type: none;
+}
+
 .dropdown-item{
     border-radius: 6px;
     max-width: 100%;
     white-space: pre-line;
 }
 
-.dropdown-menu{
-    left: -70px;
-    border-radius: 6px;
-}
 
 #errorDialogForFileSize{ /*The div containing the message of the error dialog box for an uploaded image*/
     display: none;
@@ -187,38 +185,36 @@
     width: 44px;
     height: 44px;
     border-radius: 30%;
-    /* margin-top: 6px; */
-    /* margin: 20px, 20px, 20px, 20px; */
     position: relative;
 }
 
 .friendsDiv{
-    /* display: table;     */
-    /* width: 2px; */
     height: 200px;
     border-radius: 10px;
     overflow-y: scroll;
-    /* 194.250 x 389 */
 }
 
-.friendsLink{
+.friendsLinkStyling{
     font-size: small; 
+}
+
+.friendRequestButtonDiv{
+    height: 38px;
 }
 
 .hide {
     display: none;
 }
 
-.triDiv{ /* The div that contains the three divs(intro div, all users div, and friends div) on the left side of the html*/
-    /* display: table;     */
-    /* width: 254px; */
-    height: 260px;
-    border-radius: 10px;
+.hideButtons{
+    display: none;
+}
+
+.largerComputerScreenNoFriendsText{
+    color: transparent;
 }
 
 .likeUnlikeCommentButtonStyling{
-    /* width: 120px; */
-    /* height: 20px; */
     border: none;
 }
 
@@ -237,10 +233,19 @@
     margin-bottom: -2px;
 }
 
+#messageBin{
+    margin-top: -34px;
+}
+
 .messageFriendButton{
     border-radius: 50%;
     width: 40px;
     height: 40px;
+}
+
+.nav-item{
+    list-style-type: none;
+
 }
 
 .notificationMenu{
@@ -257,36 +262,9 @@
     border: red;
     color: white;
     position: absolute;
-    bottom: 20px;
-    left: 11px;
+    bottom: 14px;
+    left: 4px;
     font-size: 14px;
-}
-
-#pendingFriendRequestButton{ /*The styling of the button on the home page*/
-font-size: 8px;
-text-align: center;
-}
-
-.removeFriendRequestButton{
-    font-size: 8px;
-    text-align: center;
-}
-
-small.messageCreatedAtWithThumbnail{
-    position: relative;
-    top: -18px; 
-    left: 22px;
-}
-
-small.messageCreatedAt{
-    position: relative;
-    top: -4px; 
-    left: 8px;
-}
-
-.messageText{
-    top: 8px;
-    font-size: 16px;
 }
 
 .nameInNotification{
@@ -305,22 +283,49 @@ small.messageCreatedAt{
     height: 58px;
 }
 
-#navIconProfPic{
-    width: 40px;
-    height: 40px;
-    border-radius: 60%;
-    margin-top: 6px;
+.newCommentNotification{
+    top: -120px;
 }
 
-/* .thumbnail{ TRY TO CHANGE THIS INSTEAD OF NAVICONPROF PIC LATER FOR BETTER CODING DICTION BUT NOT CRAZY IMPORTANT SAME 
+#navIconProfPic{
     width: 30px;
     height: 30px;
     border-radius: 60%;
-    margin-top: 6px;
-} */
+    margin-top: -4px;
+}
+
+.newPostNotification{
+    top: -80px;
+}
 
 .noDormBuilding{
     display: none;
+}
+
+.notificationsDropDownMenuDiv{
+    left: 50%; /*positions the left edge of the dropdown in the center of its parent*/
+    right: auto; /*ensures that the dropdown's width doesn't get messed up.*/
+    transform: translateX(-70%); /*moves the dropdown menu to the left*/
+    border-radius: 6px;
+    z-index: 998; /* brings it in front of other elements */
+}
+
+#notifIconProfPic{
+    width: 30px;
+    height: 30px;
+    border-radius: 60%;
+    margin-top: -4px;
+}
+
+.overlay{
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: #CCCCCC;
+    opacity: .9;
+    z-index: 998;
+    height: 100%;
+    width: 100%; 
 }
 
 .pageNotFoundDiv{
@@ -332,9 +337,10 @@ small.messageCreatedAt{
     margin-left: 30px;
 }
 
-/* .postACommentButton{ */
-    /* border: none; */
-/* } */
+#pendingFriendRequestButton{ /*The styling of the button on the home page*/
+    font-size: 8px;
+    text-align: center;
+}
 
 #postACommentForm{
     top: -10px;
@@ -346,8 +352,13 @@ small.messageCreatedAt{
 
 #postAMessageForm{
     border-radius: 10px;
-    /* width: 620px; */
-    /* height: 80px; */
+}
+
+.postMessageProfPic{
+    width: 40px;
+    height: 40px;
+    border-radius: 60%;
+    margin-top: 8px;
 }
 
 .profilePicBanner{
@@ -369,7 +380,7 @@ small.messageCreatedAt{
     color: darkgrey;
     cursor: pointer;
     border-radius: 50%;
-    margin-left: 92px;
+    margin-left: 84px;
     margin-bottom: 25px;
     position: relative;
     overflow: hidden;
@@ -398,21 +409,10 @@ small.messageCreatedAt{
     position: absolute;
     margin-left: 34%;
     /* margin-top: 20px; */
-    top: 110px; /*The lower the number, the higher it rises */
+    top: 20px; /*The lower the number, the higher it rises */
     border: 4px solid #f1f1f1;
     height: 460px;
     cursor: pointer;
-}
-
-.overlay{
-    position: fixed;
-    top: 0;
-    left: 0;
-    background: #CCCCCC;
-    opacity: .9;
-    z-index: 998;
-    height: 100%;
-    width: 100%; 
 }
 
 #questionMark{
@@ -424,21 +424,25 @@ small.messageCreatedAt{
 }
 
 #regForm{ /*The actual form*/
-    /* overflow: scroll; */
-    height: 500px;
+    overflow: scroll;
+    height: 480px;
     width: 400px;
     background-color: white;
     padding-right: 10px;
+    border: 4px solid #f1f1f1;
 }
 
 #registrationForm{ /*The div that contains the registration form*/
-    background-color: white;
     position: fixed;
     margin-left: 30%;
-    top: 23px; /*The lower the number, the higher it rises*/
-    border: 4px solid #f1f1f1;
-    height: 550px;
-    width: 500px;
+    top: 14px; /*The lower the number, the higher it rises*/
+    height: 490px;
+    width: 600px;
+}
+
+.removeFriendRequestButton{
+    font-size: 8px;
+    text-align: center;
 }
 
 .save{
@@ -453,20 +457,22 @@ small.messageCreatedAt{
     width: 180px;
 }
 
-.showTableStyling{
-    left: 40px;
+.settingsDropDownMenuDiv{
+    left: 50%; /*positions the left edge of the dropdown in the center of its parent*/
+    right: auto; /*ensures that the dropdown's width doesn't get messed up.*/
+    transform: translateX(-100%); /*moves the dropdown menu to the left*/
+    border-radius: 6px;
+    z-index: 998; /* brings it in front of other elements */
 }
 
 .table{ /*Style of the table when it displays all the users or the friends*/
     border-radius: 10px;
 }
 
-/* .test{
-    background-color: red;
-} */
-
-.testing{
-    background-color: blue;
+#searchBarForm{
+    width: 30px;
+    height: 30px;
+    border-radius: 60%;
 }
 
 .searchResultsDiv{
@@ -477,16 +483,42 @@ small.messageCreatedAt{
     left: 440px;
 }
 
+.showAllUsers{
+    position: relative;
+    left: 70px;
+}
+
 .showFriends{
     display: none;
+    position: relative;
+    left: 80px;
 }
 
 .showAllUsers{
     display: none;
 }
 
+small.messageCreatedAtWithThumbnail{
+    position: relative;
+    top: -18px; 
+    left: 20px;
+}
+
+small.messageCreatedAt{
+    position: relative;
+    top: -18px; 
+    left: 20px;
+}
+
+.specificIntroCaption{
+    font-size: 14px;
+    margin-top: 2px;
+}
+
 .specificIntroDetail{
     font-weight: bold;
+    font-size: 13px;
+    margin-top: 4px;
 }
 
 .specificNotification{
@@ -495,6 +527,13 @@ small.messageCreatedAt{
 
 #submitProfileIntroButton{
     left: 12px;
+}
+
+.triDiv{ /* The div that contains the three divs(intro div, all users div, and friends div) on the left side of the html*/
+    /* display: table;     */
+    /* width: 254px; */
+    height: 260px;
+    border-radius: 10px;
 }
 
 .thumbnailForEachFriend{
@@ -514,10 +553,6 @@ small.messageCreatedAt{
 .ui-button .ui-icon{ /*The css for the X on the error dialog box for uploading an image*/
     background-image: url(../CSS/redIcons.png);
 }
-
-/* .ui-dialog .ui-dialog-buttonpane{ */ /*The css for the bottom section on the error dialog box for uploading an image*/
-    /* background-color: #EEEEEE; */
-/* } */
 
 .ui-dialog .ui-dialog-titlebar{ /*The css for the top section on the error dialog box for uploading an image*/
     background-color: blue;
@@ -572,13 +607,13 @@ small.messageCreatedAt{
     text-align: center;
 }
 
-#userProfileHeaderButtons{
-    margin-left: 184px;
-    margin-top: 8px;
+#userProfileHeaderCancelButton{
+    position: relative;
+    left: 20px;
 }
 
 #userProfileHeaderEditLink{
-    margin-left: 160px;
+    margin-left: 146px;
 }
 
 #userProfileHeaderForm{
@@ -588,18 +623,1666 @@ small.messageCreatedAt{
 #userProfileHeaderText{
     width: 250px;
     text-align: center;
-    margin-left: 50px;
 }
 
 #userProfileHeaderTextArea{
     resize: none;
 }
 
+.userProfileHeaderSaveButton{
+    position: relative;
+    left: 20px;
+}
+
 #userUniversityID{
     bottom: 8px;
+}
+
+.XForProfileIntroFormStyling{
+    right: 4px;
 }
 
 #XForRegistrationForm{
     margin-left: 80%;
     cursor: pointer;
 }
+
+/*For the largest sized computer screen*/
+@media only screen and (min-width: 1440px) and (max-width: 2560px){
+    .allUsersLink{
+        padding-left: 60px;
+    }
+
+    .clearImage{ /*For when the image is in the database */
+        font-weight: bolder; 
+        color: black;
+        top: 4px;
+        right: 120px;
+        font-size: small;
+        position: absolute;
+        transform: translateX(44%);   
+    }
+
+    #clearImage{ /*For when the image is in the database */
+        font-weight: bolder; 
+        color: black;
+        top: 4px;
+        right: 120px;
+        font-size: small;
+        position: absolute;
+        transform: translateX(44%);   
+    }
+
+    #createAccount{
+        position: relative;
+        left: 6px;    
+    }
+
+    .decorativeLine{
+        margin-left: 2px;
+    }
+
+    .decorativeLineOnLoginForm{
+        position: relative;
+        color: #DADDE1;
+        left: 30px;
+    }
+
+    .editDetailsButtonStyling{
+        margin-left: 24px;
+    }
+
+    .friendsIconName{
+        font-size: 12px;
+        padding-left: 20px;
+    }
+
+    .friendsIconNameWithBlankAvatar{
+        font-size: 12px;
+        text-align: center;
+        padding-left: 20px;
+    }
+
+    .friendsIconProfPic{
+        width: 44px;
+        height: 44px;
+        border-radius: 30%;
+        position: relative;
+        margin-left: 24px;
+    }
+
+    .friendsLinkStyling{
+        padding-left: 60px;
+    }
+
+    .largerComputerScreenNoFriendsText{
+        color: black;
+    }
+
+    .navBarSecondSection{
+        margin-left: 600px;
+        padding-left: 140px;
+        padding-right: 140px;
+    }
+
+    .normalComputerScreenNoFriendsText{
+        color: transparent;
+    }
+
+    #profileIntroFormDiv{ /*The div that contains the update intro form*/
+        margin-left: 36%;
+        top: 250px; /*The lower the number, the higher it rises */
+    }
+
+    #registrationForm{
+        position: relative;
+        left: 250px;
+        top: 50px;
+    }
+
+    #regForm{
+        overflow: scroll;
+    }
+
+    .showAllUsers{
+        position: relative;
+        left: 100px;
+    }
+
+    #userNameText{
+        text-align: center;
+        margin-right: 60px;
+    }
+
+    #userProfileHeaderCancelButton{
+        position: relative;
+        left: 84px;
+    }
+
+    .userProfileHeaderSaveButton{
+        position: relative;
+        left: 84px;
+    }
+
+    .XForProfileIntroFormStyling{
+        right: 30px;
+        padding-left: 160px;
+    }
+}
+
+/*For a large sized computer screen*/
+@media only screen and (min-width: 1025px)  and (max-width: 1440px) {
+    .clearImage{ /*For when the image is in the database */
+        font-weight: bolder; 
+        color: black;
+        top: 4px;
+        right: 120px;
+        font-size: small;
+        position: absolute;
+        transform: translateX(44%);   
+    }
+
+    #clearImage{ /*For when the image is only a preview */
+        font-weight: bolder; 
+        color: black;
+        top: 4px;
+        right: 120px;
+        font-size: small;
+        position: absolute;
+        transform: translateX(44%);   
+    }
+
+    .customizeIntroText{
+        position: relative;
+        top: -40px;
+        left: -2px;
+    }
+
+    .decorativeLine{
+        margin-left: 74px;
+        padding-bottom: 10px;
+    }
+
+    .decorativeLineOnRegistrationForm{
+        position: relative;
+        left: -2px;
+        color: #DADDE1;
+    }
+
+    .editDetailsButtonStyling{
+        margin-left: 20px;
+    }
+
+    .friendsIconName{
+        font-size: 12px;
+        padding-left: 20px;
+    }
+    
+    .friendsIconNameWithBlankAvatar{
+        font-size: 12px;
+        text-align: center;
+        padding-left: 20px;
+    }
+
+    .friendsIconProfPic{
+        width: 44px;
+        height: 44px;
+        border-radius: 30%;
+        position: relative;
+        margin-left: 24px;
+    }
+
+    .largerComputerScreenNoFriendsText{
+        color: black;
+    }
+
+    .navBarSecondSection{
+        margin-left: 40px;
+        padding-left: 140px;
+        padding-right: 140px;
+    }
+
+    .normalComputerScreenNoFriendsText{
+        color: transparent;
+    }
+
+    #profileIntroFormDiv{ /*The div that contains the update intro form*/
+        top: 60px; /*moved it to be in the middle of a larger computer screen */
+    }
+
+    #regForm{ /* The actual form */
+        position: relative;
+        left: 24px;
+        overflow: scroll;
+    }
+
+    #registrationForm{ /* The form  div*/
+        position: relative;
+        left: 80px;
+    }
+
+    .showFriends{
+        left: 90px;
+    }
+
+    .showFriendsStyling{
+        border-style: none;
+    }
+
+    .specificIntroCaption{
+        font-size: 16px;
+    }
+
+    .specificIntroDetail{
+        font-weight: bold;
+        font-size: 16px;
+        margin-top: 2px;
+    }
+
+    #userNameText{
+        text-align: center;
+        margin-right: 60px;
+    }
+
+    #userProfileHeaderCancelButton{
+        position: relative;
+        left: 84px;
+    }
+
+    .userProfileHeaderSaveButton{
+        position: relative;
+        left: 84px;
+    }
+
+    .XForProfileIntroFormStyling{
+        position: relative;
+        top: -38px;
+        left: 238px;
+    }
+}
+
+/*This is the template/normal sized computer aka what the css standard is*/
+@media only screen and (min-width: 1024px) and (max-width: 1439px) {
+
+}
+
+/*This is a media only for a tablet sized screen*/
+@media only screen and (min-width: 521px) and (max-width: 1023px){
+    .allUsersDiv{
+        width: 262px;
+        height: 220px;
+        margin-left: 10px;
+    }
+
+    #button{ /* The button holding the save symbol for the profile pic container */
+        top: 4px;
+        margin-left: 218px;
+    }
+
+    .clearImage{ /*For when the image is in the database */
+        font-weight: bolder; 
+        color: black;
+        top: 4px;
+        right: 12px;
+        font-size: small;
+        position: absolute;
+        transform: translateX(44%);   
+    }
+    
+    #clearImage{ /*For when the image is only a preview */
+        font-weight: bolder; 
+        color: black;
+        top: 4px;
+        right: 12px;
+        font-size: small;
+        position: absolute;
+        transform: translateX(44%);   
+    }
+
+    #createAccount{
+        position: relative;
+        top: 16px;
+        left: -40px;
+    }
+
+    .customizeIntroText{
+        position: relative;
+        top: -6px;
+        left: 22px;
+        padding-bottom: 6px;
+    }
+
+    .decorativeLine{
+        display: none;
+    }
+
+    .decorativeLineOnLoginForm{
+        display: none;
+    }
+
+    .editDetailsButtonStyling{
+        margin-left: 18px;
+    }
+
+    .editIntroText{
+        margin-left: 28px;
+        padding-bottom: 4px;
+    }
+
+    .hideDetailsCheckBox{
+        margin-left: 26px;    
+    }
+
+    .friendsDiv{
+        width: 262px;
+        height: 220px;
+        margin-left: 10px;
+    }
+
+    .introDiv{
+        width: 300px;
+        background-color: white;
+        border-radius: 6px;
+    }
+
+    .listOfPostedMessages{
+        margin-left: -40px;
+    }
+
+    .messengerNavIcon{
+        top: -49px;
+        left: 10px;
+        position: relative;
+    }
+
+    .moreText{
+        display: none;
+    }
+
+    #navIconProfPic{
+        margin-left: -130px;
+        top: 4px;
+        bottom: 10px;
+        margin-top: 4px;
+    }
+
+    .navName{
+        top: -20px;
+        left: -100px;
+        position: relative;
+    }
+
+    .notificationsDropDownMenu{
+        border-radius: 6px;
+        position: absolute;
+        margin-left: -30px;
+        top: 18px;
+        z-index: 998; /* brings it in front of other elements */
+    }
+
+    #profilePicContainer{
+        margin-left: 54px;
+    }
+
+    #profileIntroForm{
+        width: 280px;
+        height: 440px;
+        margin-left: -40px;
+    }
+
+    #profileIntroFormDiv{ /*The div that contains the update intro form*/
+        top: 10px; /*The lower the number, the higher it rises */
+        /* width: 520px;
+        height: 440px; */
+    }
+
+    #registrationForm{
+        position: relative;
+        left: -50px;
+    }
+
+    .saveCancelButtons{
+        position: relative;
+        top: 10px;
+        margin-left: 20px;
+    }
+
+    .searchForm{
+        margin-left: -630px;
+        margin-bottom: 12px;
+    }
+
+    .settingsDropDownMenu{
+        border-radius: 6px;
+        position: absolute;
+        margin-left: 44px;
+        top: 18px;
+        z-index: 998; /* brings it in front of other elements */
+    }
+
+    .showFriends{
+        left: 48px;
+    }
+
+    .showAllUsers{
+        left: 48px;
+    }
+
+    #regForm{ /*The actual form*/
+        overflow: scroll;
+    }
+
+    .triDiv{
+        display: none;
+        height: 250px; 
+        margin-left: 110px;
+    }
+
+    #userNameText{
+        position: relative;
+        left: 2px;
+    }
+
+    #userProfileHeaderCancelButton{
+        position: relative;
+        left: 32px;
+        margin-left: 7px;
+        top: -72px;
+    }
+
+    #userProfileHeaderEditLink{
+        margin-left: 120px;
+    }
+
+    #userProfileHeaderForm{
+        margin-left: 10px;
+        padding-left: 20px;
+    }
+
+    .userProfileHeaderSaveButton{
+        position: relative;
+        left: 36px;
+        top: -74px;
+    }
+
+    #userProfileHeaderText{
+        position: relative;
+        left: -30px;
+    }
+
+    .XForProfileIntroFormStyling{
+        position: relative;
+        left: -30px;
+    }
+
+
+}
+
+/*This is a media only for a (large) phone*/
+@media only screen and (min-width: 425px) and (max-width: 767px){
+    .allUsersDiv{
+        width: 262px;
+        height: 220px;
+        margin-left: 10px;
+    }
+
+    #birthdayDayOnRegistrationForm{
+        position: relative;
+        left: -4px;
+        top: 8px;
+    }
+
+    #birthdayYearOnRegistrationForm{
+        position: relative;
+        left: 4px;
+        top: 16px;
+    }
+
+    #button{ /* The button holding the save symbol for the profile pic container */
+        top: -290px;
+        /* margin-left: 218px; */
+    }
+
+    .clearImage{ /*For when the image is in the database */
+        font-weight: bolder; 
+        color: black;
+        top: -280px;
+        left: 270px;
+        font-size: small;
+        position: absolute;
+        transform: translateX(44%);   
+    }
+    
+    #clearImage{ /*For when the image is only a preview */
+        font-weight: bolder; 
+        color: black;
+        top: -280px;
+        left: 270px;
+        font-size: small;
+        position: absolute;
+        transform: translateX(44%);   
+    }
+
+    .commentIconProfPic{
+        width: 24px;
+        height: 24px;
+        border-radius: 60%;
+        margin-top: 6px;
+    }
+    
+    .commentSection{
+        width: 90%;
+        margin-left: -4px;
+    }
+
+    #confirmPassword{
+        position: relative;
+        left: 4px;
+    }
+
+    #createAccount{
+        position: relative;
+        left: 14px;
+    }
+
+    .customizeIntroText{
+        position: relative;
+        top: -42px;
+        left: 26px;
+        padding-bottom: 6px;
+    }
+
+    .decorativeLine{
+        display: none;
+    }
+
+    .decorativeLineOnLoginForm{
+        position: relative;
+        left: 50px;
+    }
+
+    .decorativeLineOnRegistrationForm{
+        display: none;
+    }
+
+    .deleteCommentBinButton{
+        margin-top: -90px;
+        margin-left: 200px;
+    }
+
+    .deletePostBinButton{
+        margin-top: -88px;
+        margin-left: 286px;
+    }
+
+    .editDetailsButtonStyling{
+        margin-left: 18px;
+    }
+
+    .editIntroText{
+        margin-left: 28px;
+        padding-bottom: 4px;
+    }
+
+    #emailHelp{
+        position: relative;
+        left: 6px;
+    }
+
+    .emptySpace{  /* <td>s that create space for a bigger sized screen but not needed on the phone size */
+        display: none;
+    }
+
+    .friendsDiv{
+        width: 262px;
+        height: 220px;
+        margin-left: 10px;
+    }
+
+    .hideDetailsCheckBox{
+        margin-left: 44px; 
+    }
+
+    #initialPassword{
+        position: relative;
+        left: 6px;
+    }
+
+    .introDiv{
+        width: 300px;
+        background-color: white;
+        border-radius: 6px;
+    }
+
+    .likeUnlikeCommentButtonStyling{
+        font-size: 14px;
+        margin-left: -48px;
+        padding-left: 28px;
+        padding-right: 28px;
+    }
+
+    .listOfPostedMessages{
+        margin-left: -122px;
+        width: 400px;
+        height: 146.7px;
+    }
+
+    #loginForm{
+        position: relative;
+        top: -40px;
+    }
+
+    .messengerNavIcon{
+        top: -49px;
+        left: 10px;
+        position: relative;
+    }
+
+    .moreText{
+        display: none;
+    }
+
+    #navIconProfPic{
+        margin-left: -130px;
+        top: 4px;
+        bottom: 10px;
+        margin-top: 4px;
+    }
+
+    .navName{
+        top: -20px;
+        left: -100px;
+        position: relative;
+    }
+
+    .notificationsDropDownMenu{
+        border-radius: 6px;
+        position: absolute;
+        margin-left: -30px;
+        top: 18px;
+        z-index: 998; /* brings it in front of other elements */
+    }
+
+    .postACommentButton{
+        width: 24px;
+        height: 21px;
+        position: relative;
+        top: -2px;
+        left: -8px;
+    }
+
+    #postAMessageButton{
+        width: 48px;
+        height: 24px;
+        text-indent: -8px;
+        padding-top: 0px;
+        margin-top: 6px;
+    }
+
+    #profileIntroForm{
+        width: 280px;
+        height: 440px;
+        margin-left: -40px;
+    }
+
+    #profileIntroFormDiv{ /*The div that contains the update intro form*/
+        margin-left: 8%;
+        top: 8px; /*The lower the number, the higher it rises */
+        width: 360px;
+        height: 490px;
+    }
+
+    #profilePicContainer{
+        margin-left: 130px;
+        margin-top: -430px;
+    }
+
+    #regForm{ /*The actual form*/
+        overflow: scroll;
+        position: relative;
+        left: -70px;
+        height: 480px;
+        width: 300px;
+        background-color: white;
+        padding-right: 10px;
+        border: 4px solid #f1f1f1;
+    }
+    
+    .saveCancelButtons{
+        position: relative;
+        top: 72px;
+    }
+
+    .searchInput{
+        margin-left: -146px;
+        width: 140px;
+        height: 24px;
+        margin-top: 3px;
+        font-size: 12px;
+    }
+
+    .sendIcon{
+        position: relative;
+        left: -4px;
+        top: -6px;
+    }
+
+    .settingsDropDownMenu{
+        border-radius: 6px;
+        position: absolute;
+        margin-left: 44px;
+        top: 18px;
+        z-index: 998; /* brings it in front of other elements */
+    }
+
+    .showFriends{
+        position: relative;
+        left: 24px;
+        width: 80px;
+    }
+
+    .showAllUsers{
+        position: relative;
+        left: 18px;
+        width: 80px;
+    }
+
+    #submitProfileIntroButton{
+        left: 38px;
+    }
+
+    #submitRegistrationFormButton{
+        position: relative;
+        left: -18px;
+        top: 10px;
+    }
+
+    .triDiv{
+        display: none;
+        height: 250px; 
+        margin-left: -52px;
+    }
+
+    #userBirthdayMonthID{
+        position: relative;
+        left: 4px;
+    }
+
+    #userCommentID{
+        width: 220px;
+        height: 20px;
+        top: 1px;
+    }
+
+    #userDormBuildingID{
+        width: 134px;
+        height: 28px;
+    }
+
+    #userHighSchoolID{
+        width: 134px;
+        height: 28px;
+    }
+
+    #userHomeTownID{
+        width: 134px;
+        height: 28px;
+    }
+
+    #userMessageID{
+        width: 234px;
+        height: 34px;
+        font-size: small;
+        margin-left: -8px;
+        margin-top: 2px;
+    }
+
+    #userLastNameID{
+        position: relative;
+        left: -16px;
+    }
+
+    #userNameText{
+        position: relative;
+        margin-top: -300px;
+        right: 8px;
+    }
+
+    #userProfileHeaderCancelButton{
+        position: relative;
+        left: 44px;
+        margin-left: 10px;
+        top: -74px;
+    }
+
+    #userProfileHeaderEditLink{
+        margin-left: 200px;
+    }
+
+    #userProfileHeaderForm{
+        margin-left: 10px;
+        padding-left: 20px;
+    }
+
+    .userProfileHeaderSaveButton{
+        position: relative;
+        left: 54px;
+        top: -74px;
+    }
+
+    #userProfileHeaderText{
+        position: relative;
+        left: 50px;
+    }
+    
+    #userProfileHeaderTextArea{
+        resize: none;
+        width: 320px;
+        height: 70px;
+    }
+
+    #userRegistrationEmail{
+        position: relative;
+        left: 8px;
+    }
+
+    #userUniversityID{
+        width: 134px;
+        height: 28px;
+        margin-top: 4px;
+    }
+
+    .XForProfileIntroFormStyling{
+        position: relative;
+        left: 300px;
+        top: -40px;
+    }
+
+    #XForRegistrationForm{
+        position: relative;
+        left: 40px;
+        top: -40px;
+    }
+
+} 
+
+/*This is a media only for a (medium-sized) phone*/
+@media only screen and (min-width: 375px) and (max-width: 424px){
+    .allUsersDiv{
+        width: 262px;
+        height: 220px;
+        margin-left: 10px;
+    }
+
+    #birthdayDayOnRegistrationForm{
+        position: relative;
+        left: -4px;
+        top: 8px;
+    }
+
+    #birthdayYearOnRegistrationForm{
+        position: relative;
+        left: 4px;
+        top: 16px;
+    }
+
+    #button{ /* The button holding the save symbol for the profile pic container */
+        top: -290px;
+        /* margin-left: 218px; */
+    }
+
+    .clearImage{ /*For when the image is in the database */
+        font-weight: bolder; 
+        color: black;
+        top: -280px;
+        left: 250px;
+        font-size: small;
+        position: absolute;
+        transform: translateX(44%);   
+    }
+    
+    #clearImage{ /*For when the image is only a preview */
+        font-weight: bolder; 
+        color: black;
+        top: -280px;
+        left: 250px;
+        font-size: small;
+        position: absolute;
+        transform: translateX(44%);   
+    }
+
+    .commentIconProfPic{
+        width: 24px;
+        height: 24px;
+        border-radius: 60%;
+        margin-top: 6px;
+    }
+    
+    .commentSection{
+        width: 90%;
+        margin-left: -4px;
+    }
+
+    #confirmPassword{
+        position: relative;
+        left: 4px;
+    }
+
+    #createAccount{
+        position: relative;
+        left: -4px;
+    }
+
+    .customizeIntroText{
+        position: relative;
+        top: -40px;
+        left: 26px;
+        padding-bottom: 6px;
+    }
+
+    .decorativeLine{
+        display: none;
+    }
+
+    .decorativeLineOnLoginForm{
+        position: relative;
+        left: 20px;
+    }
+
+    .decorativeLineOnRegistrationForm{
+        display: none;
+    }
+
+    .deleteCommentBinButton{
+        margin-top: -90px;
+        margin-left: 200px;
+    }
+
+    .deletePostBinButton{
+        margin-top: -88px;
+        margin-left: 286px;
+    }
+
+    .editDetailsButtonStyling{
+        margin-left: 18px;
+    }
+
+    .editIntroText{
+        margin-left: 28px;
+        padding-bottom: 4px;
+    }
+
+    #emailHelp{
+        position: relative;
+        left: 6px;
+    }
+
+    .emptySpace{  /* <td>s that create space for a bigger sized screen but not needed on the phone size */
+        display: none;
+    }
+
+    .friendsDiv{
+        width: 262px;
+        height: 220px;
+        margin-left: 10px;
+    }
+
+    .hideDetailsCheckBox{
+        margin-left: 26px;    
+    }
+
+    #initialPassword{
+        position: relative;
+        left: 6px;
+    }
+
+    .introDiv{
+        width: 300px;
+        background-color: white;
+        border-radius: 6px;
+    }
+
+    .likeUnlikeCommentButtonStyling{
+        font-size: 14px;
+        margin-left: -48px;
+        padding-left: 28px;
+        padding-right: 28px;
+    }
+
+    .listOfPostedMessages{
+        margin-left: -154px;
+        width: 410px;
+        height: 146.7px;
+    }
+
+    #loginForm{
+        position: relative;
+        top: -36px;
+    }
+
+    .messengerNavIcon{
+        top: -49px;
+        left: 10px;
+        position: relative;
+    }
+
+    .moreText{
+        display: none;
+    }
+
+    #navIconProfPic{
+        margin-left: -130px;
+        top: 4px;
+        bottom: 10px;
+        margin-top: 4px;
+    }
+
+    .navName{
+        top: -20px;
+        left: -100px;
+        position: relative;
+    }
+
+    .notificationsDropDownMenu{
+        border-radius: 6px;
+        position: absolute;
+        margin-left: -30px;
+        top: 18px;
+        z-index: 998; /* brings it in front of other elements */
+    }
+
+    .postACommentButton{
+        width: 24px;
+        height: 21px;
+        position: relative;
+        top: -2px;
+        left: -8px;
+    }
+
+    #postAMessageButton{
+        width: 48px;
+        height: 24px;
+        text-indent: -8px;
+        padding-top: 0px;
+        margin-top: 6px;
+    }
+
+    #profileIntroForm{
+        width: 280px;
+        height: 440px;
+        margin-left: -40px;
+    }
+
+    #profileIntroFormDiv{ /*The div that contains the update intro form*/
+        margin-left: 8%;
+        top: 8px; /*The lower the number, the higher it rises */
+        width: 320px;
+        height: 490px;
+    }
+
+    #profilePicContainer{
+        margin-left: 100px;
+        margin-top: -430px;
+    }
+
+    #regForm{ /*The actual form*/
+        overflow: scroll;
+        position: relative;
+        top: 10px;
+        left: -84px;
+        height: 480px;
+        width: 300px;
+        background-color: white;
+        padding-right: 10px;
+        border: 4px solid #f1f1f1;
+    }
+
+    .saveCancelButtons{
+        position: relative;
+        top: 72px;
+    }
+
+    .searchInput{
+        margin-left: -120px;
+        width: 110px;
+        height: 24px;
+        margin-top: 3px;
+        font-size: 8px;
+    }
+
+    .sendIcon{
+        position: relative;
+        left: -4px;
+        top: -6px;
+    }
+
+    .settingsDropDownMenu{
+        border-radius: 6px;
+        position: absolute;
+        margin-left: 44px;
+        top: 18px;
+        z-index: 998; /* brings it in front of other elements */
+    }
+
+    .showFriends{
+        position: relative;
+        left: 4px;
+        /* padding-left: 8px; */
+        width: 80px;
+    }
+
+    .showAllUsers{
+        position: relative;
+        left: 4px;
+        /* padding-left: 8px; */
+        width: 80px;
+    }
+
+    #signUp{
+        position: relative;
+        top: -40px;
+    }
+
+    #submitRegistrationFormButton{
+        position: relative;
+        left: -18px;
+        top: 10px;
+    }
+
+    .triDiv{
+        display: none;
+        height: 250px; 
+        margin-left: -80px;
+    }
+
+    #userBirthdayMonthID{
+        position: relative;
+        left: 4px;
+    }
+
+    #userCommentID{
+        width: 240px;
+        height: 20px;
+        top: 1px;
+    }
+    
+    #userDormBuildingID{
+        width: 134px;
+        height: 28px;
+    }
+    
+    #userHighSchoolID{
+        width: 134px;
+        height: 28px;
+    }
+
+    #userHomeTownID{
+        width: 134px;
+        height: 28px;
+    }
+    
+    #userLastNameID{
+        position: relative;
+        left: -16px;
+    }
+
+    #userMessageID{
+        width: 234px;
+        height: 34px;
+        font-size: small;
+        margin-left: -8px;
+        margin-top: 2px;
+    }
+
+    #userNameText{
+        position: relative;
+        margin-top: -300px;
+        right: 14px;
+    }
+
+    #userProfileHeaderCancelButton{
+        position: relative;
+        left: 4px;
+        margin-left: 10px;
+        top: -74px;
+    }
+
+    #userProfileHeaderEditLink{
+        margin-left: 170px;
+    }
+
+    #userProfileHeaderForm{
+        margin-left: 10px;
+        padding-left: 20px;
+    }
+
+    .userProfileHeaderSaveButton{
+        position: relative;
+        left: 16px;
+        top: -74px;
+    }
+
+    #userProfileHeaderText{
+        position: relative;
+        left: 18px;
+    }
+    
+    #userProfileHeaderTextArea{
+        resize: none;
+        width: 280px;
+        height: 70px;
+    }
+
+    #userRegistrationEmail{
+        position: relative;
+        left: 8px;
+    }
+
+    #userUniversityID{
+        width: 134px;
+        height: 28px;
+        margin-top: 4px;
+    }
+
+    .XForProfileIntroFormStyling{
+        position: relative;
+        left: 260px;
+        top: -40px;
+    }
+
+    #XForRegistrationForm{
+        position: relative;
+        left: 40px;
+        top: -40px;
+    }
+
+} 
+
+/*This is a media only for a (small-sized) phone*/
+@media only screen and (min-width: 320px) and (max-width: 374px){
+    .allUsersDiv{
+        width: 262px;
+        height: 220px;
+        position: relative;
+        left: -100px;
+    }
+
+    #birthdayDayOnRegistrationForm{
+        position: relative;
+        left: -4px;
+        top: 8px;
+    }
+
+    #birthdayYearOnRegistrationForm{
+        position: relative;
+        left: 4px;
+        top: 16px;
+    }
+
+    #button{ /* The button holding the save symbol for the profile pic container */
+        top: -290px;
+        /* margin-left: 218px; */
+    }
+
+    .clearImage{ /*For when the image is in the database */
+        font-weight: bolder; 
+        color: black;
+        top: -280px;
+        left: 220px;
+        font-size: small;
+        position: absolute;
+        transform: translateX(44%);   
+    }
+    
+    #clearImage{ /*For when the image is only a preview */
+        font-weight: bolder; 
+        color: black;
+        top: -280px;
+        left: 220px;
+        font-size: small;
+        position: absolute;
+        transform: translateX(44%);   
+    }
+
+    .commentIconProfPic{
+        width: 24px;
+        height: 24px;
+        border-radius: 60%;
+        margin-top: 6px;
+    }
+    
+    .commentSection{
+        width: 90%;
+        margin-left: -8px;
+    }
+
+    #confirmPassword{
+        position: relative;
+        left: 4px;
+    }
+
+    .customizeIntroText{
+        position: relative;
+        top: -40px;
+        left: 22px;
+    }
+
+    .decorativeLine{
+        display: none;
+    }
+
+    .decorativeLineOnRegistrationForm{
+        display: none;
+    }
+
+    .deleteCommentBinButton{
+        margin-top: -90px;
+        margin-left: 180px;
+    }
+
+    .deletePostBinButton{
+        margin-top: -88px;
+        margin-left: 250px;
+    }
+
+    .editDetailsButtonStyling{
+        margin-left: 18px;
+    }
+
+    .editIntroText{
+        margin-left: 28px;
+        padding-bottom: 4px;
+    }
+
+    .emptySpace{  /* <td>s that create space for a bigger sized screen but not needed on the phone size */
+        display: none;
+    }
+
+    .friendsDiv{
+        width: 262px;
+        height: 220px;
+        position: relative;
+        left: -100px;
+    }
+
+    .hideDetailsCheckBox{
+        margin-left: 26px;    
+    }
+
+    #initialPassword{
+        position: relative;
+        left: 6px;
+    }
+
+    .introDiv{
+        width: 300px;
+        background-color: white;
+        border-radius: 6px;
+        position: relative;
+        left: -122px;
+    }
+
+    .likeUnlikeCommentButtonStyling{
+        font-size: 14px;
+        margin-left: -62px;
+        padding-left: 32px;
+        padding-right: 32px;
+    }
+
+    .listOfPostedMessages{
+        margin-left: -154px;
+        width: 360px;
+    }
+
+    #logoIcon{
+        margin-top: 30px;
+    }
+
+    #loginForm{
+        position: relative;
+        top: -36px;
+    }
+
+    .messengerNavIcon{
+        top: -49px;
+        left: 10px;
+        position: relative;
+    }
+
+    .moreText{
+        display: none;
+    }
+
+    #navIconProfPic{
+        margin-left: -130px;
+        top: 4px;
+        bottom: 10px;
+        margin-top: 4px;
+    }
+
+    .navName{
+        top: -20px;
+        left: -100px;
+        position: relative;
+    }
+
+    .notificationsDropDownMenu{
+        border-radius: 6px;
+        position: absolute;
+        margin-left: -30px;
+        top: 18px;
+        z-index: 998; /* brings it in front of other elements */
+    }
+
+    .postACommentButton{
+        width: 24px;
+        height: 21px;
+        position: relative;
+        top: -2px;
+        left: -8px;
+    }
+
+    .sendIcon{
+        position: relative;
+        left: -4px;
+        top: -6px;
+    }
+
+    #postAMessageButton{
+        width: 48px;
+        height: 24px;
+        text-indent: -8px;
+        padding-top: 0px;
+        margin-top: -2px;
+        margin-left: 220px;
+    }
+
+    #profileIntroForm{
+        width: 280px;
+        height: 440px;
+        margin-left: -40px;
+    }
+
+    #profileIntroFormDiv{ /*The div that contains the update intro form*/
+        margin-left: 6%;
+        top: 8px; /*The lower the number, the higher it rises */
+        width: 280px;
+        height: 490px;
+    }
+
+    #profilePicContainer{
+        margin-left: 70px;
+        margin-top: -430px;
+    }
+
+    #regForm{ /*The actual form*/
+        overflow: scroll;
+        position: relative;
+        top: 20px;
+        left: -90px;
+        height: 480px;
+        width: 300px;
+        background-color: white;
+        padding-right: 10px;
+        border: 4px solid #f1f1f1;
+    }
+
+    .saveCancelButtons{
+        position: relative;
+        top: 72px;
+    }
+
+    .searchInput{
+        margin-left: -90px;
+        width: 140px;
+        height: 24px;
+        margin-top: 18px;
+        font-size: 12px;
+    }
+
+    .settingsDropDownMenu{
+        border-radius: 6px;
+        position: absolute;
+        margin-left: 44px;
+        top: 18px;
+        z-index: 998; /* brings it in front of other elements */
+    }
+
+    .showFriends{
+        position: relative;
+        left: -30px;
+        width: 80px;
+    }
+
+    .showAllUsers{
+        position: relative;
+        left: -48px;
+    }
+
+    #signUp{
+        position: relative;
+        top: -40px;
+    }
+
+    #submitProfileIntroButton{
+        width: 260px;
+        left: 6px;
+    }
+
+    #submitRegistrationFormButton{
+        position: relative;
+        left: -18px;
+        top: 10px;
+    }
+
+    .triDiv{
+        display: none;
+        height: 250px; 
+    }
+
+    #userCommentID{
+        width: 196px;
+        height: 20px;
+        top: 1px;
+    }
+    
+    #userDormBuildingID{
+        width: 128px;
+        height: 28px;
+        left: -2px;
+    }
+    
+    #userHighSchoolID{
+        width: 128px;
+        height: 28px;
+        left: -2px;
+    }
+
+    #userHomeTownID{
+        width: 128px;
+        height: 28px;
+        left: 4px;
+    }
+
+    #userLastNameID{
+        position: relative;
+        left: -16px;
+    }
+
+    #userMessageID{
+        width: 234px;
+        height: 34px;
+        font-size: small;
+        margin-left: -8px;
+        margin-top: 2px;
+    }
+
+    #userBirthdayMonthID{
+        position: relative;
+        left: 4px;
+    }
+
+    #userNameText{
+        position: relative;
+        margin-top: -300px;
+        right: 16px;
+    }
+
+    #userProfileHeaderCancelButton{
+        position: relative;
+        left: -18px;
+        margin-left: 10px;
+        top: -109px;
+    }
+
+    #userProfileHeaderEditLink{
+        margin-left: 140px;
+    }
+
+    #userProfileHeaderForm{
+        margin-left: 10px;
+        padding-left: 20px;
+    }
+
+    .userProfileHeaderSaveButton{
+        position: relative;
+        left: -64px;
+        top: -74px;
+    }
+
+    #userProfileHeaderText{
+        position: relative;
+        left: -12px;
+    }
+    
+    #userProfileHeaderTextArea{
+        resize: none;
+        width: 200px;
+        height: 40px;
+    }
+
+    #userRegistrationEmail{
+        position: relative;
+        left: 8px;
+    }
+
+    #userUniversityID{
+        width: 128px;
+        height: 28px;
+        left: -2px;
+        top: -2px;
+    }
+
+    .XForProfileIntroFormStyling{
+        position: relative;
+        left: 230px;
+        top: -48px;
+    }
+
+    #XForRegistrationForm{
+        position: relative;
+        left: 40px;
+        top: -40px;
+    }
+
+} 
