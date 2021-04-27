@@ -19,77 +19,139 @@
         $(document).ready(function() {
 
         //The below code is the list of variables involved in the scripted code.
-
             var $crf_token = $('[name="csrfmiddlewaretoken"]').attr('value'); //this defines the token form the form so it can be used in the jquery/ajax code below
-            var profilePicForm = document.querySelector('#profilePicForm'); //The id for the profile photo form
-            var profilePicInputID = document.querySelector('#profilePicInputID'); //The id for the field/input of the profile photo that is within the form
-            var profilePicContainer = document.querySelector('#profilePicContainer'); //The id for the label within the form that is posing as a container for the input field 
-            var navIconProfPic = document.querySelector('#navIconProfPic'); //The id that contains the css style for the thumbnail in the nav bar
-            var navIconProfilePicContainer = document.querySelector('#linkForNavIconProfPic'); //The id for the label within the form that is posing as a container for the input field 
-            var thumbnail = $('#thumbnail').attr('src'); //The id for the img src that will display the uploaded profile photo by the user
-            var userProfileHeaderEditLink = document.querySelector('#userProfileHeaderEditLink'); //The id for the link that displays and hides the user profile info form
-            var userProfileHeaderCancelButton= document.querySelector('#userProfileHeaderCancelButton'); //The id for the link that displays and hides the user profile info form
-            var XForProfilePicForm = document.querySelector('#clearImage'); //The id for the X that clears the preview of the selected image
+        //The above code is the list of variables involved in the scripted code.
 
-        //The above code is the list of variables involved in the scripted code. 
-
-        //The below code are function calls that run as soon as the window is loaded.
-
-            showThumbnail(); // a function that determines whether or not a photo has been uploaded by a user and then acts accordingly
-
-        //The above code are function calls that run as soon as the window is loaded.
-
-        //The below code enables the user to drag an image to be uploaded
-
-            function showThumbnail(e) {
-                $('#navIconProfPic').hide()
-                console.log("Show Thumbnail function")
-                console.log("This is the thumbnail uploaded:",thumbnail)
-                console.log("Length", thumbnail.length)
-                if (thumbnail.length > 0) {
-                    console.log("There is an image")
-                    $('#profilePicContainer').css("border", "3px solid white") //This changes the border of the thumbnail when a photo is successfully uploaded
-                    // $('#linkForNavIconProfPic').show() //Shows a smaller version of the submitted profile pic in the navigation bar
-                    console.log("End of if statement")
-                }
-                else{
-                // if (thumbnail.length < 0){
-                    console.log("There is not an image.")
-                    // $('#linkForNavIconProfPic').hide() //This hides the default thumbnail in the navigation bar if there is no photo currently
-                    // $('#navIconProfPic').hide() //This hides the default thumbnail in the navigation bar if there is no photo currently
-                    console.log("End of if statement")
-                }
-            };
-
-        //The above code checks if there is an image or not, and changes the border of the profile pic container accordingly.
-
-        //The below code shows and hides the user profile info form depending on the amount of times the user clicks the edit link.
-        
-            userProfileHeaderEditLink.onclick = showUserProfileHeaderForm;
-                function showUserProfileHeaderForm(e) {
-                    console.log("This console log means the edit button was clicked. ")
-                    $('#userProfileHeaderText').hide() //hides the info that is currently being displayed so the edit form can fit properly in its designated area
-                    $('#userProfileHeaderEditLink').hide() //hides the edit link that the user clicked on to show the edit form
-                    if(e) {
-                        e.preventDefault(); //prevents the form from hiding right after it begins to show after the link is clicked
-                    $('#userProfileHeaderForm').show()
+        //The below code is the function for seeing and hiding notifications via jquery/ajax
+            $('#notifications').click(function(e) {
+                console.log("This means the notification button was clicked.")
+                $('#notificationCounter').hide()
+                $( ".newPostNotification" ).hover(
+                    function() {
+                        console.log("The mouse is hovering over the new post notification.")
+                        messageId = $(this).data("index")
+                        console.log("This is the id of the message:", messageId)
+                        var data = { //This is to know what page the logged in user is currently browsing
+                            "userWhoReceivesPost": $('#userWhoReceivesPostID').val()
+                        };
+                        $(this).unbind('mouseenter mouseleave') //This makes sure the decrement of notifications only occurs once when hovered
+                        $.ajax({
+                            type: "POST",
+                            url: 'removeMessageNotification' + '/' + messageId,
+                            headers:{"X-CSRFToken": $crf_token}, //this relates to the CSRF token needed to send data to the backend
+                            data: data,
+                            success: function(data) {
+                                console.log("This console log means the notification was successfully hovered over and the count can decrease to one")
+                                allRedButtons = document.getElementsByClassName('hoverNotif')
+                                for (i=0;i<allRedButtons.length;i++) {
+                                    specificRedButton = $(allRedButtons[i])
+                                    console.log("This is the corresponding user id as the data value in the red button:",specificRedButton.data("index")) 
+                                    if(specificRedButton.data("index") == messageId) {
+                                        console.log("This console log confirms they match, so the red button can be removed")
+                                        specificRedButton.remove()
+                                    }
+                                }
+                            },
+                            error: function(data){
+                                console.log("If this console log is displaying it means there were errors in decreasing the notification count.")                       
+                            },
+                        })
                     }
-                }
-            userProfileHeaderCancelButton.onclick = hideUserProfileHeaderForm;
-                function hideUserProfileHeaderForm(e) {
-                    if(e) {
-                        e.preventDefault(); //prevents the form from only temporarily hiding
-                    $('#userProfileHeaderForm').hide() //hides the form until the user clicks the edit form
-                    $('#userProfileHeaderEditLink').show() //shows the edit link button
-                    $('#userProfileHeaderText').show() //shows the current info the user has entered
+                );
+            });
 
+            $('#notifications').click(function(e) {
+                $('#notificationCounter').hide()
+                $( ".friendRequestNotification " ).hover(
+                    function() {
+                        console.log("The mouse is hovering over the new friend request notification.")
+                        userId = $(this).data("index")
+                        console.log("This is the id of the user:", userId)
+                        var data = { //This is to know what page the logged in user is currently browsing
+                            "userWhoReceivesPost": $('#userWhoReceivesPostID').val(),
+                        };
+                        $(this).unbind('mouseenter mouseleave') //This makes sure the decrement of notifications only occurs once when hovered
+                        $.ajax({
+                            type: "POST",
+                            url: 'removeFriendRequestNotification' + '/' + userId,
+                            headers:{"X-CSRFToken": $crf_token}, //this relates to the CSRF token needed to send data to the backend
+                            data: data,
+                            success: function(data) {
+                                console.log("This console log means the notification was successfully hovered over and the count can decrease to one")
+                                allRedButtons = document.getElementsByClassName('hoverNotif')
+                                for (i=0;i<allRedButtons.length;i++) {
+                                    specificRedButton = $(allRedButtons[i])
+                                    console.log("This is the corresponding user id as the data value in the red button:",specificRedButton.data("index")) 
+                                    if(specificRedButton.data("index") == userId) {
+                                        console.log("This console log confirms they match, so the red button can be removed")
+                                        specificRedButton.remove()
+                                    }
+
+                                }
+                            },
+                            error: function(data){
+                                console.log("If this console log is displaying it means there were errors in decreasing the notification count.")                       
+                            },
+                        })
                     }
-                }
+                );
+            })
 
-        //The above code shows and hides the user profile info form depending on if the user clicks the edit link or not
+            $('#notifications').click(function(e) {
+                $('#notificationCounter').hide()
+                $( ".newCommentNotification" ).hover(
+                    function() {
+                        console.log("The mouse is hovering over the new comment notification.")
+                        commentId = $(this).data("index")
+                        console.log("This is the id of the comment:", commentId)
+                        var data = { //This is to know what page the logged in user is currently browsing
+                            "userWhoReceivesPost": $('#userWhoReceivesPostID').val()
+                        };
+                        $(this).unbind('mouseenter mouseleave') //This makes sure the decrement of notifications only occurs once when hovered
+                        $.ajax({
+                            type: "POST",
+                            url: 'removeCommentNotification' + '/' + commentId,
+                            headers:{"X-CSRFToken": $crf_token}, //this relates to the CSRF token needed to send data to the backend
+                            data: data,
+                            success: function(data) {
+                                console.log("This console log means the notification was successfully hovered over and the count can decrease to one")
+                                allRedButtons = document.getElementsByClassName('hoverNotif')
+                                for (i=0;i<allRedButtons.length;i++) {
+                                    specificRedButton = $(allRedButtons[i])
+                                    console.log("This is the corresponding user id as the data value in the red button:",specificRedButton.data("index")) 
+                                    if(specificRedButton.data("index") == commentId) {
+                                        console.log("This console log confirms they match, so the red button can be removed")
+                                        specificRedButton.remove()
+                                    }
+                                }
+                            },
+                            error: function(data){
+                                console.log("If this console log is displaying it means there were errors in decreasing the notification count.")                       
+                            },
+                        })
+                    }
+                );
+            })
+
+            $('#clearNotifications').click(function(e){
+                e.preventDefault();
+                console.log("This console log means the user attempted to clear all of their current notifications")
+                $.ajax({
+                    type: "GET",
+                    url: 'clearAllNotifications',
+                    success: function(data) {
+                        console.log("This console log means all the notifications were successfully removed")
+                        location.reload();
+                    },
+                    error: function(data){
+                        console.log("If this console log is displaying it means there were errors in removing all the notifications.")                       
+                    },
+                })
+                
+            })
+        //The above code is the function for seeing and hiding notifications via jquery/ajax
 
         //The below code is the function for sending a friend request  via jquery/ajax
-
             allFriendRequestButtons = document.querySelectorAll(".sendFriendRequestButton");
             for (clickedButton of allFriendRequestButtons) {
                 clickedButton.addEventListener('click', function(e) {
@@ -113,11 +175,9 @@
                     })
                 });
             } 
+        //The above code is the function for sending a friend request  via jquery/ajax
 
-        //The below code is the function for sending a friend request  via jquery/ajax
-
-        //The above code is the function for removing a friend request  via jquery/ajax
-
+        //The below code is the function for removing a friend request  via jquery/ajax
             allCancelFriendRequestButtons = document.querySelectorAll(".pendingFriendRequestButton");
             for (clickedButton of allCancelFriendRequestButtons) {
                 clickedButton.addEventListener('click', function(e) {
@@ -142,18 +202,15 @@
                     })
                 });
             }
-
         //The above code is the function for removing a friend request via jquery/ajax
 
        //The below code is the function for seeing and hiding notifications  via jquery/ajax
-
             $('#notifications').click(function(e) {
                     $('#notificationCounter').hide()
                 }); 
         //The above code is the function for seeing notifications  via jquery/ajax
 
         //The below code is the function for handling specific notifications via jquery/ajax
-
             allConfirmFriendRequestButtons = document.querySelectorAll(".confirmNotificationButton");
             for (clickedButton of allConfirmFriendRequestButtons) {
                 clickedButton.addEventListener('click', function(e) {
@@ -180,7 +237,6 @@
         //The above code is the function for handling specific notifications via jquery/ajax
 
         //The below code is the function for handling canceling a specific notification(friend request) via jquery/ajax
-
             allCancelFriendRequestButtons = document.querySelectorAll(".cancelNotificationButton");
             for (clickedButton of allCancelFriendRequestButtons) {
                 clickedButton.addEventListener('click', function(e) {
@@ -203,7 +259,6 @@
                     })
                 })
             }
-        
         //The above code is the function for handling canceling a specific notification(friend request) 
 
 
@@ -212,110 +267,209 @@
 </head>
 
 <body class="bg-light">
-    <!--The below code is for the navigation bar  -->
-    <nav class="navbar navbar-expand-lg navbar-blue bg-white" id="navBar">
-        <!-- The below code is the first third of the navigation bar containing the logo, search textarea, and search button -->
-        <a class="navbar-brand" href="/home">
-            <img id="logoIcon" src="{% static 'Images/logo.png' %}" alt="A stock image of a logo with the two letters CB to represent Collegebook." />
-        </a>
-        <form action="/search" method="GET" class="form-inline col-sm-3" id="searchBarForm" >
-            <input class="form-control rounded-pill " name="searchBarInput" type="search" placeholder="Search CollegeBook" aria-label="Search">
-            <button class="btn btn-outline-primary btn-sm ml-2" id="searchBarButton" type="submit">Search</button>
-        </form>
-        <!-- The above code is the first third of the navigation bar containing the logo, search textarea, and search button -->
-        <!-- The below code is the second third of the navigation bar containing the picture buttons to other pages -->
-        <div class="col-sm-5 ml-3" id="navIconsDiv">
-            <button class="btn btn-outline-light buttonOfNavIcons">
-                <a href="/home">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="gray" class="bi bi-house-door-fill" viewBox="0 0 16 16">
-                        <path d="M6.5 14.5v-3.505c0-.245.25-.495.5-.495h2c.25 0 .5.25.5.5v3.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5z"/>
-                    </svg>
-                </a>
-            </button>
-            <button class="btn btn-outline-light buttonOfNavIcons ml-5">
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="gray" class="bi bi-youtube" viewBox="0 0 16 16">
-                    <path d="M8.051 1.999h.089c.822.003 4.987.033 6.11.335a2.01 2.01 0 0 1 1.415 1.42c.101.38.172.883.22 1.402l.01.104.022.26.008.104c.065.914.073 1.77.074 1.957v.075c-.001.194-.01 1.108-.082 2.06l-.008.105-.009.104c-.05.572-.124 1.14-.235 1.558a2.007 2.007 0 0 1-1.415 1.42c-1.16.312-5.569.334-6.18.335h-.142c-.309 0-1.587-.006-2.927-.052l-.17-.006-.087-.004-.171-.007-.171-.007c-1.11-.049-2.167-.128-2.654-.26a2.007 2.007 0 0 1-1.415-1.419c-.111-.417-.185-.986-.235-1.558L.09 9.82l-.008-.104A31.4 31.4 0 0 1 0 7.68v-.122C.002 7.343.01 6.6.064 5.78l.007-.103.003-.052.008-.104.022-.26.01-.104c.048-.519.119-1.023.22-1.402a2.007 2.007 0 0 1 1.415-1.42c.487-.13 1.544-.21 2.654-.26l.17-.007.172-.006.086-.003.171-.007A99.788 99.788 0 0 1 7.858 2h.193zM6.4 5.209v4.818l4.157-2.408L6.4 5.209z"/>
-                </svg>
-            </button>
-            <button class="btn btn-outline-light buttonOfNavIcons ml-5">
-                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="gray" class="bi bi-bag-fill" viewBox="0 0 16 16">
-                    <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5z"/>
-                </svg>
-            </button>
-            <button class="btn btn-outline-light buttonOfNavIcons ml-5">
-                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="gray" class="bi bi-people-fill" viewBox="0 0 16 16">
-                    <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
-                    <path fill-rule="evenodd" d="M5.216 14A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216z"/>
-                    <path d="M4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/>
-                </svg>
-            </button>
-            <button class="btn btn-outline-light buttonOfNavIcons ml-5">
-                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="gray" class="bi bi-joystick" viewBox="0 0 16 16">
-                    <path d="M10 2a2 2 0 0 1-1.5 1.937v5.087c.863.083 1.5.377 1.5.726 0 .414-.895.75-2 .75s-2-.336-2-.75c0-.35.637-.643 1.5-.726V3.937A2 2 0 1 1 10 2z"/>
-                    <path d="M0 9.665v1.717a1 1 0 0 0 .553.894l6.553 3.277a2 2 0 0 0 1.788 0l6.553-3.277a1 1 0 0 0 .553-.894V9.665c0-.1-.06-.19-.152-.23L9.5 6.715v.993l5.227 2.178a.125.125 0 0 1 .001.23l-5.94 2.546a2 2 0 0 1-1.576 0l-5.94-2.546a.125.125 0 0 1 .001-.23L6.5 7.708l-.013-.988L.152 9.435a.25.25 0 0 0-.152.23z"/>
-                </svg>
-            </button>
-        </div>
-        <!-- The above code is the second third of the navigation bar containing the picture buttons to other pages -->
-        <!-- The below code is the last third of the navigation bar containing the links -->
-        <div class="col-sm-3 mb-2 ml-5 mt-2">
-            <ul class="navbar-nav mr-auto ml-4">
+<!--The below code is for the navigation bar  -->
+    <nav class="navbar navbar-expand-lg bg-white navBarStyle">
+        <a href="/wall">
+            <img class="navbar-brand mr-0" id="logoIcon" src="{% static 'Images/logo.png' %}" alt="A stock image of a logo with the two letters CB to represent Collegebook." />
+        </a>    <!--The below button shows when the window size changes/collapses  -->
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon searchForm">            
+                <form action="/search" method="GET" class="form-inline mr-5 ">
+                <input class="form-control mr-sm-1 rounded-pill searchInput" type="search" placeholder="Search CollegeBook" name="searchBarInput"  aria-label="Search">
+                <!-- <button class="btn btn-outline-primary btn-sm" type="submit">Search</button> -->
+                </form>
+            </span> 
+        </button>
+    <!--The above button shows when the window size changes/collapses  -->
+        <div class="collapse navbar-collapse" id="">
+            <form action="/search" method="GET" class="form-inline mr-5 ">
+                <input class="form-control mr-sm-1 rounded-pill" type="search" placeholder="Search CollegeBook" name="searchBarInput"  aria-label="Search">
+                <!-- <button class="btn btn-outline-primary btn-sm" type="submit">Search</button> --> 
+            </form> 
+            <ul class="navbar-nav mr-auto navBarSecondSection">
                 <li class="nav-item active">
-                    <a id="linkForNavIconProfPic" href="/home" class="d-inline ">
-                        <!-- This if statement only displays the image src when an image is uploaded -->
-                        {% if not loggedInUser.profilePic == "" %} 
-                        <img src='{{ loggedInUser.profilePic }}' id="navIconProfPic" class="d-inline"> 
-                        {% endif %}
-                    </a>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/home">{{loggedInUser.firstName}}</a>
-                    </li>
-                    <li class="nav-item dropdown"> <!-- This is the notification bell symbol -->
-                        <a class="nav-link" href="" data-toggle="dropdown" id="notifications">
-                            {% if loggedInUser.notifications %}
-                            <button type="button" class="btn btn-sm btn-danger notificationNumber" id="notificationCounter">{{loggedInUser.notifications}}</button>
-                            {% endif %}
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-bell-fill mb-1 notificationBellSymbol" viewBox="0 0 16 16">
-                                <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zm.995-14.901a1 1 0 1 0-1.99 0A5.002 5.002 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901z"/>
+                    <button class="btn btn-outline-light buttonOfNavIcons mr-5">
+                        <a href="/home">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="gray" class="bi bi-house-door-fill" viewBox="0 0 16 16">
+                                <path d="M6.5 14.5v-3.505c0-.245.25-.495.5-.495h2c.25 0 .5.25.5.5v3.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5z"/>
                             </svg>
                         </a>
-                        <div class="dropdown-menu notificationMenu">
-                            {% if loggedInUser.notifications == 0 %}
-                            <p class="ml-4"> No new notifications.</p>
-                            {% endif %}
-                            {% for friendRequest in loggedInUser.friends.all %}
-                            {% if not loggedInUser in friendRequest.friends.all %} <!-- This code would remove the sent friend request signifying the logged in user did not accept the friend request -->
-                            <div class="dropdown-item" value="{{friendRequest.id}}">
-                                <div class="specificNotification">
-                                    <a href="/{{friendRequest.firstName}}/{{friendRequest.lastName}}/{{friendRequest.id}}" class="d-inline-block">
-                                        <img src='{{ friendRequest.profilePic }}' id="navIconProfPic" class="d-inline-block"> <p class="d-inline-block nameInNotification mb-0 mt-2">{{friendRequest.firstName}} {{friendRequest.lastName}}</p>
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="btn btn-outline-light buttonOfNavIcons mr-5">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="gray" class="bi bi-youtube" viewBox="0 0 16 16">
+                            <path d="M8.051 1.999h.089c.822.003 4.987.033 6.11.335a2.01 2.01 0 0 1 1.415 1.42c.101.38.172.883.22 1.402l.01.104.022.26.008.104c.065.914.073 1.77.074 1.957v.075c-.001.194-.01 1.108-.082 2.06l-.008.105-.009.104c-.05.572-.124 1.14-.235 1.558a2.007 2.007 0 0 1-1.415 1.42c-1.16.312-5.569.334-6.18.335h-.142c-.309 0-1.587-.006-2.927-.052l-.17-.006-.087-.004-.171-.007-.171-.007c-1.11-.049-2.167-.128-2.654-.26a2.007 2.007 0 0 1-1.415-1.419c-.111-.417-.185-.986-.235-1.558L.09 9.82l-.008-.104A31.4 31.4 0 0 1 0 7.68v-.122C.002 7.343.01 6.6.064 5.78l.007-.103.003-.052.008-.104.022-.26.01-.104c.048-.519.119-1.023.22-1.402a2.007 2.007 0 0 1 1.415-1.42c.487-.13 1.544-.21 2.654-.26l.17-.007.172-.006.086-.003.171-.007A99.788 99.788 0 0 1 7.858 2h.193zM6.4 5.209v4.818l4.157-2.408L6.4 5.209z"/>
+                        </svg>
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="btn btn-outline-light buttonOfNavIcons mr-5">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="gray" class="bi bi-bag-fill" viewBox="0 0 16 16">
+                            <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5z"/>
+                        </svg>
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="btn btn-outline-light buttonOfNavIcons mr-5">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="gray" class="bi bi-people-fill" viewBox="0 0 16 16">
+                            <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                            <path fill-rule="evenodd" d="M5.216 14A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216z"/>
+                            <path d="M4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/>
+                        </svg>
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="btn btn-outline-light buttonOfNavIcons mr-5">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="gray" class="bi bi-joystick" viewBox="0 0 16 16">
+                            <path d="M10 2a2 2 0 0 1-1.5 1.937v5.087c.863.083 1.5.377 1.5.726 0 .414-.895.75-2 .75s-2-.336-2-.75c0-.35.637-.643 1.5-.726V3.937A2 2 0 1 1 10 2z"/>
+                            <path d="M0 9.665v1.717a1 1 0 0 0 .553.894l6.553 3.277a2 2 0 0 0 1.788 0l6.553-3.277a1 1 0 0 0 .553-.894V9.665c0-.1-.06-.19-.152-.23L9.5 6.715v.993l5.227 2.178a.125.125 0 0 1 .001.23l-5.94 2.546a2 2 0 0 1-1.576 0l-5.94-2.546a.125.125 0 0 1 .001-.23L6.5 7.708l-.013-.988L.152 9.435a.25.25 0 0 0-.152.23z"/>
+                        </svg>
+                    </button>
+                </li>
+            </ul>
+        </div>
+        <div class="row navBarThirdSection">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a id="linkForNavIconProfPic" href="/home" class="d-inline ">
+                    <!-- This if statement only displays the image src when an image is uploaded -->
+                    {% if loggedInUser.profilePic == "" %} 
+                        <img src="{% static 'Images/blankAvatar.png' %}" id="navIconProfPic" class="d-inline-block" alt="A thumbnail photo of the user"><p class="d-inline-block nameInNotification mb-0 mt-1">{{notif.friendRequest.firstName}} {{notif.friendRequest.lastName}}</p> 
+                    {% else %}
+                        <img src='{{ loggedInUser.profilePic }}' id="navIconProfPic" class="d-inline notifIconProfPic"> 
+                    {% endif %}
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="mr-3 pl-1 navName" href="/home">{{loggedInUser.firstName}}</a>
+                </li>
+                <li class="nav-item dropdown notificationsDropDownMenu">
+                    <a class="" href="#" id="notifications" role="button" data-toggle="dropdown">
+                    {% if loggedInUser.notifications > 0 %}
+                        <button type="button" class="btn btn-sm btn-danger notificationNumber" id="notificationCounter">{{loggedInUser.notifications}}</button>
+                    {% endif %}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-bell-fill mb-1 notificationBellSymbol" viewBox="0 0 16 16">
+                            <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zm.995-14.901a1 1 0 1 0-1.99 0A5.002 5.002 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901z"/>
+                        </svg>
+                    </a>
+                    <div class="dropdown-menu notificationsDropDownMenuDiv">
+                        <div class="ml-5 pl-5">
+                        {% if notifications != "" %}
+                            <a href="" class="ml-5 pl-5" id="clearNotifications">Clear</a>
+                        {% endif %}
+                        </div>
+        {% for notif in notifications %} <!-- This loops through all the notifications -->
+            {% if notif.user == loggedInUser %} <!-- This provides the notifications only for the logged in user-->
+                {% if notif.friendRequest%}
+                    {% if not loggedInUser in loggedInUser.friends.all %} <!-- This code would remove the sent friend request signifying the logged in user did not accept the friend request -->
+                        {% if notif.friendRequest.profilePic == "" %}
+                            <div class="dropdown-item pb-0 pt-0">
+                                <div class="specificNotification friendRequestNotification" data-index="{{notif.friendRequest.id}}">
+                                    <a href="/{{notif.friendRequest.firstName}}/{{notif.friendRequest.lastName}}/{{notif.friendRequest.id}}" class="d-inline-block">
+                                        <img src="{% static 'Images/blankAvatar.png' %}" id="notifIconProfPic" class="d-inline-block" alt="A thumbnail photo of the user"><p class="d-inline-block nameInNotification mb-0 mt-1">{{notif.friendRequest.firstName}} {{notif.friendRequest.lastName}}</p> 
                                     </a>
-                                    <p class="d-inline-block  mb-0 pt-0"> sent you a friend request.</p>
-                                    <div class="btn-group mt-0">
-                                        <button type="button" class="btn btn-sm btn-primary confirmCancelNotificationButton confirmNotificationButton mr-2" value="{{friendRequest.id}}">Confirm</button>
-                                        <button type="button" class="btn btn-sm btn-secondary confirmCancelNotificationButton cancelNotificationButton" value="{{friendRequest.id}}">Cancel</button>
+                                    <p class="d-inline-block mb-0 pt-0"> sent you a friend request.</p>
+                                    <div class="btn-group mt-0 friendRequestButtonDiv">
+                                        <button type="button" class="btn btn-sm btn-primary confirmCancelNotificationButton confirmNotificationButton mr-2" value="{{notif.friendRequest.id}}">Confirm</button>
+                                        {% if notif.hover == 0 %}
+                                        <button type="button" class="btn btn-sm btn-secondary confirmCancelNotificationButton cancelNotificationButton" value="{{notif.friendRequest.id}}">Cancel</button> <div class="specificRedButtonDiv"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-circle-fill hoverNotif ml-2 mb-5" data-index="{{notif.friendRequest.id}}" viewBox="0 0 16 16"><circle cx="6" cy="6" r="6"/></svg></div>
+                                    {% else %}
+                                        <button type="button" class="btn btn-sm btn-secondary confirmCancelNotificationButton cancelNotificationButton" value="{{notif.friendRequest.id}}">Cancel</button> 
+                                    {% endif %}                                    
                                     </div>
                                 </div>
                             </div>
-                            {% endif %}
-                            {% endfor %}
-                        </div>
-                    </li>
-                    <li class="nav-item"> <!-- This is the messenger symbol -->
-                        <a class="nav-link" href="/home">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-chat-left-dots-fill" viewBox="0 0 16 16">
-                                <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4.414a1 1 0 0 0-.707.293L.854 15.146A.5.5 0 0 1 0 14.793V2zm5 4a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
-                            </svg>
-                        </a>
-                    </li>
+                        {% else %}
+                            <div class="dropdown-item pb-0 pt-0">
+                                <div class="specificNotification friendRequestNotification pb-0 pt-0" data-index="{{notif.friendRequest.id}}">
+                                    <a href="/{{notif.friendRequest.firstName}}/{{notif.friendRequest.lastName}}/{{notif.friendRequest.id}}" class="d-inline-block">
+                                        <img src='{{notif.friendRequest.profilePic }}' id="notifIconProfPic" class="d-inline-block mt-1"><p class="d-inline-block nameInNotification mb-0 mt-1">{{notif.friendRequest.firstName}} {{notif.friendRequest.lastName}}</p>
+                                    </a>
+                                    <p class="d-inline-block mb-0 pt-0"> sent you a friend request.</p>
+                                    <div class="btn-group mt-0 friendRequestButtonDiv">
+                                        <button type="button" class="btn btn-sm btn-primary confirmCancelNotificationButton confirmNotificationButton mr-2" value="{{notif.friendRequest.id}}">Confirm</button>
+                                    {% if notif.hover == 0 %} <!-- 0 signifying False, meaning the user has not hovered over the notification  -->
+                                        <button type="button" class="btn btn-sm btn-secondary confirmCancelNotificationButton cancelNotificationButton" value="{{notif.friendRequest.id}}">Cancel</button> <div class="specificRedButtonDiv"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-circle-fill hoverNotif ml-2 mb-5" data-index="{{notif.friendRequest.id}}" viewBox="0 0 16 16"><circle cx="6" cy="6" r="6"/></svg></div>
+                                    {% else %}
+                                        <button type="button" class="btn btn-sm btn-secondary confirmCancelNotificationButton cancelNotificationButton" value="{{notif.friendRequest.id}}">Cancel</button> 
+                                    {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+                {% if notif.message %} <!-- prevents the notification appearing when it is null -->
+                    {% if loggedInUser != notif.message.user %} <!-- This excludes notifications every time the logged in user posts on something  -->
+                        {% if notif.message.user.profilePic == ""%}
+                            <div class="dropdown-item pt-0">
+                                <div class="specificNotification newPostNotification pt-3" data-index="{{notif.message.id}}"> 
+                                    <a href="/{{notif.message.user.firstName}}/{{notif.message.user.lastName}}/{{notif.message.user.id}}" class="d-inline-block mb-0">
+                                        <img src="{% static 'Images/blankAvatar.png' %}" id="notifIconProfPic" class="d-inline-block" alt="A thumbnail photo of the user"><p class="d-inline-block nameInNotification mb-0 mt-1">{{notif.message.user.firstName}} {{notif.message.user.lastName}}</p>
+                                    </a>
+                                    <p class="d-inline-block mb-0 pb-0 pt-0"> wrote on your <a href="/home">wall.</a></p>{% if notif.hover == 0 %} <!-- 0 signifying False, meaning the user has not hovered over the notification  --><div class="specificRedButtonDiv d-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-circle-fill hoverNotif" data-index="{{notif.message.id}}" viewBox="0 0 16 16"><circle cx="6" cy="6" r="6"/></svg></div>{% endif %}    
+                                    <div class="btn-group mt-0 hideButtons">
+                                        <button type="button" class="btn btn-sm btn-primary confirmCancelNotificationButton confirmNotificationButton mr-2" value="{{notif.message.user.id}}}">View</button>
+                                        <button type="button" class="btn btn-sm btn-secondary confirmCancelNotificationButton cancelNotificationButton" value="{{notif.message.user.id}}}">Remove</button>
+                                    </div> 
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="dropdown-item">
+                                <div class="specificNotification newPostNotification pb-0 pt-0" data-index="{{notif.message.id}}">
+                                    <a href="/{{notif.message.user.firstName}}/{{notif.message.user.lastName}}/{{notif.message.user.id}}" class="d-inline-block mb-0">
+                                        <img src='{{ notif.message.user.profilePic }}' id="notifIconProfPic" class="d-inline-block mt-1"> <p class="d-inline-block nameInNotification mb-0 mt-1">{{notif.message.user.firstName}} {{notif.message.user.lastName}}</p>
+                                    </a>
+                                    <p class="d-inline-block mb-0 pb-0 pt-0"> wrote on your <a href="/home">wall.</a></p> {% if notif.hover == 0 %} <!-- 0 signifying False, meaning the user has not hovered over the notification  --><div class="specificRedButtonDiv d-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-circle-fill hoverNotif" data-index="{{notif.message.id}}" viewBox="0 0 16 16"><circle cx="6" cy="6" r="6"/></svg></div>{% endif %}                                    
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+                {% if notif.comment %}
+                    {% if loggedInUser != notif.comment.user %} <!-- This excludes  notifications every time the logged in user comments on something  -->
+                        {% if notif.comment.user.profilePic == ""%}
+                            <div class="dropdown-item">
+                                <div class="specificNotification newCommentNotification pt-3" data-index="{{notif.comment.id}}">
+                                    <a href="/{{notif.comment.user.firstName}}/{{notif.comment.user.lastName}}/{{notif.comment.user.id}}" class="d-inline-block mb-0">
+                                        <img src="{% static 'Images/blankAvatar.png' %}" id="notifIconProfPic" class="d-inline-block" alt="A thumbnail photo of the user"><p class="d-inline-block nameInNotification mb-0 mt-1">{{notif.comment.user.firstName}} {{notif.comment.user.lastName}} <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-circle-fill" viewBox="0 0 16 16"><circle cx="6" cy="6" r="6"/></svg></p>
+                                    </a>
+                                    <p class="d-inline-block mb-0 pb-0 pt-0"> commented on a <a href="/home">post.</a></p>{% if notif.hover == 0 %} <!-- 0 signifying False, meaning the user has not hovered over the notification  --><div class="specificRedButtonDiv d-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-circle-fill hoverNotif" data-index="{{notif.comment.id}}" viewBox="0 0 16 16"><circle cx="6" cy="6" r="6"/></svg></div>{% endif %} 
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="dropdown-item">
+                                <div class="specificNotification newCommentNotification pt-2" data-index="{{notif.comment.id}}">
+                                    <a href="/{{notif.comment.user.firstName}}/{{notif.comment.user.lastName}}/{{notif.comment.user.id}}" class="d-inline-block mb-0">
+                                        <img src='{{ notif.comment.user.profilePic }}' id="notifIconProfPic" class="d-inline-block mt-1"> <p class="d-inline-block nameInNotification mb-0 mt-1">{{notif.comment.user.firstName}} {{notif.comment.user.lastName}}</p>
+                                    </a>
+                                    <p class="d-inline-block mb-0 pb-0 pt-0"> commented on a <a href="/home">post.</a></p>{% if notif.hover == 0 %} <!-- 0 signifying False, meaning the user has not hovered over the notification  --><div class="specificRedButtonDiv d-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-circle-fill hoverNotif" data-index="{{notif.comment.id}}" viewBox="0 0 16 16"><circle cx="6" cy="6" r="6"/></svg></div>{% endif %} 
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+            {% endif %} <!-- The end if statement for only showing the logged in user's notifications -->
+        {% endfor %}
+                    </div>
                 </li>
-                <li class="nav-item dropdown"> <!-- This is the settings symbol -->
-                    <a class="nav-link" href="/home" role="button" data-toggle="dropdown">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-gear-fill mb-1" viewBox="0 0 16 16">
+                <div class="ml-3"></div>
+                <li class="nav-item"> <!-- This is the messenger symbol -->
+                    <a class="" href="">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-chat-left-dots-fill messengerNavIcon" viewBox="0 0 16 16">
+                            <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4.414a1 1 0 0 0-.707.293L.854 15.146A.5.5 0 0 1 0 14.793V2zm5 4a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
+                        </svg>
+                    </a>
+                </li>
+                <div class="ml-3"></div>
+                <li class="nav-item dropdown settingsDropDownMenu"> <!-- This is the settings symbol -->
+                    <a class="" href="/home" role="button" data-toggle="dropdown">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-gear-fill mb-1 settingsNavIcon" viewBox="0 0 16 16">
                             <path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872l-.1-.34zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z"/>
                         </svg>
                     </a>
-                    <div class="dropdown-menu ">
+                    <div class="dropdown-menu settingsDropDownMenuDiv">
                         <a class="dropdown-item" href="/home">Settings</a>
                         <a class="dropdown-item" href="/home">Support</a>
                         <a class="dropdown-item" href="/home">Give Feedback</a>
@@ -323,24 +477,20 @@
                         <a class="dropdown-item" href="/logout">Log Out</a>
                     </div>
                 </li>
-                <li class="nav-item active">
-                    <a class="nav-link" href="/logout">Logout <span class="sr-only">(current)</span></a>
-                </li>
             </ul>
         </div>
-        <!-- The above code is the last third of the navigation bar containing the links -->
     </nav>
-    <!-- The above code is for the navigation bar -->
+<!-- The above code is for the navigation bar -->
     
     <div class="row">
         <div class="col-sm-4 bg-white pageNotFoundDiv">
             <h4 class="ml-4 mt-2">Search Results for</h4>
             <p class="ml-4 mb-0">{{searchForUser.0}} {{searchForUser.1}}</p>
-            <p class="ml-4 mb-0 decorativeLine">______________________________________________________</p>
+            <p class="ml-4 mb-0 decorativeLineOnPageNotFound">___________________________________________</p>
             <div class="row mt-5">
                 <div class="col-sm-2"></div>
                 <div class="col-sm ml-5">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" fill="#167BFF" class="bi bi-hand-thumbs-down-fill mt-3 ml-5" viewBox="0 0 16 16">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" fill="#167BFF" class="bi bi-hand-thumbs-down-fill thumbsDown mt-3 ml-5" viewBox="0 0 16 16">
                         <path d="M6.956 14.534c.065.936.952 1.659 1.908 1.42l.261-.065a1.378 1.378 0 0 0 1.012-.965c.22-.816.533-2.512.062-4.51.136.02.285.037.443.051.713.065 1.669.071 2.516-.211.518-.173.994-.68 1.2-1.272a1.896 1.896 0 0 0-.234-1.734c.058-.118.103-.242.138-.362.077-.27.113-.568.113-.856 0-.29-.036-.586-.113-.857a2.094 2.094 0 0 0-.16-.403c.169-.387.107-.82-.003-1.149a3.162 3.162 0 0 0-.488-.9c.054-.153.076-.313.076-.465a1.86 1.86 0 0 0-.253-.912C13.1.757 12.437.28 11.5.28H8c-.605 0-1.07.08-1.466.217a4.823 4.823 0 0 0-.97.485l-.048.029c-.504.308-.999.61-2.068.723C2.682 1.815 2 2.434 2 3.279v4c0 .851.685 1.433 1.357 1.616.849.232 1.574.787 2.132 1.41.56.626.914 1.28 1.039 1.638.199.575.356 1.54.428 2.591z"/>
                     </svg>
                 </div>
@@ -388,34 +538,34 @@
                                 <div>
                             </div>
                         </td>
-                        <td>
+                        <td class="emptySpace">
                             <!-- Creates space in between -->
                         </td>
-                        <td>
+                        <td class="emptySpace">
                             <!-- Creates space in between -->
                         </td>
-                        <td>
+                        <td class="emptySpace">
                             <!-- Creates space in between -->
                         </td>
-                        <td>
+                        <td class="emptySpace">
                             <!-- Creates space in between -->
                         </td>
-                        <td>
+                        <td class="emptySpace">
                             <!-- Creates space in between -->
                         </td>
-                        <td>
+                        <td class="emptySpace">
                             <!-- Creates space in between -->
                         </td>
-                        <td>
+                        <td class="emptySpace">
                             <!-- Creates space in between -->
                         </td>
-                        <td>
+                        <td class="emptySpace">
                             <!-- Creates space in between -->
                         </td>
-                        <td>
+                        <td class="emptySpace">
                             <!-- Creates space in between -->
                         </td>
-                        <td>
+                        <td class="emptySpace">
                             <!-- Creates space in between -->
                         </td>
                     {% if loggedInUser in user.friends.all and user in loggedInUser.friends.all %}

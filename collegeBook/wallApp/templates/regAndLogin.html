@@ -78,6 +78,8 @@
                     $('#initialPassword').removeClass('decoratedErrorField');  //This resets/removes the red input box around the specific error that was raised
                     $('#confirmPassword').removeClass('decoratedErrorField');  //This resets/removes the red input box around the specific error that was raised
                     $('#userBirthdayMonthID').removeClass('decoratedErrorField');  //This resets/removes the red input box around the specific error that was raised
+                    $('#userBirthdayDayID').removeClass('decoratedErrorField');  //This resets/removes the red input box around the specific error that was raised
+                    $('#userBirthdayYearID').removeClass('decoratedErrorField');  //This resets/removes the red input box around the specific error that was raised
                 }
                 var registrationData = {
                     //Note: The key name needs to match the key name in the html because it is the key name used on the server side for validations. if not  will get a multi value dict key error
@@ -87,11 +89,11 @@
                     "initialPassword": $('input[name="initialPassword"]').val(), 
                     "userConfirmPassword": $('input[name="userConfirmPassword"]').val(), 
                     //This is select rather than input 
-                    "birthdayMonth": $('select[name="userBirthdayMonth"]').val(),
+                    "birthdayMonth": $('select[name="birthdayMonth"]').val(),
                     //This is select rather than input 
-                    "birthdayDay": $('select[name="userBirthdayDay"]').val(), 
+                    "birthdayDay": $('select[name="birthdayDay"]').val(), 
                     //This is select rather than input 
-                    "birthdayYear": $('select[name="userBirthdayYear"]').val() ,
+                    "birthdayYear": $('select[name="birthdayYear"]').val() ,
                 };
                 console.log("The form data was submitted.", registrationData)
                 $.ajax({
@@ -143,10 +145,18 @@
                                 $('#initialPassword').addClass('decoratedErrorField'); 
                                 $('#confirmPassword').addClass('decoratedErrorField'); 
                             }
-                            // if(error == "birthdayMonth") { //the given name of the error in the registration validator in the models.py
-                                // console.log("This is inside the if loop for the birthdayMonth error", error) //adds a red border around the incorrectly submitted input field
-                                // $('#userBirthdayMonthID').addClass('decoratedErrorField'); 
-                            // }
+                            if(error == "birthdayMonth") { //the given name of the error in the registration validator in the models.py
+                                console.log("This is inside the if loop for the birthdayMonth error", error) //adds a red border around the incorrectly submitted input field
+                                $('#userBirthdayMonthID').addClass('decoratedErrorField'); 
+                            }
+                            if(error == "birthdayDay") { //the given name of the error in the registration validator in the models.py
+                                console.log("This is inside the if loop for the birthdayMonth error", error) //adds a red border around the incorrectly submitted input field
+                                $('#userBirthdayDayID').addClass('decoratedErrorField'); 
+                            }
+                            if(error == "birthdayYear") { //the given name of the error in the registration validator in the models.py
+                                console.log("This is inside the if loop for the birthdayMonth error", error) //adds a red border around the incorrectly submitted input field
+                                $('#userBirthdayYearID').addClass('decoratedErrorField'); 
+                            }
                             
                         }
                         console.log("Outside of the for loop of the dictionary")
@@ -166,8 +176,8 @@
 
             <!-- The below code is the first column -->
             <div class="col-sm-6">
-                <h2 class=" mt-4 ml-5">College Wall</h2>
-                <h3 class=" ml-5 mt-3 font-italic font-weight-light">Recent Logins</h3>
+                <h2 class=" mt-4 ml-5 text-primary">College Wall</h2>
+                <h4 class="ml-5 mt-3 font-italic font-weight-light">Good Vibes Only</h3>
                 <small class="text-secondary ml-5">Log In Or Create An Account.</small>
             </div>
             <!-- The above code is the first column -->
@@ -258,7 +268,7 @@
                         </div>
 
                         <div class="form-group pt-0 d-inline">
-                            <select class="form-control d-inline col-sm-4" name="userBirthdayMonth" id="userBirthdayMonthID">
+                            <select class="form-control d-inline col-sm-4" name="birthdayMonth" id="userBirthdayMonthID">
                                 <option disabled selected>Month</option>
                                 <option value="January">January</option>
                                 <option value="February">February</option>
@@ -274,7 +284,7 @@
                                 <option value="December">December</option>
                             </select>
 
-                            <select id="birthdayDayOnRegistrationForm" class="form-control d-inline col-sm-3 ml-2 mr-2" name="userBirthdayDay">
+                            <select id="userBirthdayDayID" class="form-control d-inline col-sm-3 ml-2 mr-2" name="birthdayDay">
                                 <option  disabled selected>Day</option>
                                 <option value="1">1</option>
                                 <option value="2">2</option>
@@ -309,7 +319,7 @@
                                 <option value="31">31</option>
                             </select>
 
-                            <select id="birthdayYearOnRegistrationForm" class="form-control d-inline col-sm-4" name="userBirthdayYear">
+                            <select id="userBirthdayYearID" class="form-control d-inline col-sm-4" name="birthdayYear">
                                 <option  disabled selected>Year</option>
                                 <option value="2020">2020</option>
                                 <option value="2019">2019</option>

@@ -85,24 +85,23 @@ class UserManager(models.Manager):
                 errors['password'] = "Password should be at least 8 characters."
 
         #The below line of code makes sure the birthday month is submitted. 
-        # if len(postData.get("userBirthdayMonth", [])) < 1: #Written slightly different with get because it's a select dropbuttton
-            # errors["birthdayMonth"] = "Must submit a month for the birthday field."
-        #THE ABOVE WORKS(SORT OF)
-        # if len(postData["userBirthdayMonth"]) < 1:
+        if len(postData.get("birthdayMonth", [])) < 1: #Written slightly different with get because it's a select dropbuttton
+            errors["birthdayMonth"] = "Must submit a month for the birthday field."
+
+        # if len(postData["birthdayMonth"]) < 1:
         #     errors["birthdayMonth"] = "Must submit a month for the birthday field."
         
-        # #The below line of code makes sure the birthday day is submitted. 
-        # if len(postData.get("userBirthdayDay", [])) < 1:
-        #     errors["birthdayDay"] = "Must submit a day for the birthday field."
+        #The below line of code makes sure the birthday day is submitted. 
+        if len(postData.get("birthdayDay", [])) < 1:
+            errors["birthdayDay"] = "Must submit a day for the birthday field."
 
-        # #The below line of code makes sure the birthday year is submitted. 
-        # if len(postData.get("userBirthdayYear", [])) < 1:
-        #     errors["birthdayYear"] = "Must submit a year for the birthday field."
+        #The below line of code makes sure the birthday year is submitted. 
+        if len(postData.get("birthdayYear", [])) < 1:
+            errors["birthdayYear"] = "Must submit a year for the birthday field."
 
-        # print('This is the registrationValidation from models with the errors.')
-        # print(errors)
+        print('This is the registrationValidation from models with the errors.')
+        print(errors)
 
-        #TIME TO DO PHOTO IMAGE ERRORS
         return errors
     
     def loginValidator(self, postData):
@@ -148,10 +147,11 @@ class UserManager(models.Manager):
 
         return errors
 
+#The below line of code makes sure a profile intro is submitted. 
+
     def profileIntroValidator(self, postData):
         errors = {}
         print("*"*50)
-        #The below line of code makes sure an email is submitted. 
         
         if len(postData['userUniversity']) == 0:
             errors['universityRequired'] = "Must submit a college"
@@ -167,8 +167,23 @@ class UserManager(models.Manager):
         print("*"*50)
         return errors
 
-
 #The above code is for the login registration
+
+#The below code is the validations for the search engine
+# class UserManager(models.Manager):
+#     def searchEngineValidator(self, postData):
+#         print("*"*50)
+#         errors = {}
+#         # print('This is the searchEngineValidator from models.')
+#         #The below line of code makes sure an entry is submitted. 
+#         if len(postData['searchBarInput']) == 0:
+#             errors['entryRequired'] = "Oops, you forgot to search for something!"
+#         print("*"*50)
+#         return errors
+
+#The above code is for the validations of posting a message
+
+#The above code is the valdations for the search engine
 
 #The below code is for the validations of posting a message
 

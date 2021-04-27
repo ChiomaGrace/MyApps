@@ -16,12 +16,12 @@ def regAndLoginPage(request):
 
 def processRegistration(request):
     print("THIS FUNCTION PROCESSES THE FORM FOR REGISTERING AN ACCOUNT.")
-    # print("This is the data submitted on the form via ajax/jquery.")
-    # print(request.POST.get)
-    # print("This is the data submitted on the form.")
-    # print("*"*50)
-    # print(request.POST)
-    # print("*"*50)
+    print("This is the data submitted on the form via ajax/jquery.")
+    print(request.POST.get)
+    print("This is the data submitted on the form.")
+    print("*"*50)
+    print(request.POST)
+    print("*"*50)
     registrationErrors = User.objects.registrationValidator(request.POST)
     # print("These are the errors submitted on the registration form.")
     # print(registrationErrors)
@@ -32,16 +32,17 @@ def processRegistration(request):
             request.session['rememberFirstName'] = request.POST['userFirstName']
             request.session['rememberLastName'] = request.POST['userLastName']
             request.session['rememberEmail'] = request.POST['initialEmail']
-            request.session['rememberBirthdayMonth'] = request.POST.get('userBirthdayMonth', False)
-            request.session['rememberBirthdayDay'] = request.POST.get('userBirthdayDay', False)
-            request.session['rememberBirthdayYear'] = request.POST.get('userBirthdayYear', False)
+            request.session['rememberBirthdayMonth'] = request.POST.get('birthdayMonth', False)
+            request.session['rememberBirthdayDay'] = request.POST.get('birthdayDay', False)
+            request.session['rememberBirthdayYear'] = request.POST.get('birthdayYear', False)
         return JsonResponse({"errors": registrationErrors}, status=400)
     else:
         hashedPassword = bcrypt.hashpw(request.POST['initialPassword'].encode(), bcrypt.gensalt()).decode()
-        newUser = User.objects.create(firstName = request.POST['userFirstName'].capitalize(), lastName = request.POST['userLastName'].capitalize(), birthdayMonth = request.POST.get('userBirthdayMonth'), birthdayDay = request.POST.get('userBirthdayDay'), birthdayYear = request.POST.get('userBirthdayYear'), emailAddress = request.POST['initialEmail'], password = hashedPassword, confirmPassword = hashedPassword)
+        print("This is the birthday month:", request.POST.get('birthdayMonth'))
+        newUser = User.objects.create(firstName = request.POST['userFirstName'].capitalize(), lastName = request.POST['userLastName'].capitalize(), emailAddress = request.POST['initialEmail'], birthdayMonth = request.POST.get('birthdayMonth'), birthdayDay = request.POST.get('birthdayDay'), birthdayYear = request.POST.get('birthdayYear'), password = hashedPassword, confirmPassword = hashedPassword)
         request.session['loginInfo'] = newUser.id
     print("THIS IS THE LAST PRINT STATEMENT IN THE THE PROCESS REGISTRATION ROUTE.")
-    return redirect("/home")
+    return redirect("/wall")
 
 def processLogin(request):
     print("THIS FUNCTION PROCESSES THE FORM FOR LOGGING IN.")
@@ -57,21 +58,31 @@ def processLogin(request):
         loginUser = User.objects.filter(emailAddress= request.POST['userEmail'])[0] #if no errors hit and the user did successfully register, this filters to get that correctly submitted email and password
         request.session['loginInfo'] = loginUser.id #now store that info in session into a new variable
         print("THIS IS THE LAST PRINT STATEMENT IN THE THE PROCESS LOGIN ROUTE.")
-    return redirect("/home")
+    return redirect("/wall")
 
-def success(request):
-    #if they are not logged in( if loginInfo is not in session), then direct the user back to the index page
-    if 'loginInfo' not in request.session:
-        return redirect('/')
-    userLoginInfo = User.objects.get(id=request.session['loginInfo'])
+def wall(request):
+    print("THIS FUNCTION IS THE WALL OF THE COLLEGEBOOK")
+    loggedInUser = User.objects.get(id=request.session['loginInfo'])
+    #make the loggedinuser friends with themselves so their posts display on the wall (if friends statement)
+    # loggedInUser.friends.add(loggedInUser)
+    loggedInUsersFriends = loggedInUser.friends.all()
+    # print("These are the logged in user's friends:", loggedInUsersFriends)
+    wallOfLoggedInUser = Message.objects.filter(userReceivesPost = loggedInUser).order_by('-createdAt')
+    allMessages = Message.objects.all().order_by('-createdAt')
+    # print("These are the messages on the logged in user's wall:", allMessages)
+    print("THIS IS THE LAST PRINT STATEMENT IN THE WALL FUNCTION")
     context = {
-        'loggedInUser': userLoginInfo
+        'loggedInUser': loggedInUser,
+        'allMessages': allMessages,
+        'wallOfLoggedInUser': wallOfLoggedInUser,
+        'notifications': Notification.objects.all,
+        'loggedInUsersFriends': loggedInUsersFriends,
+        'loggedInUsersNotifs': Notification.objects.filter(user=loggedInUser)
     }
-    return render(request, "loggedInUsersPage.html", context)
+    return render(request, "wall.html", context)
 
 #The above line of code is for the registration and login.
 
-# def loggedInUsersPage(request):
 def loggedInUsersPage(request, messageId=0):
 #if they are not logged in (if loginInfo is not in session), then this directs the user back to the index page
     if 'loginInfo' not in request.session:
@@ -122,20 +133,21 @@ def loggedInUsersPage(request, messageId=0):
     return render(request, "loggedInUsersPage.html", context)
 
 def processProfilePic(request):
+    print("*"*50)
     print("THIS FUNCTION PROCESSES THE FORM/UPLOADING OF A PROFILE PICTURE.")
-    # print("This is the submitted image by the user")
-    # print("*"*50)
-    # print(request.FILES)
-    submittedProfilePic = request.FILES.get('userProfilePic')
-    # print(submittedProfilePic)
-    # print("*"*50)
+    # if request.is_ajax():
+    #     if request.method == 'POST':
+    #         print("POST request occurred.")
     if request.method == 'POST' and request.FILES.get('userProfilePic'):
         userProfilePic = request.FILES['userProfilePic']
+        print("This is the submitted profile picture:", userProfilePic)
         fileSystem = FileSystemStorage()
         uploadedImage = fileSystem.save(userProfilePic.name, userProfilePic)
         uploadedImageURL = fileSystem.url(uploadedImage)
+        print("This is the uploaded image url:", uploadedImageURL)
         addProfilePic = User.objects.filter(id=request.session['loginInfo']).update(profilePic=uploadedImageURL) 
     print("THIS IS THE LAST PRINT STATEMENT IN THE PROCESS PROFILE PIC ROUTE.")
+    print("*"*50)
     return redirect("/home")
 
 def userDeletesProfilePic(request):
@@ -224,8 +236,17 @@ def processMessage(request, userFirstName, userLastName, userId):
         loggedInUser = User.objects.get(id=request.session['loginInfo'])
         # print(loggedInUser)
         recipientOfPost = request.POST['userWhoReceivesPost'] # is a number but as a string so need to convert before comparison   
-        # print(recipientOfPost)
-        # print(loggedInUser.id)
+        print("The id of the user receiving the post:", recipientOfPost)
+        recipientOfPostObject = User.objects.get(id = recipientOfPost)
+        # print("The id of the loggedInUser:", loggedInUser.id)
+        # print("These are the friends of the user receiving the posts:", recipientOfPostObject.friends.all())
+        # print("These are the logged in user's friends:", loggedInUser.friends.all())
+        # if recipientOfPostObject in loggedInUser.friends.all() and loggedInUser in recipientOfPostObject.friends.all():
+        #     print("This means there are friends.")
+        # if recipientOfPostObject not in loggedInUser.friends.all() and loggedInUser in recipientOfPostObject.friends.all():
+        #     print("This means the friend request is still pending/hasn't been accepted or declined yet.")
+        # if recipientOfPostObject not in loggedInUser.friends.all() and loggedInUser not in recipientOfPostObject.friends.all():
+        #     print("You're not friends! Send friend request")
         if loggedInUser.id == int(recipientOfPost): #this means the logged in user is writing on their own wall
             #this creates the message and saves it to the database
             submittedMessageByUser = Message.objects.create(message = userMessage, user = loggedInUser, userReceivesPost_id = recipientOfPost)
@@ -244,6 +265,34 @@ def processMessage(request, userFirstName, userLastName, userId):
             print("THIS IS THE LAST PRINT STATEMENT IN THE PROCESS MESSAGE ROUTE.")    
         return redirect(reverse('specificUsersPage', args=(userFirstName, userLastName, userId,))) #using the name of the url to redirect and passing the variables/params to the form rendering the template
 
+def processMessageOnWall(request):
+    # print("*"*50)
+    print("THIS FUNCTION PROCESSES THE FORM OF POSTING A MESSAGE ON THE WALL.")
+    postAMessageErrors = Message.objects.messageValidator(request.POST) #linking the messageValidator instance in the model that's containing the errors
+    # print(postAMessageErrors)
+    if len(postAMessageErrors) > 0:
+        for key, value in postAMessageErrors.items():
+            messages.error(request,value)
+        return JsonResponse({"errors": postAMessageErrors}, status=400)
+    else:
+        #print("This prints the messaged created by the logged in user.")
+        userMessage = request.POST['userMessage']
+        print(userMessage)
+        #print("This prints the logged in user.")
+        loggedInUser = User.objects.get(id=request.session['loginInfo'])
+        # print(loggedInUser)
+        recipientOfPost = request.POST['userWhoReceivesPost'] # is a number but as a string so need to convert before comparison   
+        print("The id of the user receiving the post:", recipientOfPost)
+        recipientOfPostObject = User.objects.get(id = recipientOfPost)
+        print("The id of the loggedInUser:", loggedInUser.id)
+        print("These are the friends of the user receiving the posts:", recipientOfPostObject.friends.all())
+        print("These are the logged in user's friends:", loggedInUser.friends.all())
+        submittedMessageByUser = Message.objects.create(message = userMessage, user = loggedInUser, userReceivesPost_id = recipientOfPost)
+        userReceivesNewPost = User.objects.get(id = recipientOfPost)
+        notifyUser = Notification.objects.create(user = userReceivesNewPost, message = submittedMessageByUser) #This creates a notification for the user receiving the posted message
+        print("THIS IS THE LAST PRINT STATEMENT IN THE PROCESS POSTING A MESSAGE ON THE WALL ROUTE.")    
+    return redirect("/wall")
+
 def deleteMessage(request, userFirstName, userLastName, userId):
     # print("*"*50)
     print("THIS FUNCTION DELETES A POSTED MESSAGE.")
@@ -258,16 +307,21 @@ def deleteMessage(request, userFirstName, userLastName, userId):
         if loggedInUser == messageToBeDeleted.userReceivesPost: #this means the logged in user is attempting to delete a message on their own wall and should be directed back here
             messageToBeDeleted.delete()
             print("THIS IS THE LAST PRINT STATEMENT IN THE DELETING A MESSAGE ROUTE.")    
-    return redirect("/home")
-    # else: #this means the user is trying to delete a post they created on a specific user's page
-    #     # print("*"*50)
-    #     messageID = request.POST['userMessage']
-    #     print("This is the id of the message needed to be deleted", messageID)
-    #     messageToBeDeleted = Message.objects.get(id = messageID)
-    #     print("This is the message being deleted:", messageToBeDeleted)
-    #     messageToBeDeleted.delete()
-    #     print("THIS IS THE LAST PRINT STATEMENT IN THE PROCESS MESSAGE ROUTE.")    
-    # return redirect(reverse('specificUsersPage', args=(userFirstName, userLastName, userId,))) #using the name of the url to redirect and passing the variables/params to the form rendering the template
+            return redirect("/home")
+        else: #this means the user is trying to delete a post they created on a specific user's page
+            # print("*"*50)
+            messageToBeDeleted = Message.objects.get(id = messageID)
+            # print("This is the message being deleted:", messageToBeDeleted)
+            messageToBeDeleted.delete()
+            userId = messageToBeDeleted.userReceivesPost.id
+            print("This is the user's first name of the page to be redirected to:", userId)
+            userObject = User.objects.get(id = userId)
+            userFirstName = userObject.firstName
+            userLastName = userObject.lastName
+            userId = userObject.id
+            print("This is the user's first name, last name, and id of the page to be redirected to:", userFirstName, userLastName, userId)
+            print("THIS IS THE LAST PRINT STATEMENT IN THE PROCESS MESSAGE ROUTE.")    
+        return redirect(reverse('specificUsersPage', args=(userFirstName, userLastName, userId,))) #using the name of the url to redirect and passing the variables/params to the form rendering the template
 
 def processComment(request, userFirstName, userLastName, userId):
     postACommentErrors = Comment.objects.commentValidator(request.POST)
@@ -319,44 +373,32 @@ def deleteComment(request, userFirstName, userLastName, userId):
         print("This is the comment id:", commentID)
         commentToBeDeleted = Comment.objects.get(id = commentID)
         print("This is the comment being deleted:", commentToBeDeleted)
-        print("This is the user who received the post:", commentToBeDeleted.userReceivesComment) #user object
+        print("This is the user who received the comment:", commentToBeDeleted.userReceivesComment) #user object
         if loggedInUser == commentToBeDeleted.userReceivesComment: #this means the logged in user is attempting to delete a comment on their own wall and should be directed back here
             commentToBeDeleted.delete()
             print("THIS IS THE LAST PRINT STATEMENT IN THE DELETING A COMMENT ROUTE.")    
-        return redirect("/home")
-    # # print("*"*50)
-    # loggedInUser = User.objects.get(id=request.session['loginInfo'])
-    # recipientOfComment = request.POST['userReceivesComment'] # is a number but as a string so need to convert before comparison  
-    # print("THIS FUNCTION DELETES A POSTED MESSAGE.")
-    # if loggedInUser.id == int(recipientOfComment): #this means the logged in user is writing on their own wall
-    #     print("This is the id of the user receiving the posted comment:", recipientOfComment)
-    #     commentID = request.POST['userComment']
-    #     print("This is the id of the comment needed to be deleted", commentID)
-    #     commentToBeDeleted = Comment.objects.get(id = commentID)
-    #     print("This is the comment being deleted:", commentToBeDeleted)
-    #     commentToBeDeleted.delete()
-    #         #this creates the comment and saves it to the database
-    #     print("THIS IS THE LAST PRINT STATEMENT IN THE DELETING A MESSAGE ROUTE.")    
-    #     return redirect("/home")
-    # else: #this means the post attempted to be deleted is on a specific user's page
-    #     # print("*"*50)
-    #     commentID = request.POST['userComment']
-    #     print("This is the id of the comment needed to be deleted", commentID)
-    #     commentToBeDeleted = Comment.objects.get(id = commentID)
-    #     print("This is the comment being deleted:", commentToBeDeleted)
-    #     commentToBeDeleted.delete()
-    #     print("THIS IS THE LAST PRINT STATEMENT IN THE DELETE A MESSAGE ROUTE.")    
-    # return redirect(reverse('specificUsersPage', args=(userFirstName, userLastName, userId,))) #using the name of the url to redirect and passing the variables/params to the form rendering the template
+            return redirect("/home")
+        else: #this means the post attempted to be deleted is on a specific user's page
+            # print("*"*50)
+            print("This is the id of the comment needed to be deleted", commentID)
+            commentToBeDeleted = Comment.objects.get(id = commentID)
+            print("This is the comment being deleted:", commentToBeDeleted)
+            commentToBeDeleted.delete()
+            userFirstName = commentToBeDeleted.userReceivesComment.firstName
+            userLastName = commentToBeDeleted.userReceivesComment.lastName
+            userId = commentToBeDeleted.userReceivesComment.id
+            print("THIS IS THE LAST PRINT STATEMENT IN THE DELETE A MESSAGE ROUTE.")    
+        return redirect(reverse('specificUsersPage', args=(userFirstName, userLastName, userId,))) #using the name of the url to redirect and passing the variables/params to the form rendering the template
 
 def specificUsersPage(request, userFirstName, userLastName, userId, messageId = 0):
     print("THIS IS THE SPECIFIC USER'S PAGE ROUTE.")
     # print("*"*50)
+    loggedInUser = User.objects.get(id=request.session['loginInfo'])
     specificUsersPage = User.objects.get(id=userId) #retreiving from the url
     specificUsersFirstName = User.objects.get(firstName=userFirstName) #retreiving from the url
     specificUsersLastName = User.objects.get(lastName=userLastName) #retreiving from the url
     # print("This prints all the messages posted on a page of a specific user and orders them from latest post created.")
     specificUsersMessages = Message.objects.filter(userReceivesPost = userId).order_by('-createdAt')
-    newPosts = Message.objects.filter(userReceivesPost=request.session['loginInfo'])
     if messageId:
         print("THIS IS THE SPECIFIC USER'S PAGE ROUTE THAT WAS REACHED BY THE LOGGED IN USER LIKING A MESAGE ON THE SPECIFIC USER'S PAGE.")
         # print("*"*50)
@@ -386,7 +428,8 @@ def specificUsersPage(request, userFirstName, userLastName, userId, messageId = 
         'allUsers': allUsers,
         'specificUsersFriends': specificUsersFriends,
         'loggedInUser': User.objects.get(id=request.session['loginInfo']),
-        'newPosts': newPosts,
+        'notifications': Notification.objects.all,
+        'loggedInUsersNotifs': Notification.objects.filter(user=loggedInUser)
     }
     return render(request, "specificUserPage.html", context)
 
@@ -464,10 +507,60 @@ def userUnlikes(request, userFirstName='firstName', userLastName='lastName', use
         else:
             return redirect(reverse('home', args=(messageId,))) #using the name of the url to redirect and passing the variables/params to the form rendering the template
 
+def userLikesOnWall(request, messageId):
+    print("THIS IS THE USER LIKES ROUTE ON THE WALL")
+    print("*"*50)
+    print("THIS IS THE MESSAGE ID:",messageId)
+    print("*"*50)
+    # print("This is the specific message being liked")
+    messageBeingLiked = Message.objects.get(id=messageId)
+    print(messageBeingLiked) #prints as a Message Object(#)
+    print("This is the user liking the message")
+    userWhoLikes = User.objects.get(id=request.session['loginInfo'])
+    print(userWhoLikes) # prints as a User Object(#)
+    # print("The id of the user giving the like", userWhoLikes.id)
+    print("The id of the user receiving the like(the person who wrote the post)", messageBeingLiked.user.id)
+    # print("The id of the users who have liked messages:", messageBeingLiked.userLikes.all())
+    if userWhoLikes in messageBeingLiked.userLikes.all():
+        print("You've already liked the message!")
+        return redirect('/wall') #using the name of the url to redirect and passing the variables/params to the form rendering the template
+    else:
+        messageBeingLiked.userLikes.add(userWhoLikes) #This creates the like - userLikes is the instance name in the Message model holding the many to many relationship
+        messageBeingLiked.likeMessageCount += 1
+        messageBeingLiked.save()
+        print("THIS IS THE LAST PRINT STATEMENT OF THE USER LIKES ON THE WALL ROUTE")
+        return redirect('/wall')
+
+def userUnlikesOnWall(request, messageId):
+    print("THIS IS THE USER UNLIKES ROUTE ON THE WALL")
+    print("*"*50)
+    print("THIS IS THE MESSAGE ID:",messageId)
+    print("*"*50)
+    # print("This is the specific message being liked")
+    messageBeingUnliked = Message.objects.get(id=messageId)
+    print(messageBeingUnliked) #prints as a Message Object(#)
+    print("This is the user unliking the message")
+    userWhoUnlikes = User.objects.get(id=request.session['loginInfo'])
+    print(userWhoUnlikes) # prints as a User Object(#)
+    # print("The id of the user giving the like", userWhoUnlikes.id)
+    print("The id of the user receiving the like(the person who wrote the post)", messageBeingUnliked.user.id)
+    # print("The id of the users who have liked messages:", messageBeingUnliked.userLikes.all())
+    if userWhoUnlikes in messageBeingUnliked.userLikes.all(): #this checks if the logged in user has liked the specific message to begin with
+        messageBeingUnliked.userLikes.remove(userWhoUnlikes) #userLikes is the instance name in the Message model holding the many to many relationship
+        messageBeingUnliked = Message.objects.get(id = messageId)
+        if messageBeingUnliked.likeMessageCount > 0: #this prevents the subtraction when the user tries to unlike a message they have never liked initially
+            print("This is the amount of likes the message has:", messageBeingUnliked.likeMessageCount)
+            messageBeingUnliked.likeMessageCount -= 1
+            print("This is the amount of likes the message has after subtracting one:", messageBeingUnliked.likeMessageCount)
+            messageBeingUnliked.save()
+            print("THIS IS THE LAST PRINT STATEMENT OF THE USER LIKES ON THE WALL ROUTE")
+        return redirect('/wall')
+
 def sendFriendRequest(request, userFirstName='firstName', userLastName='lastName', userId=0, messageId = 0):
     print("THIS IS THE SEND A FRIEND REQUEST ROUTE")
     # print("*"*50)
     userReceivesRequest = User.objects.get(id=userId) #the recipient of the friend request
+    print("This prints the user object of the user receiving the friend request.", userReceivesRequest)
     # print(userReceivesRequest) #prints as a User Object(#)
     userFirstName = userReceivesRequest.firstName # need for params to reroute
     userLastName = userReceivesRequest.lastName # need for params to reroute
@@ -482,7 +575,7 @@ def sendFriendRequest(request, userFirstName='firstName', userLastName='lastName
             print("This print statement means the friend request is being created")
             userReceivesRequest.friends.add(userWhoSentFriendRequest)
             print("These are all the users the logged in user sent friend requests to:", userWhoSentFriendRequest.friends.all())
-            print("These are all the users who asked to be the logged in user's friend:", userReceivesRequest.friends.all())
+            # print("These are all the users who asked to be the logged in user's friend:", userReceivesRequest.friends.all())
             notifyUser = Notification.objects.create(user= userReceivesRequest, friendRequest = userWhoSentFriendRequest) #This creates a notification for the user receiving the posted message
             userReceivesRequest.notifications += 1
             userReceivesRequest.save()
@@ -677,14 +770,19 @@ def clearAllNotifications(request):
 
 def searchForUsersProfile(request):
     print("THIS IS THE SEARCH FOR A USER PROFILE ROUTE")
+    loggedInUser = User.objects.get(id=request.session["loginInfo"])
     try: #used so i can incoperate 'except index error' in case the logged in user triggers an index error searching for a user not in the database
         if request.method == 'GET':
             # searchForUser = request.GET.get("searchBarInput")
+            searchForUser = request.GET.get("searchBarInput")
+            if searchForUser == '':
+                print("No search submitted.") 
+                id = loggedInUser.id #sends them back to their page
             searchForUser = request.GET.get('searchBarInput').split() #creates a list of arrays with the names submitted by the logged in user
             if searchForUser is not None: #use to prevent NoneType object attribute split error
             # print("The name(s) the logged in user typed", searchForUser)
                 for name in searchForUser: # have to iterate to use title on a list
-                    # print("The name(s) searched:", name.title())
+                    print("The name(s) searched:", name.title())
                     if len(searchForUser) == 1:
                         searchedNameOne = name.title() #title capitalizes the submitted data
                         print("This means there was only one name submitted", searchedNameOne)
@@ -694,18 +792,22 @@ def searchForUsersProfile(request):
                         searchedNameTwo = searchForUser[1].title()
                         print("This means there was two names submitted", searchedNameOne, searchedNameTwo)
                         id = User.objects.filter(Q(firstName = (searchedNameOne))| Q(lastName= (searchedNameTwo))| Q(firstName = (searchedNameTwo))| Q(lastName= (searchedNameOne))).values('id')[0]['id'] #switched the order to include all ways the user typers their search
-            userProfile = User.objects.get(id = id) #this retrieves the searched user as an object
-            userProfile.firstName
-            userProfile.lastName
-            print("This is the searched user's first name, last name, and id:", userProfile.firstName, userProfile.lastName, userProfile.id)
-            print("THIS IS THE LAST PRINT STATEMENT OF THE SEARCH FOR A USER PROFILE ROUTE")
-            return redirect(reverse('specificUsersPage', args=(userProfile.firstName, userProfile.lastName, userProfile.id,))) #using the name of the url to redirect and passing the variables/params to the form rendering the template
+                userProfile = User.objects.get(id = id) #this retrieves the searched user as an object
+                userProfile.firstName
+                userProfile.lastName
+                print("This is the searched user's first name, last name, and id:", userProfile.firstName, userProfile.lastName, userProfile.id)
+                print("THIS IS THE LAST PRINT STATEMENT OF THE SEARCH FOR A USER PROFILE ROUTE")
+                return redirect(reverse('specificUsersPage', args=(userProfile.firstName, userProfile.lastName, userProfile.id,))) #using the name of the url to redirect and passing the variables/params to the form rendering the template
+        else:
+            print("This means it is empty")
     except IndexError:
         print("No results found!")
     context = {
         'loggedInUser': User.objects.get(id=request.session['loginInfo']),
         'allUsers': User.objects.all().exclude(id=request.session['loginInfo']).order_by('firstName'), #orders alphabetically
-        'searchForUser': searchForUser,
+        # 'searchForUser': searchForUser,
+        'notifications': Notification.objects.all,
+        'loggedInUsersNotifs': Notification.objects.filter(user=loggedInUser)
     }
     return render(request, "noUserFound.html", context)
 

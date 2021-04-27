@@ -7,6 +7,7 @@ urlpatterns = [
     path('', views.regAndLoginPage),
     path('processRegistration', views.processRegistration, name='process-Registration'),
     path('processLogin', views.processLogin),
+    path('wall', views.wall),
     path('home', views.loggedInUsersPage, name='home'),
     path('home/<int:messageId>', views.loggedInUsersPage, name='home'), #route used when a message is liked
     path('processProfilePic', views.processProfilePic),
@@ -14,14 +15,17 @@ urlpatterns = [
     path('processProfileHeader', views.processProfileHeader), # the caption underneath the profile photo
     path('processProfileIntro', views.processProfileIntro),
     path('processMessage/<str:userFirstName>/<str:userLastName>/<int:userId>', views.processMessage, name='processMessage'),
+    path('processMessageOnWall', views.processMessageOnWall), #this is when a user posts a message while on the wall page
     path('deleteMessage/<str:userFirstName>/<str:userLastName>/<int:userId>', views.deleteMessage, name='deleteMessage'),
     path('processComment/<str:userFirstName>/<str:userLastName>/<int:userId>', views.processComment, name='processComment'),
     path('deleteComment/<str:userFirstName>/<str:userLastName>/<int:userId>', views.deleteComment, name='deleteComment'),
     path('<str:userFirstName>/<str:userLastName>/<int:userId>', views.specificUsersPage, name='specificUsersPage'),
     path('<str:userFirstName>/<str:userLastName>/<int:userId>/<int:messageId>', views.specificUsersPage, name='specificUsersPage'), #route used when a message is liked
     path('like/<int:messageId>', views.userLikes, name='processLike'), #route that processes the like made on the home page
+    path('likeOnWall/<int:messageId>', views.userLikesOnWall), #route that processes the like made on the wall page
     path('<str:userFirstName>/<str:userLastName>/like/<int:messageId>', views.userLikes, name='processLikeOnSpecificUsersPage'), #route that processes the like made on the specific user's page
     path('unlike/<int:messageId>', views.userUnlikes),
+    path('unlikeOnWall/<int:messageId>', views.userUnlikesOnWall),
     path('<str:userFirstName>/<str:userLastName>/unlike/<int:messageId>', views.userUnlikes, name='processUnlikeOnSpecificUsersPage'), #route that processes the removal of a like made on the specific user's page
     path('sendFriendRequest/<int:userId>', views.sendFriendRequest),
     path('sendFriendRequest/<str:userFirstName>/<str:userLastName>/<int:userId>', views.sendFriendRequest, name='processFriendRequestOnSpecificUsersPage'), #route that processes the removal of a like made on the specific user's page

@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" 
+    integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <title>CollegeBook</title>
+    {% load static %}	<!-- Need this line to use static images -->
+    <link rel="stylesheet" href="{% static 'css/collegeWall.css' %}">  <!-- Need this line to use external stylesheet -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script> <!-- Order matters..important to load bootstrap before jquery ui to avoid button method conflicts -->
+    <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.min.js"></script> <!-- Need this line to use pop up dialog boxes -->
+    <script>
+        $(document).ready(function() { 
+
+            var $crf_token = $('[name="csrfmiddlewaretoken"]').attr('value'); //this defines the token form the form so it can be used in the jquery/ajax code below
+            var userProfileHeaderEditLink = document.querySelector('#userProfileHeaderEditLink'); //The id for the link that displays and hides the user profile info form
+            var userProfileHeaderCancelButton= document.querySelector('#userProfileHeaderCancelButton'); //The id for the link that displays and hides the user profile info form
+
+        //The below code are function calls that run as soon as the window is loaded.
+            enableDisableMessageButton(); // a function that enables and disables the post a message button
+
+            $('.postACommentButton').prop('disabled', true); //This disables the comment button to start
+
+        //The above code are function calls that run as soon as the window is loaded.
+
+        //The below code is the function for posting a message via jquery/ajax
+            $("#postAMessageForm").submit(function(e){// the id name given to the form action in the below html
+                console.log("The post a message button was clicked.")
+                e.preventDefault(); //prevents the default browser behavior of the form submitting normally
+                if ($(".displayMessageErrors").is(':visible')) {
+                    console.log("This console log means errors occurred and are visible on the html")
+                    $(".displayMessageErrors").empty() // This resets the current errors and prevents them from appending multiple times upon a submit (register attempt)
+                }
+                var messageData = {
+                    "userMessage": $('#userMessageID').val().trim(), //the key name must match the name in the views/form but the value name must differentiate
+                    "userWhoReceivesPost": $('#userWhoReceivesPostID').val(), //the key name must match the name in the views/form but the value name must differentiate
+                };
+                console.log("The form data was submitted.", messageData)
+                $.ajax({
+                    type: "POST",
+                    url: '/processMessageOnWall',
+                    headers:{"X-CSRFToken": $crf_token}, //this relates to the CSRF token in the form
+                    data: messageData,
+                    success: function(data) {
+                            console.log("This is the data successfully submitted", data)
+                            location.reload(); //reloads the page and displays the new data.
+                    },
+                    error: function(data){
+                        console.log("If this console log is displaying, it means errors occurred in submitting the user profile info data.")
+                        var postAMessageErrors = data.responseJSON.errors //Name of the dictionary.
+                        console.log("This will print the key and value of each pair in the dictionary", postAMessageErrors)
+                        // alert(data.responseJSON.errors)
+                        console.log("Before the for loop of the dictionary")
+                        for(error in postAMessageErrors){ 
+                            console.log(error) //This provides the key name of each error
+                            console.log(postAMessageErrors[error]) //This provides the value of each error (the actual error message)
+                            // console.log(registrationErrors[error][0]) //This provides the value of each character in the error message (a specific letter)
+                            $(".displayMessageErrors").append('<li class= "text-danger small">' + postAMessageErrors[error] + '</li>')
+                            $(".displayMessageErrors").show(); //displays the appended registration errors on the html
+                            if(error == "messageRequired") { //the key name of an error in the dictionary
+                                console.log("This is inside the if loop for the messageRequired error", error)
+                            }
+                        }
+                        console.log("Outside of the for loop of the dictionary")
+                    },
+                });
+            });
+
+            $('#userMessageID').keypress(function (e) {
+                if (e.which == 13) {
+                    console.log("This means enter was pressed to submit the written post.")
+                    $("#postAMessageForm").submit();
+                    return false;
+                }
+            });
+        //The above code is the function for posting a message via jquery/ajax
+
+        //The below code is the function that enables and disables the post a message button depending on if the textarea contains characters
+            function enableDisableMessageButton(e){
+                console.log("This is the enableDisableMessageButton function.")
+                $('#postAMessageButton').prop('disabled', true); //This disables the button
+                var submittedPost = document.getElementById("userMessageID"); //element that will be the focus of the keyup
+                // var userWhoSentPost = document.getElementById("userWhoReceivesPostID")
+                // console.log("This is the id of the user who sent the post(aka logged in user)", $('#userWhoReceivesPostID').val())
+                // var userWhoReceivesPost = document.getElementById("userWhoReceivesPostID")
+                // console.log("This is the id of the user who is receiving the post", $('#userWhoReceivesPostID').val())
+                // var confirmFriendID = document.getElementById("confirmFriendID") //This id should be the same as the user who sent the post
+                // console.log("This user id is to confirm if the user who sent the post is a friend of the user receiving the post ", $('#confirmFriendID').val())
+                var showMessageButton = function() {
+                    // if() 
+                    if (submittedPost.value !== '') {
+                        console.log("This console log means the text area is not blank, and the post a message button should be enabled.")
+                        $("#postAMessageButton").attr('disabled',false)
+                    } 
+                    else if (submittedPost.value == '')  {
+                        console.log("This console log means the text area is blank, and the post a message button should be disabled.")
+                        $("#postAMessageButton").attr('disabled',true)
+                    }
+                }
+                submittedPost.onkeyup = showMessageButton; //The keyup event is sent to an element when the user releases a key on the keyboard. This will then trigger the showMessageButton()
+            }
+        //The above code is the function that enables and disables the post a message button depending on if the textarea contains characters
+        
+        //The below code is the function that deletes a posted message
+            $(".deleteMessage").submit(function(e){ // the class name given to button submit in the below html
+                console.log("The trash can button was clicked.")
+                e.preventDefault(); //prevents the default browser behavior of the form submitting normally
+                $.ajax({
+                    type: "POST",
+                    url: "{% url 'deleteMessage' userFirstName=loggedInUser.firstName userLastName=loggedInUser.lastName userId=loggedInUser.id %}",
+                    headers:{"X-CSRFToken": $crf_token}, //this relates to the CSRF token in the form
+                    data: JSON.stringify({'messageID':$(this).data("index")}),
+                    success: function(data) {
+                            console.log("This is the data successfully submitted", data)
+                            location.reload(); //reloads the page and displays the new data.
+                    },
+                    error: function(data){
+                        console.log("If this console log is displaying, it means errors occurred in deleting a posted message.")
+                    },
+                });
+            });
+        //The above code is the function that deletes a posted message
+
+        //The below code is the function for selecting the correct textarea when the comment button is clicked
+            $( ".commentButton" ).click(function(e) {
+                e.preventDefault(); //prevents the default browser behavior of the form submitting normally
+                console.log("This means the comment button was clicked.")
+                commentButtonID = $(this).data("index") //This is really the message id so the comment is linked to the right post
+                console.log("The id of the clicked button:", commentButtonID)
+                allCommentTextAreaOnForms = document.getElementsByClassName('commentTextAreaOnForm')
+                for (i=0;i<allCommentTextAreaOnForms.length;i++) {
+                    specificTextAreaID = $(allCommentTextAreaOnForms[i]).data("index")
+                    if(commentButtonID == specificTextAreaID) {
+                        console.log("Found match")
+                        console.log("This is the message id of a specific textarea:", specificTextAreaID)
+                        console.log("This is the html of the specific textarea:", allCommentTextAreaOnForms[i])
+                        allCommentTextAreaOnForms[i].focus();
+                        break;
+                    }
+                }
+            })
+        //The above code is the function for selecting the correct textarea when the comment button is clicked
+
+        //The below code is the function that enables and disables the post a comment button depending on if the textarea contains characters, and then submits the comment if validations are passed.
+            $(".commentTextAreaOnForm").keyup(function(e) { //This function then tracks the user's typing within all textareas
+                console.log("inside the keyup function")
+                typedComment = $(this).val(); //This helps differentiate which textarea is being typed in because the value will change 
+                console.log("This is the typed comment:", typedComment)
+                messageID = $(this).data("index"); //This helps differentiate which textarea is being typed in because the value will change 
+                allHiddenInputsOfUserReceivingComment = document.getElementsByClassName('userReceivesCommentClass')
+                for (i=0;i<allHiddenInputsOfUserReceivingComment.length;i++) {
+                    specificUserID = $(allHiddenInputsOfUserReceivingComment[i]).data("index")
+                    console.log("This is the id of the user receiving the comment",specificUserID)            
+                }
+                console.log("This is where the comment is being posted aka the messageID:", messageID)
+                if (typedComment == '')  {
+                    console.log("This console log means the text area is blank, and the post a comment button should be disabled.")
+                    $(this).siblings('.postACommentButton').attr('disabled',true) //siblings corresponds the button to the correct textarea box being typed in
+                }
+                else if (typedComment !== '') {
+                    console.log("This console log means the text area is not blank, and the post a comment button should be enabled.")
+                    $(this).siblings('.postACommentButton').attr('disabled',false)
+                    if (e.which == 13) {
+                        console.log("This means enter was pressed to submit the written comment.")
+                        var commentData = {
+                            "userComment": typedComment.trim(), //the key name must match the name in the views/form but the value name must differentiate. trim gets rid of spaces to make sure there is actually data
+                            "userReceivesComment": specificUserID, //the key name must match the name in the views/form but the value name must differentiate
+                            "postLocationForComment": messageID, //the key name must match the name in the views/form but the value name must differentiate
+                        };
+                        console.log("The form data was submitted.", commentData)
+                        $.ajax({
+                            type: "POST",
+                            url: "{% url 'processComment' userFirstName=loggedInUser.firstName userLastName=loggedInUser.lastName userId=loggedInUser.id %}",
+                            headers:{"X-CSRFToken": $crf_token}, //this relates to the CSRF token in the form
+                            data: commentData,
+                            success: function(data) {
+                                console.log("This is the data successfully submitted", data)
+                                location.reload(); //reloads the page and displays the new data.
+                            },
+                            error: function(data){
+                                console.log("If this console log is displaying, it means errors occurred in submitting the user profile info data.")
+                                var postACommentErrors = data.responseJSON.errors //Name of the dictionary.
+                                console.log("This will print the key and value of each pair in the dictionary", postACommentErrors)
+                                // alert(data.responseJSON.errors)
+                                console.log("Before the for loop of the dictionary")
+                                for(error in postACommentErrors){ 
+                                    console.log(error) //This provides the key name of each error
+                                    console.log(postACommentErrors[error]) //This provides the value of each error (the actual error message)
+                                    // console.log(postACommentErrors[error][0]) //This provides the value of each character in the error message (a specific letter)
+                                        $(".displayCommentErrors").empty();
+                                        $(".displayCommentErrors").append('<li class= "text-danger small">' + postACommentErrors[error] + '</li>')
+                                        $(".displayCommentErrors").show(); //displays the appended comment errors on the html
+                                    // if(error == "commentRequired") { //the key name of an error in the dictionary
+                                    //     console.log("This is inside the if loop for the commentRequired error", error)
+                                    // }
+                                }
+                                console.log("Outside of the for loop of the dictionary")                       
+                            },
+                        })
+                    }
+                }
+            });
+        //The above code is the function that enables and disables the post a comment button depending on if the textarea contains characters, and then submits the comment if validations are passed.
+
+        //The below code is the function that deletes a posted comment
+            $(".deleteComment").submit(function(e){ // the class name given to button submit in the below html
+                console.log("The trash can button was clicked.")
+                e.preventDefault(); //prevents the default browser behavior of the form submitting normally
+                $.ajax({
+                    type: "POST",
+                    url: "{% url 'deleteComment' userFirstName=loggedInUser.firstName userLastName=loggedInUser.lastName userId=loggedInUser.id %}",
+                    headers:{"X-CSRFToken": $crf_token}, //this relates to the CSRF token in the form
+                    data: JSON.stringify({'commentID':$(this).data("index")}),
+                    success: function(data) {
+                            console.log("This is the data successfully submitted", data)
+                            location.reload(); //reloads the page and displays the new data.
+                    },
+                    error: function(data){
+                        console.log("If this console log is displaying, it means errors occurred in deleting a posted message.")
+                    },
+                });
+            });
+        //The above code is the function that deletes a posted comment
+
+        //The below code is the function for liking a posted message via jquery/ajax
+        $('.likeAPostLink').click(function(e) {
+                e.preventDefault(); //prevents the default browser behavior of the form submitting normally
+                messageId = $(this).data("index"); //this the value retrieved when the link is clicked
+                console.log("The link to like a post was clicked, and the message id is:", messageId)
+                $.ajax({
+                    type: "POST",
+                    url: '/likeOnWall' + '/' + messageId, 
+                    headers:{"X-CSRFToken": $crf_token}, //this relates to the CSRF token needed to send data to the backend
+                    data: messageId,
+                    success: function(data) {
+                            console.log("This console log means the posted messaged was liked successfully.")
+                            location.reload(); //reloads the page and displays the new data.
+                    },
+                    error: function(data){
+                        console.log("If this console log is displaying, it means errors occurred in the user attempting a like.")                       },
+                })
+            });
+        //The above code is the function for liking a posted message via jquery/ajax
+
+        //The below code is the function for unliking a posted message via jquery/ajax
+        $('.unlikeAPostLink').click(function(e) {
+                e.preventDefault(); //prevents the default browser behavior of the form submitting normally
+                messageId = $(this).data("index"); //this the value retrieved when the link is clicked
+                console.log("The link to unlike a post was clicked, and the message id is:", messageId)
+                $.ajax({
+                    type: "POST",
+                    url: '/unlikeOnWall' + '/' + messageId, 
+                    headers:{"X-CSRFToken": $crf_token}, //this relates to the CSRF token needed to send data to the backend
+                    data: messageId,
+                    success: function(data) {
+                            console.log("This console log means the posted messaged was liked successfully.")
+                            location.reload(); //reloads the page and displays the new data.
+                    },
+                    error: function(data){
+                        console.log("If this console log is displaying, it means errors occurred in the user attempting a like.")                       },
+                })
+            });
+        //The above code is the function for unliking a posted message via jquery/ajax
+
+        //The below code is the function for seeing and hiding notifications  via jquery/ajax
+            $('#notifications').click(function(e) {
+                $('#notificationCounter').hide()
+            }); 
+        //The above code is the function for seeing notifications  via jquery/ajax
+
+        //The below code is the function for handling specific notifications via jquery/ajax
+            allConfirmFriendRequestButtons = document.querySelectorAll(".confirmNotificationButton");
+            for (clickedButton of allConfirmFriendRequestButtons) {
+                clickedButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    userId = this.value
+                    user= $(this)
+                    console.log("The button to confirm a friend request was clicked, and the user id is:", userId)
+                    var data = { //This is to know what page the logged in user is currently browsing
+                    "userWhoReceivesPost": $('#userWhoReceivesPostID').val()
+                    };
+                    $.ajax({
+                        type: "POST",
+                        url: 'acceptFriendRequest' + '/' + userId, 
+                        headers:{"X-CSRFToken": $crf_token}, //this relates to the CSRF token needed to send data to the backend
+                        data: data,
+                        success: function() {
+                            console.log("This console log means the friend request was confirmed successfully.", data)
+                            user.parent().parent().remove()
+                            // user.parent().parent().hide()
+                            location.reload(); //reloads the page and displays the new data.
+                        },
+                        error: function(){
+                            console.log("If this console log is displaying, it means errors occurred in accepting the friend request.", data)                      
+                        },
+                    })
+                })
+            }
+        //The above code is the function for handling specific notifications via jquery/ajax
+
+        //The below code is the function for handling canceling a specific notification(friend request) via jquery/ajax
+            allCancelFriendRequestButtons = document.querySelectorAll(".cancelNotificationButton");
+            for (clickedButton of allCancelFriendRequestButtons) {
+                clickedButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    userId = this.value
+                    user= $(this)
+                    console.log("The button to decline a friend request was clicked, and the user id is:", userId)
+                    $.ajax({
+                        type: "POST",
+                        url: 'unfriend' + '/' + userId, 
+                        headers:{"X-CSRFToken": $crf_token}, //this relates to the CSRF token needed to send data to the backend
+                        data: userId,
+                        success: function(data) {
+                            console.log("This console log means the friend request was declined successfully.")
+                            user.parent().parent().remove()
+                            // location.reload(); //reloads the page and displays the new data.
+                        },
+                        error: function(data){
+                            console.log("If this console log is displaying, it means errors occurred in declining the friend request.")                       },
+                    })
+                })
+            }
+        //The above code is the function for handling canceling a specific notification(friend request) 
+
+        });//end of entire code in the script
+    </script>
+</head>
+
+<body class="bg-light">
+    <!--The below code is for the navigation bar  -->
+        <nav class="navbar navbar-expand-lg bg-white navBarStyle">
+            <a href="/wall">
+                <img class="navbar-brand mr-0" id="logoIcon" src="{% static 'Images/logo.png' %}" alt="A stock image of a logo with the two letters CB to represent Collegebook." />
+            </a>        <!--The below button shows when the window size changes/collapses  -->
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon searchForm">            
+                    <form action="/search" method="GET" class="form-inline mr-5 ">
+                    <input class="form-control mr-sm-1 rounded-pill searchInput" type="search" placeholder="Search CollegeBook" name="searchBarInput"  aria-label="Search">
+                    <!-- <button class="btn btn-outline-primary btn-sm" type="submit">Search</button> -->
+                    </form>
+                </span> 
+            </button>
+        <!--The above button shows when the window size changes/collapses  -->
+            <div class="collapse navbar-collapse" id="">
+                <form action="/search" method="GET" class="form-inline mr-5 ">
+                    <input class="form-control mr-sm-1 rounded-pill" type="search" placeholder="Search CollegeBook" name="searchBarInput"  aria-label="Search">
+                    <!-- <button class="btn btn-outline-primary btn-sm" type="submit">Search</button> --> 
+                </form> 
+                <ul class="navbar-nav mr-auto navBarSecondSection">
+                    <li class="nav-item active">
+                        <button class="btn btn-outline-light buttonOfNavIcons mr-5">
+                            <a href="/home">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="gray" class="bi bi-house-door-fill" viewBox="0 0 16 16">
+                                    <path d="M6.5 14.5v-3.505c0-.245.25-.495.5-.495h2c.25 0 .5.25.5.5v3.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5z"/>
+                                </svg>
+                            </a>
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="btn btn-outline-light buttonOfNavIcons mr-5">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="gray" class="bi bi-youtube" viewBox="0 0 16 16">
+                                <path d="M8.051 1.999h.089c.822.003 4.987.033 6.11.335a2.01 2.01 0 0 1 1.415 1.42c.101.38.172.883.22 1.402l.01.104.022.26.008.104c.065.914.073 1.77.074 1.957v.075c-.001.194-.01 1.108-.082 2.06l-.008.105-.009.104c-.05.572-.124 1.14-.235 1.558a2.007 2.007 0 0 1-1.415 1.42c-1.16.312-5.569.334-6.18.335h-.142c-.309 0-1.587-.006-2.927-.052l-.17-.006-.087-.004-.171-.007-.171-.007c-1.11-.049-2.167-.128-2.654-.26a2.007 2.007 0 0 1-1.415-1.419c-.111-.417-.185-.986-.235-1.558L.09 9.82l-.008-.104A31.4 31.4 0 0 1 0 7.68v-.122C.002 7.343.01 6.6.064 5.78l.007-.103.003-.052.008-.104.022-.26.01-.104c.048-.519.119-1.023.22-1.402a2.007 2.007 0 0 1 1.415-1.42c.487-.13 1.544-.21 2.654-.26l.17-.007.172-.006.086-.003.171-.007A99.788 99.788 0 0 1 7.858 2h.193zM6.4 5.209v4.818l4.157-2.408L6.4 5.209z"/>
+                            </svg>
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="btn btn-outline-light buttonOfNavIcons mr-5">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="gray" class="bi bi-bag-fill" viewBox="0 0 16 16">
+                                <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5z"/>
+                            </svg>
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="btn btn-outline-light buttonOfNavIcons mr-5">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="gray" class="bi bi-people-fill" viewBox="0 0 16 16">
+                                <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                                <path fill-rule="evenodd" d="M5.216 14A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216z"/>
+                                <path d="M4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/>
+                            </svg>
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="btn btn-outline-light buttonOfNavIcons mr-5">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="gray" class="bi bi-joystick" viewBox="0 0 16 16">
+                                <path d="M10 2a2 2 0 0 1-1.5 1.937v5.087c.863.083 1.5.377 1.5.726 0 .414-.895.75-2 .75s-2-.336-2-.75c0-.35.637-.643 1.5-.726V3.937A2 2 0 1 1 10 2z"/>
+                                <path d="M0 9.665v1.717a1 1 0 0 0 .553.894l6.553 3.277a2 2 0 0 0 1.788 0l6.553-3.277a1 1 0 0 0 .553-.894V9.665c0-.1-.06-.19-.152-.23L9.5 6.715v.993l5.227 2.178a.125.125 0 0 1 .001.23l-5.94 2.546a2 2 0 0 1-1.576 0l-5.94-2.546a.125.125 0 0 1 .001-.23L6.5 7.708l-.013-.988L.152 9.435a.25.25 0 0 0-.152.23z"/>
+                            </svg>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+            <div class="row navBarThirdSection">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a id="linkForNavIconProfPic" href="/home" class="d-inline ">
+                        <!-- This if statement only displays the image src when an image is uploaded -->
+                        {% if loggedInUser.profilePic == "" %} 
+                            <img src="{% static 'Images/blankAvatar.png' %}" id="navIconProfPic" class="d-inline-block" alt="A thumbnail photo of the user"><p class="d-inline-block nameInNotification mb-0 mt-1">{{notif.friendRequest.firstName}} {{notif.friendRequest.lastName}}</p> 
+                        {% else %}
+                            <img src='{{ loggedInUser.profilePic }}' id="navIconProfPic" class="d-inline notifIconProfPic"> 
+                        {% endif %}
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="mr-3 pl-1 navName" href="/home">{{loggedInUser.firstName}}</a>
+                    </li>
+                    <li class="nav-item dropdown notificationsDropDownMenu">
+                        <a class="" href="#" id="notifications" role="button" data-toggle="dropdown">
+                        {% if loggedInUser.notifications > 0 %}
+                            <button type="button" class="btn btn-sm btn-danger notificationNumber" id="notificationCounter">{{loggedInUser.notifications}}</button>
+                        {% endif %}
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-bell-fill mb-1 notificationBellSymbol" viewBox="0 0 16 16">
+                                <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zm.995-14.901a1 1 0 1 0-1.99 0A5.002 5.002 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901z"/>
+                            </svg>
+                        </a>
+                        <div class="dropdown-menu notificationsDropDownMenuDiv">
+                            <div class="ml-5 pl-5">
+                            {% if notifications != "" %}
+                                <a href="" class="ml-5 pl-5" id="clearNotifications">Clear</a>
+                            {% endif %}
+                            </div>
+            {% for notif in notifications %} <!-- This loops through all the notifications -->
+                {% if notif.user == loggedInUser %} <!-- This provides the notifications only for the logged in user-->
+                    {% if notif.friendRequest%}
+                        {% if not loggedInUser in loggedInUser.friends.all %} <!-- This code would remove the sent friend request signifying the logged in user did not accept the friend request -->
+                            {% if notif.friendRequest.profilePic == "" %}
+                                <div class="dropdown-item pb-0 pt-0">
+                                    <div class="specificNotification friendRequestNotification" data-index="{{notif.friendRequest.id}}">
+                                        <a href="/{{notif.friendRequest.firstName}}/{{notif.friendRequest.lastName}}/{{notif.friendRequest.id}}" class="d-inline-block">
+                                            <img src="{% static 'Images/blankAvatar.png' %}" id="notifIconProfPic" class="d-inline-block" alt="A thumbnail photo of the user"><p class="d-inline-block nameInNotification mb-0 mt-1">{{notif.friendRequest.firstName}} {{notif.friendRequest.lastName}}</p> 
+                                        </a>
+                                        <p class="d-inline-block mb-0 pt-0"> sent you a friend request.</p>
+                                        <div class="btn-group mt-0 friendRequestButtonDiv">
+                                            <button type="button" class="btn btn-sm btn-primary confirmCancelNotificationButton confirmNotificationButton mr-2" value="{{notif.friendRequest.id}}">Confirm</button>
+                                            {% if notif.hover == 0 %}
+                                            <button type="button" class="btn btn-sm btn-secondary confirmCancelNotificationButton cancelNotificationButton" value="{{notif.friendRequest.id}}">Cancel</button> <div class="specificRedButtonDiv"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-circle-fill hoverNotif ml-2 mb-5" data-index="{{notif.friendRequest.id}}" viewBox="0 0 16 16"><circle cx="6" cy="6" r="6"/></svg></div>
+                                        {% else %}
+                                            <button type="button" class="btn btn-sm btn-secondary confirmCancelNotificationButton cancelNotificationButton" value="{{notif.friendRequest.id}}">Cancel</button> 
+                                        {% endif %}                                    
+                                        </div>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="dropdown-item pb-0 pt-0">
+                                    <div class="specificNotification friendRequestNotification pb-0 pt-0" data-index="{{notif.friendRequest.id}}">
+                                        <a href="/{{notif.friendRequest.firstName}}/{{notif.friendRequest.lastName}}/{{notif.friendRequest.id}}" class="d-inline-block">
+                                            <img src='{{notif.friendRequest.profilePic }}' id="notifIconProfPic" class="d-inline-block mt-1"><p class="d-inline-block nameInNotification mb-0 mt-1">{{notif.friendRequest.firstName}} {{notif.friendRequest.lastName}}</p>
+                                        </a>
+                                        <p class="d-inline-block mb-0 pt-0"> sent you a friend request.</p>
+                                        <div class="btn-group mt-0 friendRequestButtonDiv">
+                                            <button type="button" class="btn btn-sm btn-primary confirmCancelNotificationButton confirmNotificationButton mr-2" value="{{notif.friendRequest.id}}">Confirm</button>
+                                        {% if notif.hover == 0 %} <!-- 0 signifying False, meaning the user has not hovered over the notification  -->
+                                            <button type="button" class="btn btn-sm btn-secondary confirmCancelNotificationButton cancelNotificationButton" value="{{notif.friendRequest.id}}">Cancel</button> <div class="specificRedButtonDiv"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-circle-fill hoverNotif ml-2 mb-5" data-index="{{notif.friendRequest.id}}" viewBox="0 0 16 16"><circle cx="6" cy="6" r="6"/></svg></div>
+                                        {% else %}
+                                            <button type="button" class="btn btn-sm btn-secondary confirmCancelNotificationButton cancelNotificationButton" value="{{notif.friendRequest.id}}">Cancel</button> 
+                                        {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}
+                    {% if notif.message %} <!-- prevents the notification appearing when it is null -->
+                        {% if loggedInUser != notif.message.user %} <!-- This excludes notifications every time the logged in user posts on something  -->
+                            {% if notif.message.user.profilePic == ""%}
+                                <div class="dropdown-item pt-0">
+                                    <div class="specificNotification newPostNotification pt-3" data-index="{{notif.message.id}}"> 
+                                        <a href="/{{notif.message.user.firstName}}/{{notif.message.user.lastName}}/{{notif.message.user.id}}" class="d-inline-block mb-0">
+                                            <img src="{% static 'Images/blankAvatar.png' %}" id="notifIconProfPic" class="d-inline-block" alt="A thumbnail photo of the user"><p class="d-inline-block nameInNotification mb-0 mt-1">{{notif.message.user.firstName}} {{notif.message.user.lastName}}</p>
+                                        </a>
+                                        <p class="d-inline-block mb-0 pb-0 pt-0"> wrote on your <a href="/home">wall.</a></p>{% if notif.hover == 0 %} <!-- 0 signifying False, meaning the user has not hovered over the notification  --><div class="specificRedButtonDiv d-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-circle-fill hoverNotif" data-index="{{notif.message.id}}" viewBox="0 0 16 16"><circle cx="6" cy="6" r="6"/></svg></div>{% endif %}    
+                                        <div class="btn-group mt-0 hideButtons">
+                                            <button type="button" class="btn btn-sm btn-primary confirmCancelNotificationButton confirmNotificationButton mr-2" value="{{notif.message.user.id}}}">View</button>
+                                            <button type="button" class="btn btn-sm btn-secondary confirmCancelNotificationButton cancelNotificationButton" value="{{notif.message.user.id}}}">Remove</button>
+                                        </div> 
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="dropdown-item">
+                                    <div class="specificNotification newPostNotification pb-0 pt-0" data-index="{{notif.message.id}}">
+                                        <a href="/{{notif.message.user.firstName}}/{{notif.message.user.lastName}}/{{notif.message.user.id}}" class="d-inline-block mb-0">
+                                            <img src='{{ notif.message.user.profilePic }}' id="notifIconProfPic" class="d-inline-block mt-1"> <p class="d-inline-block nameInNotification mb-0 mt-1">{{notif.message.user.firstName}} {{notif.message.user.lastName}}</p>
+                                        </a>
+                                        <p class="d-inline-block mb-0 pb-0 pt-0"> wrote on your <a href="/home">wall.</a></p> {% if notif.hover == 0 %} <!-- 0 signifying False, meaning the user has not hovered over the notification  --><div class="specificRedButtonDiv d-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-circle-fill hoverNotif" data-index="{{notif.message.id}}" viewBox="0 0 16 16"><circle cx="6" cy="6" r="6"/></svg></div>{% endif %}                                    
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}
+                    {% if notif.comment %}
+                        {% if loggedInUser != notif.comment.user %} <!-- This excludes  notifications every time the logged in user comments on something  -->
+                            {% if notif.comment.user.profilePic == ""%}
+                                <div class="dropdown-item">
+                                    <div class="specificNotification newCommentNotification pt-3" data-index="{{notif.comment.id}}">
+                                        <a href="/{{notif.comment.user.firstName}}/{{notif.comment.user.lastName}}/{{notif.comment.user.id}}" class="d-inline-block mb-0">
+                                            <img src="{% static 'Images/blankAvatar.png' %}" id="notifIconProfPic" class="d-inline-block" alt="A thumbnail photo of the user"><p class="d-inline-block nameInNotification mb-0 mt-1">{{notif.comment.user.firstName}} {{notif.comment.user.lastName}}</p>
+                                        </a>
+                                        <p class="d-inline-block mb-0 pb-0 pt-0"> commented on a <a href="/home">post.</a></p>{% if notif.hover == 0 %}<div class="specificRedButtonDiv d-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-circle-fill hoverNotif" data-index="{{notif.comment.id}}" viewBox="0 0 16 16"><circle cx="6" cy="6" r="6"/></svg></div>{% endif %} 
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="dropdown-item">
+                                    <div class="specificNotification newCommentNotification pt-2" data-index="{{notif.comment.id}}">
+                                        <a href="/{{notif.comment.user.firstName}}/{{notif.comment.user.lastName}}/{{notif.comment.user.id}}" class="d-inline-block mb-0">
+                                            <img src='{{ notif.comment.user.profilePic }}' id="notifIconProfPic" class="d-inline-block mt-1"> <p class="d-inline-block nameInNotification mb-0 mt-1">{{notif.comment.user.firstName}} {{notif.comment.user.lastName}}</p>
+                                        </a>
+                                        <p class="d-inline-block mb-0 pb-0 pt-0"> commented on a <a href="/home">post.</a></p>{% if notif.hover == 0 %} <!-- 0 signifying False, meaning the user has not hovered over the notification  --><div class="specificRedButtonDiv d-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-circle-fill hoverNotif" data-index="{{notif.comment.id}}" viewBox="0 0 16 16"><circle cx="6" cy="6" r="6"/></svg></div>{% endif %} 
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}
+                {% endif %} <!-- The end if statement for only showing the logged in user's notifications -->
+            {% endfor %}
+                        </div>
+                    </li>
+                    <div class="ml-3"></div>
+                    <li class="nav-item"> <!-- This is the messenger symbol -->
+                        <a class="" href="">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-chat-left-dots-fill messengerNavIcon" viewBox="0 0 16 16">
+                                <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4.414a1 1 0 0 0-.707.293L.854 15.146A.5.5 0 0 1 0 14.793V2zm5 4a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
+                            </svg>
+                        </a>
+                    </li>
+                    <div class="ml-3"></div>
+                    <li class="nav-item dropdown settingsDropDownMenu"> <!-- This is the settings symbol -->
+                        <a class="" href="/home" role="button" data-toggle="dropdown">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-gear-fill mb-1 settingsNavIcon" viewBox="0 0 16 16">
+                                <path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872l-.1-.34zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z"/>
+                            </svg>
+                        </a>
+                        <div class="dropdown-menu settingsDropDownMenuDiv">
+                            <a class="dropdown-item" href="/home">Settings</a>
+                            <a class="dropdown-item" href="/home">Support</a>
+                            <a class="dropdown-item" href="/home">Give Feedback</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="/logout">Log Out</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    <!-- The above code is for the navigation bar -->
+    
+            <div class="row">
+                <div class="col-sm-3 bg-light firstWallColumn">
+                    <div class="row">
+                        <div class="col-sm leftColumnNavIcons ml-4">
+                            <div class="d-block mb-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#1C8BF6" class="bi bi-people-fill d-inline-block " viewBox="0 0 16 16">
+                                    <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                                    <path fill-rule="evenodd" d="M5.216 14A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216z"/>
+                                    <path d="M4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/>
+                                </svg>
+                                <h6 class="d-inline-block ml-2 mt-1">Friends</h6>
+                            </div>
+                            <div class="d-block mb-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#1C8BF6" class="bi bi-alarm-fill ml-1" viewBox="0 0 16 16">
+                                    <path d="M6 .5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1H9v1.07a7.001 7.001 0 0 1 3.274 12.474l.601.602a.5.5 0 0 1-.707.708l-.746-.746A6.97 6.97 0 0 1 8 16a6.97 6.97 0 0 1-3.422-.892l-.746.746a.5.5 0 0 1-.707-.708l.602-.602A7.001 7.001 0 0 1 7 2.07V1h-.5A.5.5 0 0 1 6 .5zm2.5 5a.5.5 0 0 0-1 0v3.362l-1.429 2.38a.5.5 0 1 0 .858.515l1.5-2.5A.5.5 0 0 0 8.5 9V5.5zM.86 5.387A2.5 2.5 0 1 1 4.387 1.86 8.035 8.035 0 0 0 .86 5.387zM11.613 1.86a2.5 2.5 0 1 1 3.527 3.527 8.035 8.035 0 0 0-3.527-3.527z"/>
+                                </svg>
+                                <h6 class="d-inline-block ml-2 mt-2">Most Recent</h6>
+                            </div>
+                            <div class="d-block mb-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#F6BF36" class="bi bi-star-fill ml-1" viewBox="0 0 16 16">
+                                    <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
+                                </svg>
+                                <h6 class="d-inline-block ml-2 mt-2">Favorites</h6>
+                            </div>
+                            <div class="d-block mb-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#1C8BF6" class="bi bi-shop ml-1" viewBox="0 0 16 16">
+                                    <path d="M2.97 1.35A1 1 0 0 1 3.73 1h8.54a1 1 0 0 1 .76.35l2.609 3.044A1.5 1.5 0 0 1 16 5.37v.255a2.375 2.375 0 0 1-4.25 1.458A2.371 2.371 0 0 1 9.875 8 2.37 2.37 0 0 1 8 7.083 2.37 2.37 0 0 1 6.125 8a2.37 2.37 0 0 1-1.875-.917A2.375 2.375 0 0 1 0 5.625V5.37a1.5 1.5 0 0 1 .361-.976l2.61-3.045zm1.78 4.275a1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0 1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0 1.375 1.375 0 1 0 2.75 0V5.37a.5.5 0 0 0-.12-.325L12.27 2H3.73L1.12 5.045A.5.5 0 0 0 1 5.37v.255a1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0zM1.5 8.5A.5.5 0 0 1 2 9v6h1v-5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v5h6V9a.5.5 0 0 1 1 0v6h.5a.5.5 0 0 1 0 1H.5a.5.5 0 0 1 0-1H1V9a.5.5 0 0 1 .5-.5zM4 15h3v-5H4v5zm5-5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1v-3zm3 0h-2v3h2v-3z"/>
+                                </svg>
+                                <h6 class="d-inline-block ml-2 mt-2">Marketplace</h6>
+                            </div>
+                            <div class="d-block mb-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#1C8BF6" class="bi bi-tv-fill ml-1" viewBox="0 0 16 16">
+                                    <path d="M2.5 13.5A.5.5 0 0 1 3 13h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zM2 2h12s2 0 2 2v6s0 2-2 2H2s-2 0-2-2V4s0-2 2-2z"/>
+                                </svg>
+                                <h6 class="d-inline-block ml-2 mt-2">Watch</h6>
+                            </div>
+                            <div class="d-block mb-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#EF4462" class="bi bi-calendar3 ml-1" viewBox="0 0 16 16">
+                                    <path d="M14 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zM1 3.857C1 3.384 1.448 3 2 3h12c.552 0 1 .384 1 .857v10.286c0 .473-.448.857-1 .857H2c-.552 0-1-.384-1-.857V3.857z"/>
+                                    <path d="M6.5 7a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
+                                </svg>
+                                <h6 class="d-inline-block ml-2 mt-2">Events</h6>
+                            </div>
+                            <div class="d-block mb-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#1C8BF6" class="bi bi-arrow-counterclockwise ml-1" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M8 3a5 5 0 1 1-4.546 2.914.5.5 0 0 0-.908-.417A6 6 0 1 0 8 2v1z"/>
+                                    <path d="M8 4.466V.534a.25.25 0 0 0-.41-.192L5.23 2.308a.25.25 0 0 0 0 .384l2.36 1.966A.25.25 0 0 0 8 4.466z"/>
+                                </svg>
+                                <h6 class="d-inline-block ml-2 mt-2">Memories</h6>
+                            </div>
+                            <div class="d-block mb-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#72432F" class="bi bi-briefcase-fill ml-1" viewBox="0 0 16 16">
+                                    <path d="M6.5 1A1.5 1.5 0 0 0 5 2.5V3H1.5A1.5 1.5 0 0 0 0 4.5v1.384l7.614 2.03a1.5 1.5 0 0 0 .772 0L16 5.884V4.5A1.5 1.5 0 0 0 14.5 3H11v-.5A1.5 1.5 0 0 0 9.5 1h-3zm0 1h3a.5.5 0 0 1 .5.5V3H6v-.5a.5.5 0 0 1 .5-.5z"/>
+                                    <path d="M0 12.5A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5V6.85L8.129 8.947a.5.5 0 0 1-.258 0L0 6.85v5.65z"/>
+                                </svg>
+                                <h6 class="d-inline-block ml-2 mt-2">Job</h6>
+                            </div>
+                            <div class="d-block mb-3 weatherNavIcon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#F9D04D" class="bi bi-brightness-high-fill ml-1 weatherNavIcon" viewBox="0 0 16 16">
+                                    <path d="M12 8a4 4 0 1 1-8 0 4 4 0 0 1 8 0zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z"/>
+                                </svg>
+                                <h6 class="d-inline-block ml-2 mt-2 weatherNavIcon">Weather</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 bg-light middleWallColumn">
+                    <div class="listOfPostedMessagesOnWall mt-2"> 
+                    <!-- The below code is for the post a message form -->
+                        <form class="bg-white pt-1 pb-1 mb-3" action="" method="post" id="postAMessageForm">
+                            {% csrf_token %}
+                            <div id="postAMessageErrors">
+                                <ul class="displayMessageErrors mb-0"></ul>
+                            </div>
+                            <div class="form-group">
+                                <input type="hidden" id="userWhoReceivesPostID" name="userWhoReceivesPost" value="{{loggedInUser.id}}">
+                            {% if loggedInUser.profilePic == "" %}
+                                <a href="/home">
+                                    <img src="{% static 'Images/blankAvatar.png' %}" id="" class="postMessageProfPic" alt="A thumbnail photo of the user">
+                                </a>
+                            {% else %}
+                                <a href="/home">
+                                    <img src="{{loggedInUser.profilePic}}" class="d-inline-block postMessageProfPic ml-2">
+                                </a>
+                            {% endif %}
+                                <div class="d-inline-block mt-2 ml-2">
+                                    <textarea class="form-control rounded-pill" id="userMessageID" name="userMessage" rows="1" placeholder="What's On Your Mind, {{loggedInUser.firstName}}?"></textarea>
+                                </div>
+                                <div class="d-inline-block mt-2 ml-1">
+                                    <button type="submit" class="btn btn-primary btn-sm" id="postAMessageButton">Post</button>
+                                </div>
+                            </div>
+                            <!-- <div class="pt-2"></div> -->
+                        </form>
+                <!-- The above code is for the post a message form -->
+        {% for friend in loggedInUsersFriends %} <!-- Looping through all the logged in user's friends -->
+            {% for message in allMessages %} <!-- Looping through all the messaged submitted-->
+                {% if friend == message.user or message.user == loggedInUser %} <!-- if statement that only displays the logged in user's friends posts/comments -->
+                        <table class="table table-borderless ">
+                            <tbody>
+                                <tr class="test">
+                                    <td class="bg-white listOfPostedMessagesOnWall">
+                                        <div class="row">
+                                            <div class="col-9">
+                                                <div class="messageContentsDivOnWall">
+                                                {% if message.user.id == loggedInUser.id %}
+                                                        <a href="/home" class="">
+                                                        {% if message.user.profilePic == "" %}
+                                                            <img src="{% static 'Images/blankAvatar.png' %}" class="postMessageProfPic mt-2" alt="A thumbnail photo of the user">
+                                                        {% else %}
+                                                            <img src="{{message.user.profilePic}}" class="postMessageProfPic" alt="">
+                                                        {% endif %}
+                                                            {{message.user.firstName}} {{message.user.lastName}}
+                                                        </a>
+                                                {% else %}
+                                                        <a href="/{{message.user.firstName}}/{{message.user.lastName}}/{{message.user.id}}">
+                                                        {% if message.user.profilePic == "" %}
+                                                            <img src="{% static 'Images/blankAvatar.png' %}" class="postMessageProfPic mt-2" alt="A thumbnail photo of the user">
+                                                        {% else %}
+                                                            <img src="{{message.user.profilePic}}" class="postMessageProfPic" alt="">
+                                                        {% endif %}
+                                                            {{message.user.firstName}}
+                                                        </a>
+                                                    {% if message.user != message.userReceivesPost %}
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#1A87FF" class="bi bi-caret-right-fill mt-2 pt-1 carrotSymbol" viewBox="0 0 16 16">
+                                                            <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"/>
+                                                        </svg>
+                                                        <a href="/{{message.userReceivessPost.firstName}}/{{message.userReceivessPost.lastName}}/{{message.userRecievesPost.id}}" class="userReceivesNameOnWall">
+                                                            {{message.userReceivesPost.firstName}}
+                                                        </a>
+                                                    {% endif %}
+                                                {% endif %}
+                                                    {% if message.user.profilePic == "" %}
+                                                        <small class="d-block ml-4 text-secondary messageCreatedAt">{{message.createdAt}}</small>
+                                                    {% else %}
+                                                        <small class="d-block ml-4 text-secondary messageCreatedAtWithThumbnail">{{message.createdAt}}</small>
+                                                    {% endif %}
+                                                </div>                                    
+                                            </div>
+                                            <div class="col">
+                                                <!-- One of three columns -->
+                                            </div>
+                                            <div class="col-sm">
+                                                <form class="deleteMessage" action="" data-index="{{message.id}}" method="post">
+                                                    {% csrf_token %}
+                                                {% if message.user == loggedInUser or message.userReceivesPost == loggedInUser %}
+                                                    <button type="submit" class="btn btn-outline ml-2 mt-2 deletePostBinButtonOnWall">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash deletePostBin " viewBox="0 0 16 16">
+                                                            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                                                            <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4L4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                                                        </svg>
+                                                    </button>
+                                                {% endif %}
+                                                </form>
+                                            </div>
+                                        </div>
+                                        <p class="col-sm mb-1 mt-1 ml-0 messageTextOnWall">{{message.message}} </p>
+                                        <div class=" col-sm-10 mr-3 pl-5 mt-0  stylingOfMessageFormDivs">
+                                            <form action="" class="d-inline pl-4"> 
+                                                <input type="hidden" value="{{message.id}}">
+                                                <button class="btn btn-outline-secondary hover likeAPostLink likeUnlikeCommentButtonStylingOnWall" data-index="{{message.id}}">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-hand-thumbs-up" viewBox="0 0 16 16">
+                                                        <path d="M8.864.046C7.908-.193 7.02.53 6.956 1.466c-.072 1.051-.23 2.016-.428 2.59-.125.36-.479 1.013-1.04 1.639-.557.623-1.282 1.178-2.131 1.41C2.685 7.288 2 7.87 2 8.72v4.001c0 .845.682 1.464 1.448 1.545 1.07.114 1.564.415 2.068.723l.048.03c.272.165.578.348.97.484.397.136.861.217 1.466.217h3.5c.937 0 1.599-.477 1.934-1.064a1.86 1.86 0 0 0 .254-.912c0-.152-.023-.312-.077-.464.201-.263.38-.578.488-.901.11-.33.172-.762.004-1.149.069-.13.12-.269.159-.403.077-.27.113-.568.113-.857 0-.288-.036-.585-.113-.856a2.144 2.144 0 0 0-.138-.362 1.9 1.9 0 0 0 .234-1.734c-.206-.592-.682-1.1-1.2-1.272-.847-.282-1.803-.276-2.516-.211a9.84 9.84 0 0 0-.443.05 9.365 9.365 0 0 0-.062-4.509A1.38 1.38 0 0 0 9.125.111L8.864.046zM11.5 14.721H8c-.51 0-.863-.069-1.14-.164-.281-.097-.506-.228-.776-.393l-.04-.024c-.555-.339-1.198-.731-2.49-.868-.333-.036-.554-.29-.554-.55V8.72c0-.254.226-.543.62-.65 1.095-.3 1.977-.996 2.614-1.708.635-.71 1.064-1.475 1.238-1.978.243-.7.407-1.768.482-2.85.025-.362.36-.594.667-.518l.262.066c.16.04.258.143.288.255a8.34 8.34 0 0 1-.145 4.725.5.5 0 0 0 .595.644l.003-.001.014-.003.058-.014a8.908 8.908 0 0 1 1.036-.157c.663-.06 1.457-.054 2.11.164.175.058.45.3.57.65.107.308.087.67-.266 1.022l-.353.353.353.354c.043.043.105.141.154.315.048.167.075.37.075.581 0 .212-.027.414-.075.582-.05.174-.111.272-.154.315l-.353.353.353.354c.047.047.109.177.005.488a2.224 2.224 0 0 1-.505.805l-.353.353.353.354c.006.005.041.05.041.17a.866.866 0 0 1-.121.416c-.165.288-.503.56-1.066.56z"/>
+                                                    </svg>
+                                                    Like
+                                                </button><!-- The button tag also needs the message id value so it can be compared to the hidden message id value in ajax otherwise when one message is clicked all will receive likes   -->
+                                            </form>
+                                            <form action="" class="d-inline"> 
+                                                <input type="hidden" value="{{message.id}}">
+                                            {% if loggedInUser in message.userLikes.all %}
+                                                <button class="btn btn-outline-secondary hover unlikeAPostLink likeUnlikeCommentButtonStylingOnWall" data-index="{{message.id}}">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-hand-thumbs-down" viewBox="0 0 16 16">
+                                                        <path d="M8.864 15.674c-.956.24-1.843-.484-1.908-1.42-.072-1.05-.23-2.015-.428-2.59-.125-.36-.479-1.012-1.04-1.638-.557-.624-1.282-1.179-2.131-1.41C2.685 8.432 2 7.85 2 7V3c0-.845.682-1.464 1.448-1.546 1.07-.113 1.564-.415 2.068-.723l.048-.029c.272-.166.578-.349.97-.484C6.931.08 7.395 0 8 0h3.5c.937 0 1.599.478 1.934 1.064.164.287.254.607.254.913 0 .152-.023.312-.077.464.201.262.38.577.488.9.11.33.172.762.004 1.15.069.13.12.268.159.403.077.27.113.567.113.856 0 .289-.036.586-.113.856-.035.12-.08.244-.138.363.394.571.418 1.2.234 1.733-.206.592-.682 1.1-1.2 1.272-.847.283-1.803.276-2.516.211a9.877 9.877 0 0 1-.443-.05 9.364 9.364 0 0 1-.062 4.51c-.138.508-.55.848-1.012.964l-.261.065zM11.5 1H8c-.51 0-.863.068-1.14.163-.281.097-.506.229-.776.393l-.04.025c-.555.338-1.198.73-2.49.868-.333.035-.554.29-.554.55V7c0 .255.226.543.62.65 1.095.3 1.977.997 2.614 1.709.635.71 1.064 1.475 1.238 1.977.243.7.407 1.768.482 2.85.025.362.36.595.667.518l.262-.065c.16-.04.258-.144.288-.255a8.34 8.34 0 0 0-.145-4.726.5.5 0 0 1 .595-.643h.003l.014.004.058.013a8.912 8.912 0 0 0 1.036.157c.663.06 1.457.054 2.11-.163.175-.059.45-.301.57-.651.107-.308.087-.67-.266-1.021L12.793 7l.353-.354c.043-.042.105-.14.154-.315.048-.167.075-.37.075-.581 0-.211-.027-.414-.075-.581-.05-.174-.111-.273-.154-.315l-.353-.354.353-.354c.047-.047.109-.176.005-.488a2.224 2.224 0 0 0-.505-.804l-.353-.354.353-.354c.006-.005.041-.05.041-.17a.866.866 0 0 0-.121-.415C12.4 1.272 12.063 1 11.5 1z"/>
+                                                    </svg>
+                                                    Unlike
+                                                </button><!-- The button tag also needs the message id value so it can be compared to the hidden message id value in ajax otherwise when one message is clicked all will receive likes   -->
+                                            {% endif %}
+                                            </form>
+                                            <form action="" class="d-inline"> 
+                                                <button class="btn btn-outline-secondary likeUnlikeCommentButtonStylingOnWall commentButton" data-index="{{message.id}}">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-left" viewBox="0 0 16 16">
+                                                        <path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4.414A2 2 0 0 0 3 11.586l-2 2V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12.793a.5.5 0 0 0 .854.353l2.853-2.853A1 1 0 0 1 4.414 12H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
+                                                    </svg>
+                                                    Comment
+                                                </button>
+                                            </form>
+                                        </div>
+        
+                <!-- the below code contains the logic for displaying specific words dependent on who and how many likes-->
+                                        <div class="col-sm ml-5 likeNameSectionOnWall">
+                                <!-- The below line of code displays when a single user likes a message on the logged in user's page -->
+                    {% for user in message.userLikes.all%} <!--the message.userLikes.all is the many to many relationship in the message model containing all the likes the users did  -->
+                                        {% if loggedInUser.id == user.id and message.likeMessageCount == 1 %}
+                                            <small class=""> You like this </small>
+                                        {% endif %}
+                                        {% if loggedInUser.id != user.id and message.likeMessageCount == 1 %}
+                                            <small class=""> {{user.firstName}} likes this </small>
+                                        {% endif %}
+                                <!-- The above line of code displays when a single user likes a message on the logged in user's page  -->
+                                            
+                                <!-- The below line of code displays when two users(either a user and logged in user OR two other users) like a message on the logged in user's page -->
+                                    {% if loggedInUser.id == user.id and message.likeMessageCount == 2 %}
+                                            <small class=""> You and </small>
+                                        {% if forloop.last %}
+                                            <small class=""> {{user.firstName}} like this </small>
+                                        {% endif %}
+                                    {% endif %}
+        
+                                    {% if loggedInUser.id != user.id and message.likeMessageCount == 2 %}
+                                        {% if forloop.first %}
+                                            <small class=""> {{user.firstName}} and </small>
+                                        {% endif %}
+                                        {% if forloop.last %}
+                                            <small class=""> {{user.firstName}} like this </small>
+                                        {% endif %}
+                                    {% endif %}
+                                <!-- The above line of code displays when two users likes a message on the logged in user's page  -->
+        
+                            <!-- The below line of code displays when three users(1 being the logged in user) like a message on the logged in user's page -->
+                                    {% if loggedInUser.id == user.id and message.likeMessageCount == 3 %}
+                                        {% if forloop.first %}
+                                            <small class=""> You, </small>
+                                        {% endif %}
+                                    {% endif %}
+        
+                                    {% if loggedInUser.id != user.id and message.likeMessageCount == 3 %}
+                                        {% if forloop.last %}
+                                            <small class=""> {{user.firstName}}, and 1 other </small>
+                                        {% endif %}
+                                    {% endif %}
+                            <!-- The above line of code displays when three users(1 being the logged in user) like a message on the logged in user's page -->
+        
+                    <!-- The below line of code displays when three users(none being the logged in user) like a message on the logged in user's page -->
+                        {% if loggedInUser.id != user.id and message.likeMessageCount == 3 %}
+                                {% if forloop.first %}
+                                            <small class=""> {{user.firstName}}, </small>
+                                    {% if loggedInUser.id != user.id and message.likeMessageCount == 3 %}
+                                        {% if forloop.last %}
+                                            <small class=""> {{user.firstName}}, and 1 other </small>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endif %}
+                        {% endif %}
+                    <!-- The above line of code displays when three users(none being the logged in user) like a message on the logged in user's page -->
+        
+                    <!-- The below line of code displays when more than three users(1 being the logged in user) like a message on the logged in user's page -->
+                                    {% if loggedInUser.id == user.id and message.likeMessageCount > 3 %}
+                                        {% if forloop.first %}
+                                            <small class=""> You, </small>
+                                        {% endif %}
+                                    {% endif %}
+        
+                                    {% if loggedInUser.id != user.id and message.likeMessageCount > 3 %}
+                                        {% if forloop.last %}
+                                            <small class=""> {{user.firstName}}, and {{message.likeMessageCountMinusDisplayNames}} others </small>
+                                        {% endif %}
+                                    {% endif %}
+                    <!-- The above line of code displays when three users(1 being the logged in user) like a message on the logged in user's page -->
+                                        
+                    <!-- The below line of code displays when more than three users(none being the logged in user) like a message on the logged in user's page -->
+                        {% if loggedInUser.id != user.id and message.likeMessageCount > 3 %}
+                                {% if forloop.first %}
+                                            <small class=""> {{user.firstName}}, </small>
+                                    {% if loggedInUser.id != user.id and message.likeMessageCount > 3 %}
+                                        {% if forloop.last %}
+                                            <small class=""> {{user.firstName}}, and {{message.likeMessageCountMinusDisplayNames}} others </small>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endif %}
+                        {% endif %}
+                    <!-- The above line of code displays when more than three users(none being the logged in user) like a message on the logged in user's page -->
+                    {% endfor %} <!-- The end of the message.userLikes.all loop -->
+                                        </div> <!-- The closing div containing all of the liking logic -->
+                <!-- the above code contains the logic for displaying specific words dependent on who and how many likes-->
+                                    {% for comment in message.comments.all %}
+                                        <div class="commentSectionDivOnWall row mt-2 ml-3">
+                                        {% if comment.user.profilePic == "" %} 
+                                            <a href="/{{comment.user.firstName}}/{{comment.user.lastName}}/{{comment.user.id}}">
+                                                <img src="{% static 'Images/blankAvatar.png' %}" id="" class="commentIconProfPic " alt="A thumbnail photo of the user">
+                                            </a>
+                                        {% else %}
+                                            <a href="/{{comment.user.firstName}}/{{comment.user.lastName}}/{{comment.user.id}}">
+                                                <img src="{{comment.user.profilePic}}" id="" alt="" class="d-inline commentIconProfPic ml-1 mr-1">
+                                            </a>
+                                        {% endif %}
+                                            <div class="badge badge-pill badge-light commentSection pl-2 pr-5">
+                                                    <div class="row">
+                                                        <div class="col-sm">
+                                                        <a href="/{{comment.user.firstName}}/{{comment.user.lastName}}/{{comment.user.id}}" class="commentHeadText d-block pt-2">{{comment.user.firstName}} {{comment.user.lastName}}</a>
+                                                        <p class="commentSubText pt-1">{{comment.comment}}</p>
+                                                        </div>
+                                                        <div class="col-1">
+                                                            <!-- One of three columns -->
+                                                        </div>
+                                                        <div class="col-1">
+                                                            <form class="deleteComment" action="" data-index="{{comment.id}}" method="post">
+                                                                {% csrf_token %}
+                                                            {% if comment.user == loggedInUser or comment.userReceivesComment == loggedInUser %}
+                                                                <button type="submit" class="btn btn-outline deleteCommentBinButtonOnWall commentButton">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-trash " viewBox="0 0 16 16">
+                                                                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                                                                        <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4L4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                                                                    </svg>
+                                                                </button>
+                                                            {% endif %}
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                    <!-- The below line of code is the form to post a comment. -->
+                                        <form class=" ml-0 sm mb-0 mt-0 pt-0 pb-0" action="{% url 'processComment' userFirstName=loggedInUser.firstName userLastName=loggedInUser.lastName userId=loggedInUser.id %}" method="post" id="postACommentForm">
+                                            {% csrf_token %}
+                                            <div id="postACommentErrors mt-5">
+                                                <ul class="displayCommentErrors mt-3"></ul>
+                                            </div>
+                                            <div class="form-group pr-2 mt-0 mb-0 commentSubDivOnWall"> 
+                                                <label for="textArea"></label>
+                                                <input type="hidden" id="postLocationForCommentID" class="postLocationForCommentClass" name="postLocationForComment" value="{{message.id}}">
+                                                <input type="hidden" id="userReceivesCommentID" class="userReceivesCommentClass" name="userReceivesComment" value="{{loggedInUser.id}}" data-index="{{loggedInUser.id}}">
+                                            {% if loggedInUser.profilePic == "" %} 
+                                                <a href="/home">
+                                                    <img src="{% static 'Images/blankAvatar.png' %}" id="" class="commentIconProfPic " alt="A thumbnail photo of the user">
+                                                </a>
+                                            {% else %}
+                                                <a href="/home">
+                                                    <img src="{{loggedInUser.profilePic}}" id="" alt="" class="d-inline mt-3 ml-3 commentIconProfPic">
+                                                </a>
+                                            {% endif %}
+                                                <textarea class="form-control form-control-sm col-sm-8 mt-3 rounded-pill bg-light text-black d-inline comment commentTextAreaOnForm commentTextAreaOnFormOnWall" value="{{loggedInUser.id}}" rows="1" data-index="{{message.id}}" id="userCommentID" name="userComment"></textarea>
+                                                <!-- The data value of the textarea is the message id so the clicked "comment" button will move the cursos to the corect textarea based on the jquery code above-->
+                                                <button type="submit" id="" class="mt-3 ml-2 btn btn-outline-primary btn-sm d-inline postACommentButton">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cursor-fill sendIcon" viewBox="0 0 16 16">
+                                                        <path d="M14.082 2.182a.5.5 0 0 1 .103.557L8.528 15.467a.5.5 0 0 1-.917-.007L5.57 10.694.803 8.652a.5.5 0 0 1-.006-.916l12.728-5.657a.5.5 0 0 1 .556.103z"/>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </form>
+                                    <!-- This above line of code is the form to post a comment. -->
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        {% endif %} <!-- the end if to make sure a user replying to their comment isn't shown -->
+            {% endfor %} <!-- the end of the for statement for the 'message in allMessages' loop -->
+        {% endfor %} <!-- The end of the for statement for 'loggedInUsersFriends' -->
+                    </div> <!-- The closing div of the looped messages -->
+                </div> <!-- The div ending the second column -->
+                <div class="col-sm-3 lastWallColumn">
+                    <div class="row">
+                        <div class="col-sm rightColumnNavIcons ml-2">
+                            <div class="d-block ml-1 pl-5 mb-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#1C8BF6" class="bi bi-gift-fill" viewBox="0 0 16 16">
+                                    <path d="M3 2.5a2.5 2.5 0 0 1 5 0 2.5 2.5 0 0 1 5 0v.006c0 .07 0 .27-.038.494H15a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h2.038A2.968 2.968 0 0 1 3 2.506V2.5zm1.068.5H7v-.5a1.5 1.5 0 1 0-3 0c0 .085.002.274.045.43a.522.522 0 0 0 .023.07zM9 3h2.932a.56.56 0 0 0 .023-.07c.043-.156.045-.345.045-.43a1.5 1.5 0 0 0-3 0V3zm6 4v7.5a1.5 1.5 0 0 1-1.5 1.5H9V7h6zM2.5 16A1.5 1.5 0 0 1 1 14.5V7h6v9H2.5z"/>
+                                </svg>
+                                <h6 class="d-inline-block ml-2 mt-2">Birthdays</h6>
+                            </div>
+                            <div class="d-block ml-1 pl-5 mb-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#783DE3" class="bi bi-bookmark-fill" viewBox="0 0 16 16">
+                                    <path d="M2 2v13.5a.5.5 0 0 0 .74.439L8 13.069l5.26 2.87A.5.5 0 0 0 14 15.5V2a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z"/>
+                                </svg>
+                                <h6 class="d-inline-block ml-2 mt-2">Saved</h6>
+                            </div> 
+                            <div class="d-block ml-1 pl-5 mb-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#EF632C" class="bi bi-bookmark-fill" viewBox="0 0 16 16">
+                                    <path d="M2 2v13.5a.5.5 0 0 0 .74.439L8 13.069l5.26 2.87A.5.5 0 0 0 14 15.5V2a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z"/>
+                                </svg>
+                                <h6 class="d-inline-block ml-2 mt-2">Pages</h6>
+                            </div>
+                            <div class="d-block ml-1 pl-5 mb-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#1C8BF6" class="bi bi-book" viewBox="0 0 16 16">
+                                    <path d="M1 2.828c.885-.37 2.154-.769 3.388-.893 1.33-.134 2.458.063 3.112.752v9.746c-.935-.53-2.12-.603-3.213-.493-1.18.12-2.37.461-3.287.811V2.828zm7.5-.141c.654-.689 1.782-.886 3.112-.752 1.234.124 2.503.523 3.388.893v9.923c-.918-.35-2.107-.692-3.287-.81-1.094-.111-2.278-.039-3.213.492V2.687zM8 1.783C7.015.936 5.587.81 4.287.94c-1.514.153-3.042.672-3.994 1.105A.5.5 0 0 0 0 2.5v11a.5.5 0 0 0 .707.455c.882-.4 2.303-.881 3.68-1.02 1.409-.142 2.59.087 3.223.877a.5.5 0 0 0 .78 0c.633-.79 1.814-1.019 3.222-.877 1.378.139 2.8.62 3.681 1.02A.5.5 0 0 0 16 13.5v-11a.5.5 0 0 0-.293-.455c-.952-.433-2.48-.952-3.994-1.105C10.413.809 8.985.936 8 1.783z"/>
+                                </svg>
+                                <h6 class="d-inline-block ml-2 mt-2">Campus</h6>
+                            </div>
+                            <div class="d-block ml-1 pl-5 mb-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#F1AB1C" class="bi bi-pencil" viewBox="0 0 16 16">
+                                    <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                                </svg>
+                                <h6 class="d-inline-block ml-2 mt-2">Edits</h6>
+                            </div>
+                            <div class="d-block ml-1 pl-5 mb-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#1D8754" class="bi bi-cash-stack" viewBox="0 0 16 16">
+                                    <path d="M1 3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1H1zm7 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/>
+                                    <path d="M0 5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V5zm3 0a2 2 0 0 1-2 2v4a2 2 0 0 1 2 2h10a2 2 0 0 1 2-2V7a2 2 0 0 1-2-2H3z"/>
+                                </svg>
+                                <h6 class="d-inline-block ml-2 mt-2">CB Pay</h6>
+                            </div>
+                            <div class="d-block ml-1 pl-5 mb-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#3C3F42" class="bi bi-earbuds" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M6.825 4.138c.596 2.141-.36 3.593-2.389 4.117a4.432 4.432 0 0 1-2.018.054c-.048-.01.9 2.778 1.522 4.61l.41 1.205a.52.52 0 0 1-.346.659l-.593.19a.548.548 0 0 1-.69-.34L.184 6.99c-.696-2.137.662-4.309 2.564-4.8 2.029-.523 3.402 0 4.076 1.948zm-.868 2.221c.43-.112.561-.993.292-1.969-.269-.975-.836-1.675-1.266-1.563-.43.112-.561.994-.292 1.969.269.975.836 1.675 1.266 1.563zm3.218-2.221c-.596 2.141.36 3.593 2.389 4.117a4.434 4.434 0 0 0 2.018.054c.048-.01-.9 2.778-1.522 4.61l-.41 1.205a.52.52 0 0 0 .346.659l.593.19c.289.092.6-.06.69-.34l2.536-7.643c.696-2.137-.662-4.309-2.564-4.8-2.029-.523-3.402 0-4.076 1.948zm.868 2.221c-.43-.112-.561-.993-.292-1.969.269-.975.836-1.675 1.266-1.563.43.112.561.994.292 1.969-.269.975-.836 1.675-1.266 1.563z"/>
+                                </svg>
+                                <h6 class="d-inline-block ml-2 mt-2">Music</h6>
+                            </div>
+                            <div class="d-block ml-1 pl-5 mb-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#F02849" class="bi bi-camera-reels" viewBox="0 0 16 16">
+                                    <path d="M6 3a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM1 3a2 2 0 1 0 4 0 2 2 0 0 0-4 0z"/>
+                                    <path d="M9 6h.5a2 2 0 0 1 1.983 1.738l3.11-1.382A1 1 0 0 1 16 7.269v7.462a1 1 0 0 1-1.406.913l-3.111-1.382A2 2 0 0 1 9.5 16H2a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h7zm6 8.73V7.27l-3.5 1.555v4.35l3.5 1.556zM1 8v6a1 1 0 0 0 1 1h7.5a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1z"/>
+                                    <path d="M9 6a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM7 3a2 2 0 1 1 4 0 2 2 0 0 1-4 0z"/>
+                                </svg>
+                                <h6 class="d-inline-block ml-2 mt-2">Video</h6>
+                            </div>
+                            <div class="d-block ml-1 pl-5 mb-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#F9D04D" class="bi bi-emoji-smile" viewBox="0 0 16 16">
+                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                    <path d="M4.285 9.567a.5.5 0 0 1 .683.183A3.498 3.498 0 0 0 8 11.5a3.498 3.498 0 0 0 3.032-1.75.5.5 0 1 1 .866.5A4.498 4.498 0 0 1 8 12.5a4.498 4.498 0 0 1-3.898-2.25.5.5 0 0 1 .183-.683zM7 6.5C7 7.328 6.552 8 6 8s-1-.672-1-1.5S5.448 5 6 5s1 .672 1 1.5zm4 0c0 .828-.448 1.5-1 1.5s-1-.672-1-1.5S9.448 5 10 5s1 .672 1 1.5z"/>
+                                </svg>
+                                <h6 class="d-inline-block ml-2 mt-2">Feeling/Activity</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- The end of the row -->
+</body>
+</html>
