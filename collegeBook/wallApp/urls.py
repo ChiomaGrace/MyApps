@@ -18,6 +18,7 @@ urlpatterns = [
     path('processMessageOnWall', views.processMessageOnWall), #this is when a user posts a message while on the wall page
     path('deleteMessage/<str:userFirstName>/<str:userLastName>/<int:userId>', views.deleteMessage, name='deleteMessage'),
     path('processComment/<str:userFirstName>/<str:userLastName>/<int:userId>', views.processComment, name='processComment'),
+    path('processCommentOnWall', views.processCommentOnWall), #this is when a user posts a comment while on the wall page
     path('deleteComment/<str:userFirstName>/<str:userLastName>/<int:userId>', views.deleteComment, name='deleteComment'),
     path('<str:userFirstName>/<str:userLastName>/<int:userId>', views.specificUsersPage, name='specificUsersPage'),
     path('<str:userFirstName>/<str:userLastName>/<int:userId>/<int:messageId>', views.specificUsersPage, name='specificUsersPage'), #route used when a message is liked

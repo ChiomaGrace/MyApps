@@ -64,12 +64,13 @@ def wall(request):
     print("THIS FUNCTION IS THE WALL OF THE COLLEGEBOOK")
     loggedInUser = User.objects.get(id=request.session['loginInfo'])
     #make the loggedinuser friends with themselves so their posts display on the wall (if friends statement)
-    # loggedInUser.friends.add(loggedInUser)
+    loggedInUser.friends.add(loggedInUser)
     loggedInUsersFriends = loggedInUser.friends.all()
     # print("These are the logged in user's friends:", loggedInUsersFriends)
-    wallOfLoggedInUser = Message.objects.filter(userReceivesPost = loggedInUser).order_by('-createdAt')
+    wallOfLoggedInUser = Message.objects.filter(userReceivesPost = loggedInUser).order_by('createdAt')
     allMessages = Message.objects.all().order_by('-createdAt')
-    # print("These are the messages on the logged in user's wall:", allMessages)
+    print("These are the messages on the logged in user's wall:", allMessages)
+    # print("These are all the users the logged in user sent friend requests to:", loggedInUser.friends.all())
     print("THIS IS THE LAST PRINT STATEMENT IN THE WALL FUNCTION")
     context = {
         'loggedInUser': loggedInUser,
@@ -118,7 +119,8 @@ def loggedInUsersPage(request, messageId=0):
     # print(allUsers)
     friends = loggedInUser.friends.all().order_by('?')
     # print("These are all the friends of the logged in user:", friends)
-    # print("This is the friend count:", friends.count())
+    friendCount = friends.count() - 1
+    print("This is the friend count:", friendCount)
     # print("This is the notification count", Notification.objects.filter(user=loggedInUser).count())
     # print("*"*50)
     context = {
@@ -127,6 +129,7 @@ def loggedInUsersPage(request, messageId=0):
         'commentsOnWall': commentsOnWall,
         'allUsers': allUsers,
         'friends': friends,
+        'friendCount': friendCount,
         'notifications': Notification.objects.all,
         'loggedInUsersNotifs': Notification.objects.filter(user=loggedInUser)
     }
@@ -363,6 +366,36 @@ def processComment(request, userFirstName, userLastName, userId):
             print("THIS IS THE LAST PRINT STATEMENT IN THE PROCESS COMMENT ROUTE.")  
     return redirect(reverse('specificUsersPage', args=(userFirstName, userLastName, userId,))) #using the name of the url to redirect and passing the variables/params to the form rendering the template
 
+def processCommentOnWall(request):
+    postACommentErrors = Comment.objects.commentValidator(request.POST)
+    print(postACommentErrors)
+    if len(postACommentErrors) > 0:
+        for key, value in postACommentErrors.items():
+            messages.error(request,value)
+        return JsonResponse({"errors": postACommentErrors}, status=400)
+    else:
+        print("THIS FUNCTION PROCESSES THE FORM FOR POSTING A COMMENT ON THE WALL.")
+        # print("*"* 50)
+        # print("This is the comment left by the logged in user.")
+        comment = request.POST['userComment']
+        # print("This is the logged in user's comment:", comment)
+        # print("This is the post id where the comment is made.")
+        messageSelectedForComment = request.POST['postLocationForComment']
+        # print(messageSelectedForComment)
+        # print("This is the user that made the comment.")
+        user = User.objects.get(id=request.session['loginInfo'])
+        # print(user)
+        # print("This prints the id of the specific user who received the comment.")
+        userReceivesComment = request.POST['userReceivesComment']
+        print("This is the user receiving the comment:", userReceivesComment)
+        recipientOfComment = User.objects.get(id= userReceivesComment)
+        #Now that I have the post that receives the comment(messageSelectedForComment), and the user who receives the comment(userReceivesComment), I can use said variables for a query to obtain its' instances.
+        #To do that I need to get the message object via id to use for the foreign key/one to many relationship
+        theSpecificPost = Message.objects.get(id = messageSelectedForComment)
+        commentByUser = Comment.objects.create(comment = comment, message = theSpecificPost, user = user, userReceivesComment = recipientOfComment)
+        notifyUser = Notification.objects.create(user = user, comment = commentByUser) #This creates a notification for the user receiving the posted message
+        return redirect("/wall")
+
 def deleteComment(request, userFirstName, userLastName, userId):
     # print("*"*50)
     print("THIS FUNCTION DELETES A POSTED COMMENT.")
@@ -420,6 +453,8 @@ def specificUsersPage(request, userFirstName, userLastName, userId, messageId = 
     # print(allUsers)
     specificUsersFriends = specificUsersPage.friends.all()
     # print("These are the friends of the specific user:", specificUsersFriends)
+    friendCount = specificUsersPage.friends.count() - 1
+    print("This is the friend count:", friendCount)
     # print("*"*50)
     print("THIS IS THE LAST PRINT STATEMENT OF THE SPECIFIC USER'S PAGE ROUTE.")
     context = {
@@ -427,6 +462,7 @@ def specificUsersPage(request, userFirstName, userLastName, userId, messageId = 
         'specificUsersMessages': specificUsersMessages,
         'allUsers': allUsers,
         'specificUsersFriends': specificUsersFriends,
+        'friendCount': friendCount,
         'loggedInUser': User.objects.get(id=request.session['loginInfo']),
         'notifications': Notification.objects.all,
         'loggedInUsersNotifs': Notification.objects.filter(user=loggedInUser)
@@ -574,7 +610,7 @@ def sendFriendRequest(request, userFirstName='firstName', userLastName='lastName
         if userWhoSentFriendRequest.id != userReceivesRequest.id: #if this line of code runs it means the friend request occurred on the specific user's page
             print("This print statement means the friend request is being created")
             userReceivesRequest.friends.add(userWhoSentFriendRequest)
-            print("These are all the users the logged in user sent friend requests to:", userWhoSentFriendRequest.friends.all())
+            # print("These are all the users the logged in user sent friend requests to:", userWhoSentFriendRequest.friends.all())
             # print("These are all the users who asked to be the logged in user's friend:", userReceivesRequest.friends.all())
             notifyUser = Notification.objects.create(user= userReceivesRequest, friendRequest = userWhoSentFriendRequest) #This creates a notification for the user receiving the posted message
             userReceivesRequest.notifications += 1
@@ -604,13 +640,20 @@ def removeFriendRequest(request, userFirstName='firstName', userLastName='lastNa
     print("This prints the user object of the user sending the friend request aka the logged in user.")
     print(userWhoSentFriendRequest) # prints as a User Object(#)
     print("*"*50)
+    idOfPageLocation = request.POST['userWhoReceivesPost'] #This identifies the location of where the user is currently browsing
+    # print("This identifies the id of the location of where the user is currently browsing", idOfPageLocation)
+    currentPageLocation = User.objects.get(id= idOfPageLocation) #a hidden input containing the id of the specific user
     if userWhoSentFriendRequest in userReceivesRequest.friends.all():
         userReceivesRequest.friends.remove(userWhoSentFriendRequest)
         if userReceivesRequest.notifications >= 0:
             userReceivesRequest.notifications -= 1
             userReceivesRequest.save()
-    print("THIS IS THE LAST PRINT STATEMENT OF THE REMOVE A FRIEND REQUEST ROUTE.")
-    return redirect("/home")
+            print("THIS IS THE LAST PRINT STATEMENT OF THE REMOVE A FRIEND REQUEST ROUTE.")
+    if currentPageLocation == loggedInUser:
+        return redirect("/home")
+    else:
+        return redirect(reverse('specificUsersPage', args=(currentPageLocation.firstName, currentPageLocation.lastName, currentPageLocation.id,))) #using the name of the url to redirect and passing the variables/params to the form rendering the template
+
 
 def acceptFriendRequest(request, userFirstName='firstName', userLastName='lastName', userId=0, messageId = 0):
     print("THIS IS THE ACCEPT A FRIEND REQUEST ROUTE POOP")
@@ -664,10 +707,11 @@ def unfriend(request, userFirstName='firstName', userLastName='lastName', userId
     userReceivesRequest.friends.remove(userWhoSentFriendRequest)
     #also need to delete this object in the notification model
     removeNotif = Notification.objects.get(user = userReceivesRequest, friendRequest = userWhoSentFriendRequest)
-    removeNotif.delete()
-    if userReceivesRequest.notifications > 0:
-        userReceivesRequest.notifications -= 1
-        userReceivesRequest.save()
+    if removeNotif:
+        removeNotif.delete()
+        if userReceivesRequest.notifications > 0:
+            userReceivesRequest.notifications -= 1
+            userReceivesRequest.save()
     print("*"*50)
     print("THIS IS THE LAST PRINT STATEMENT OF THE REMOVE A FRIEND REQUEST ROUTE.")
     return redirect("/home")

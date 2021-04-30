@@ -1036,7 +1036,6 @@
         {% for notif in notifications %} <!-- This loops through all the notifications -->
             {% if notif.user == loggedInUser %} <!-- This provides the notifications only for the logged in user-->
                 {% if notif.friendRequest%}
-                    {% if not loggedInUser in loggedInUser.friends.all %} <!-- This code would remove the sent friend request signifying the logged in user did not accept the friend request -->
                         {% if notif.friendRequest.profilePic == "" %}
                             <div class="dropdown-item pb-0 pt-0">
                                 <div class="specificNotification friendRequestNotification" data-index="{{notif.friendRequest.id}}">
@@ -1072,7 +1071,6 @@
                                 </div>
                             </div>
                         {% endif %}
-                    {% endif %}
                 {% endif %}
                 {% if notif.message %} <!-- prevents the notification appearing when it is null -->
                     {% if loggedInUser != notif.message.user %} <!-- This excludes notifications every time the logged in user posts on something  -->
@@ -1169,10 +1167,10 @@
                     <!-- <p class="decorativeLine mt-3 mb-0">________________________________________________</p> -->
                     <button class="btn btn-outline-light profilePicBannerLinks postsLink pr-1">Posts</button>
                     <button class="btn btn-outline-light profilePicBannerLinks aboutLink pr-1">About</button>
-                {% if friends.count == 0 %}
+                {% if friendCount == 0 %}
                     <button class="btn btn-outline-light profilePicBannerLinks friendsLink pr-1">Friends</button>
                 {% else %}
-                    <button class="btn btn-outline-light profilePicBannerLinks friendsLink pr-1">Friends {{friends.count}}</button>
+                    <button class="btn btn-outline-light profilePicBannerLinks friendsLink pr-1">Friends {{friendCount}}</button>
                 {% endif %}
                     <button class="btn btn-outline-light profilePicBannerLinks pr-1 moreText">More
                         <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-caret-down-fill" viewBox="0 0 16 16">

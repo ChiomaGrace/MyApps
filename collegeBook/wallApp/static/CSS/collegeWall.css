@@ -246,6 +246,13 @@
         border: none;
     }
 
+    .likeUnlikeCommentButtonStylingOnWall{
+        border: none;
+        height: 20px;
+        padding-top: -2px;
+        margin-top: -30px;
+    }
+
     .listOfPostedMessages{
         border-radius: 10px;
         /* color: red; */
@@ -272,8 +279,21 @@
         margin-bottom: -2px;
     }
 
+    .messageContentsDivOnWall{
+        height: 40px;
+        margin-bottom: 4px;
+    }
+
     #messageBin{
         margin-top: -34px;
+    }
+
+    .messageCreatedAt{
+        font-size: 8px;
+    }
+
+    .messageCreatedAtWithThumbnail{
+        font-size: 8px;
     }
 
     .messageFriendButton{
@@ -288,9 +308,12 @@
         margin-left: 280px;
     } 
 
+    /* .nameInPost{
+        font-size: 12px;
+    } */
+
     .nav-item{
         list-style-type: none;
-
     }
 
     .notificationMenu{
@@ -545,7 +568,6 @@
         left: 40px;
     }
 
-
     small.messageCreatedAtWithThumbnail{
         position: relative;
         top: -18px; 
@@ -691,7 +713,8 @@
 
     .userReceivesNameOnWall{
         position: relative;
-        top: 10px;
+        top: 15px;
+        font-size: 12px;
     }
 
     #userUniversityID{
@@ -793,9 +816,25 @@
             margin-left: 2280px;
         }
 
+        .likeUnlikeCommentButtonStylingOnWall{
+            border: none;
+            height: 20px;
+            padding-top: 0px;
+            margin-top: -20px;
+        }
+
         #mainSendFriendRequestButton{
             position: relative;
             left: 180px;
+        }
+
+        .messageContentsDivOnWall{
+            height: 40px;
+            margin-bottom: 4px;
+        }
+
+        .messageTextOnWall{
+            padding-bottom: 0px;
         }
 
         .middleWallColumn{
@@ -829,7 +868,6 @@
         #regForm{
             overflow: scroll;
             overflow-x: hidden; 
-
         }
 
         .searchResultsDiv{
@@ -848,10 +886,6 @@
         .thumbsDown{
             position: relative;
             left: 130px;
-        }
-
-        #userMessageID{
-            width: 1100px;
         }
 
         #userNameText{
@@ -877,6 +911,11 @@
 
 /*The beginning of a large sized computer screen*/
 @media only screen and (min-width: 1025px)  and (max-width: 1440px) {
+        .carrotSymbol{
+            position: relative;
+            top: 3px;
+        }
+        
         .clearImage{ /*For when the image is in the database */
             font-weight: bolder; 
             color: black;
@@ -961,6 +1000,10 @@
             margin-left: 400px;
         } 
 
+        .nameInPost{
+            font-size: 14px;
+        }
+
         .navBarSecondSection{
             margin-left: 40px;
             padding-left: 140px;
@@ -1023,9 +1066,9 @@
             left: 4px;
         }
 
-        #userMessageID{
+        /* #userMessageID{
             width: 580px;
-        }
+        } */
 
         #userNameText{
             text-align: center;
@@ -1040,6 +1083,10 @@
         .userProfileHeaderSaveButton{
             position: relative;
             left: 84px;
+        }
+
+        .userReceivesNameOnWall{
+            font-size: 12px;
         }
 
         .XForProfileIntroFormStyling{
@@ -1223,14 +1270,16 @@
     }
 
     .likeUnlikeCommentButtonStylingOnWall{
-        position: relative;
         border: none;
-        top: -28px;
+        height: 20px;
+        padding-top: 0px;
+        margin-top: -30px;
+        margin-left: -10px;
     }
 
-    .likeNameSectionOnWall{
+    /* .likeNameSectionOnWall{
         top: -30px;
-    }
+    } */
 
     .listOfPostedMessages{
         margin-left: -20px;
@@ -1247,9 +1296,9 @@
         left: 30px;
     }
 
-    .messageTextOnWall{
+    /* .messageTextOnWall{
         top: -20px;
-    }
+    } */
 
     .messengerNavIcon{
         top: -49px;
@@ -1259,6 +1308,10 @@
 
     .moreText{
         display: none;
+    }
+
+    .nameInPost{
+        font-size: 12px;
     }
 
     #navIconProfPic{
@@ -1397,6 +1450,10 @@
         left: -30px;
     }
 
+    .userReceivesNameOnWall{
+        font-size: 12px;
+    }
+
     .weatherNavIcon{
         display: none;
         color: white;
@@ -1477,7 +1534,7 @@
         top: -40px;
     }
 
-    .commentSectionDivOnWall{
+    /* .commentSectionDivOnWall{
         position: relative;
         top: -60px;
     }
@@ -1485,7 +1542,7 @@
     .commentSubDiv{
         position: relative;
         top: -12px;
-    }
+    } */
 
     #confirmPassword{
         position: relative;
@@ -1528,6 +1585,10 @@
         margin-left: 250px;
     }
 
+    .deleteMessage{
+        height: 10px;
+    }
+
     .deletePostBinButton{
         margin-top: -88px;
         margin-left: 286px;
@@ -1536,7 +1597,7 @@
     .deletePostBinButtonOnWall{
         position: relative;
         left: 348px;
-        top: -68px;
+        top: -60px;
     }
 
     .editDetailsButtonStyling{
@@ -1582,9 +1643,9 @@
         border-radius: 6px;
     }
 
-    .messageTextOnWall{
+    /* .messageTextOnWall{
         top: -60px;
-    }
+    } */
 
     .middleWallColumn{
         overflow-y: scroll; 
@@ -1593,7 +1654,7 @@
     } 
 
     .likeNameSectionOnWall{
-        top: -70px;
+        top: -28px;
     }
 
     .likeUnlikeCommentButtonStyling{
@@ -1604,10 +1665,7 @@
     }
 
     .likeUnlikeCommentButtonStylingOnWall{
-        position: relative;
-        border: none;
-        top: -28px;
-        left: -34px;
+        margin-top: 30px; 
     }
 
     .listOfPostedMessages{
@@ -1628,7 +1686,8 @@
     }
 
     .messageContentsDivOnWall{
-        font-size: 92%;
+        height: 40px;
+        margin-bottom: 4px;
     }
 
     .messengerNavIcon{
@@ -1639,6 +1698,10 @@
 
     .moreText{
         display: none;
+    }
+
+    .nameInPost{
+        font-size: 10px;
     }
 
     #navIconProfPic{
@@ -2000,6 +2063,10 @@
         margin-left: 200px;
     }
 
+    .deleteMessage{
+        height: 8px;
+    }
+
     .deletePostBinButton{
         margin-top: -88px;
         margin-left: 286px;
@@ -2007,7 +2074,7 @@
 
     .deletePostBinButtonOnWall{
         position: relative;
-        top: -70px;
+        top: -50px;
         left: 314px;
     }
 
@@ -2054,9 +2121,9 @@
         border-radius: 6px;
     }
     
-    .likeNameSectionOnWall{
+    /* .likeNameSectionOnWall{
         top: -50px;
-    }
+    } */
 
     .likeUnlikeCommentButtonStyling{
         font-size: 14px;
@@ -2066,11 +2133,7 @@
     }
 
     .likeUnlikeCommentButtonStylingOnWall{
-        position: relative;
-        border: none;
-        top: -60px;
-        left: -42px;
-        font-size: 82%;
+        margin-left: -20px;
     }
 
     .listOfPostedMessages{
@@ -2100,9 +2163,9 @@
         position: relative;
     }
 
-    .messageTextOnWall{
+    /* .messageTextOnWall{
         top: -60px;
-    }
+    } */
 
     .middleWallColumn{
         overflow-y: scroll; 
@@ -2112,6 +2175,10 @@
 
     .moreText{
         display: none;
+    }
+
+    .nameInPost{
+        font-size: 10px;
     }
 
     #navIconProfPic{
@@ -2472,6 +2539,10 @@
         margin-left: 180px;
     }
 
+    .deleteMessage{
+        height: 5px;
+    }
+
     .deletePostBinButton{
         margin-top: -88px;
         margin-left: 250px;
@@ -2525,8 +2596,9 @@
     }
 
     .likeNameSectionOnWall{
-        top: -70px;
-        left: -22px;
+        /* top: -70px; */
+        /* left: -22px; */
+        font-size: 11px;
     }
 
     .likeUnlikeCommentButtonStyling{
@@ -2538,11 +2610,10 @@
 
     .likeUnlikeCommentButtonStylingOnWall{
         position: relative;
-        border: none;
-        top: -70px;
-        left: -50px;
-        width: 60px;
-        font-size: 14px;
+        padding-top: 6px;
+        margin-top: -30px;
+        font-size: 7px;
+        left: -60px;
     }
 
     .listOfPostedMessages{
@@ -2570,7 +2641,8 @@
     }
 
     .messageTextOnWall{
-        top: -60px;
+        /* top: -60px; */
+        font-size: 12px;
     }
 
     .middleWallColumn{
@@ -2585,6 +2657,10 @@
 
     .moreText{
         display: none;
+    }
+
+    .nameInPost{
+        font-size: 10px;
     }
 
     #navIconProfPic{
@@ -2809,7 +2885,8 @@
     }
 
     .userReceivesNameOnWall{
-        margin-top: 2px;
+        /* margin-top: 2px; */
+        font-size: 10px;
     }
 
     #userRegistrationEmail{
